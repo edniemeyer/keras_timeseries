@@ -4,8 +4,14 @@ import json
 import numpy as np
 import pandas
 import math
+
 seed=7
 np.random.seed(seed)  # for reproducibility
+
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
@@ -21,7 +27,9 @@ dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python
 dataset = dataframe.values
 dataset = dataset.astype('float32')
 
-
+scaler = MinMaxScaler(feature_range=(0, 1))
+#scaler = StandardScaler() #z-score
+dataset = scaler.fit_transform(dataset)
 
 batch_size = 20
 nb_epoch = 1000
@@ -36,21 +44,39 @@ def evaluate_model(model, dataset, name, n_layers, hals):
     #mcp = ModelCheckpoint('output/mnist_adaptative_%dx800/%s.checkpoint' % (n_layers, name), save_weights_only=True)
     #tb = TensorBoard(log_dir='output/mnist_adaptative_%dx800' % n_layers, histogram_freq=1, write_graph=False, write_images=False)
 
+    
     sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)
-    model.compile(loss='mean_squared_error', optimizer=sgd)
-    #model.compile(loss='mean_squared_error', optimizer='adam')
-    #model.compile(loss='mean_squared_error', optimizer='adadelta')
 
-    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, callbacks=[csv_logger])
+    optimizer = sgd
+    #optimizer = "adam"
+    #optimizer = "adadelta"
 
-    trainScore = model.evaluate(X_train, Y_train, verbose=0)
-    print('Train Score: %.2f MSE (%.2f RMSE)' % (trainScore, math.sqrt(trainScore)))
-    testScore = model.evaluate(X_test, Y_test, verbose=0)
-    print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore, math.sqrt(testScore)))
+    model.compile(loss='mean_squared_error', optimizer=optimizer)
 
+    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, callbacks=[csv_logger,es])
+
+    #trainScore = model.evaluate(X_train, Y_train, verbose=0)
+    #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
+    #testScore = model.evaluate(X_test, Y_test, verbose=0)
+    #print('Test Score: %f MSE (%f RMSE)' % (testScore, math.sqrt(testScore)))
+
+    # make predictions
+    trainPredict = model.predict(X_train)
+    testPredict = model.predict(X_test)
+    # invert predictions
+    trainPredict = scaler.inverse_transform(trainPredict)
+    Y_train = scaler.inverse_transform([Y_train])
+    testPredict = scaler.inverse_transform(testPredict)
+    Y_test = scaler.inverse_transform([Y_test])
+
+    # calculate root mean squared error
+    trainScore = math.sqrt(mean_squared_error(Y_train[0], trainPredict[:,0]))
+    print('Train Score: %f RMSE' % (trainScore))
+    testScore = math.sqrt(mean_squared_error(Y_test[0], testPredict[:,0]))
+    print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
-    return trainScore, testScore, epochs
+    return trainScore, testScore, epochs, optimizer
 
 
 def create_dataset(dataset, look_back=1):
@@ -135,10 +161,10 @@ def __main__(argv):
         model.add(HAL)
         model.summary()
 
-        trainScore, testScore, epochs = evaluate_model(model, dataset, name, n_layers, hals)
+        trainScore, testScore, epochs, optimizer = evaluate_model(model, dataset, name, n_layers, hals)
 
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            fp.write("%s,%f,%f,%d\n" % (name, trainScore, testScore, epochs))
+            fp.write("%s,%f,%f,%d,%s\n" % (name, trainScore, testScore, epochs, optimizer))
 
         model = None
 
