@@ -29,11 +29,11 @@ dataset = dataset.astype('float32')
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 #scaler = StandardScaler() #z-score
-dataset = scaler.fit_transform(dataset)
+dataset = scaler.fit_transform(dataset) #não posso fazer scale no dataset inteiro.. apenas no treino
 
 batch_size = 20
-nb_epoch = 1000
-patience = 50
+nb_epoch = 20000
+patience = 500
 look_back = 6
 
 def evaluate_model(model, dataset, name, n_layers, hals):
@@ -94,6 +94,11 @@ def load_dataset():
     print(len(train), len(test))
     trainX, trainY = create_dataset(train, look_back)
     testX, testY = create_dataset(test, look_back)
+
+    # reshape input to be [samples, time steps, features]
+    #trainX = numpy.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
+    #testX = numpy.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+    
     print(trainX.shape[0], 'train samples')
     print(testX.shape[0], 'test samples')
 
@@ -137,10 +142,11 @@ def __main__(argv):
 
     dataset = load_dataset()
     
-    nonlinearities = ['aabh', 'abh', 'ah', 'ahrelu', 'srelu', 'prelu', 'lrelu', 'trelu', 'elu', 'pelu', 'psoftplus', 'sigmoid', 'relu', 'tanh', 'softplus']
+    #nonlinearities = ['aabh', 'abh', 'ah', 'ahrelu', 'srelu', 'prelu', 'lrelu', 'trelu', 'elu', 'pelu', 'psoftplus', 'sigmoid', 'relu', 'tanh', 'softplus']
+    nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-NN CONFIG: batch size %d, es patience %d, max_epoch %d\n" % (batch_size, patience, nb_epoch))
+        fp.write("-NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s\n" % (batch_size, patience, nb_epoch, scaler))
         fp.write("fn,RMSE_train,RMSE_test,epochs\n")
 
     hals = []
@@ -149,6 +155,7 @@ def __main__(argv):
         model = Sequential()
 
         model.add(Dense(4, input_dim=(look_back)))
+        #model.add(LSTM(4, input_shape=(1, look_back)))
         HAL = create_layer(name)
         model.add(HAL)
         hals.append(HAL)
