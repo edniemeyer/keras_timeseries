@@ -4,6 +4,7 @@ import json
 import numpy as np
 import pandas
 import math
+#import talib
 
 seed=7
 np.random.seed(seed)  # for reproducibility
@@ -34,7 +35,7 @@ dataset = scaler.fit_transform(dataset) #não posso fazer scale no dataset intei
 batch_size = 20
 nb_epoch = 20000
 patience = 500
-look_back = 6
+look_back = 7
 
 def evaluate_model(model, dataset, name, n_layers, hals):
     X_train, Y_train, X_test, Y_test = dataset
@@ -146,7 +147,7 @@ def __main__(argv):
     nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s\n" % (batch_size, patience, nb_epoch, scaler))
+        fp.write("-NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s, look_back %d\n" % (batch_size, patience, nb_epoch, scaler, look_back))
         fp.write("fn,RMSE_train,RMSE_test,epochs\n")
 
     hals = []
