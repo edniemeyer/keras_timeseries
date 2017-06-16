@@ -24,7 +24,7 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
-dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python', skipfooter=3, decimal=',')
+dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 dataset = dataframe.values
 dataset = dataset.astype('float32')
 
@@ -54,7 +54,7 @@ def evaluate_model(model, dataset, name, n_layers, hals):
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
 
-    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch, verbose=0, callbacks=[csv_logger,es])
+    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, callbacks=[csv_logger,es])
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
@@ -148,7 +148,7 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s, look_back %d\n" % (batch_size, patience, nb_epoch, scaler, look_back))
+        fp.write("-(minute)NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s, look_back %d\n" % (batch_size, patience, nb_epoch, scaler, look_back))
         fp.write("fn,RMSE_train,RMSE_test,epochs\n")
 
     hals = []

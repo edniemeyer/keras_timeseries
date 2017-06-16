@@ -24,7 +24,8 @@ from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, Adaptati
 from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
-dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python', skipfooter=3, decimal=',')
+#dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python', skipfooter=3, decimal=',')
+dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 dataset = dataframe.values
 dataset = dataset.astype('float32')
 
@@ -32,9 +33,9 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 #scaler = StandardScaler() #z-score
 dataset = scaler.fit_transform(dataset) #não posso fazer scale no dataset inteiro.. apenas no treino
 
-batch_size = 20
-nb_epoch = 20000
-patience = 500
+batch_size = 5
+nb_epoch = 200
+patience = 50
 look_back = 7
 
 def evaluate_model(model, dataset, name, n_layers, hals):

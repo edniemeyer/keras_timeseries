@@ -24,7 +24,8 @@ from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, Adaptati
 from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
-dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python', skipfooter=3, decimal=',')
+#dataframe = pandas.read_csv('DOLAR.csv', sep = ';', usecols=[1],  engine='python', skipfooter=3, decimal=',')
+dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 dataset = dataframe.values
 dataset = dataset.astype('float32')
 
@@ -32,9 +33,9 @@ scaler = MinMaxScaler(feature_range=(0, 1))
 #scaler = StandardScaler() #z-score
 dataset = scaler.fit_transform(dataset) #não posso fazer scale no dataset inteiro.. apenas no treino
 
-batch_size = 20
-nb_epoch = 20000
-patience = 500
+batch_size = 5
+nb_epoch = 200
+patience = 50
 look_back = 7
 
 def evaluate_model(model, dataset, name, n_layers, hals):
@@ -54,8 +55,8 @@ def evaluate_model(model, dataset, name, n_layers, hals):
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
 
-    for i in range(100):
-	    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, callbacks=[csv_logger,es])
+    for i in range(nb_epoch):
+	    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=1, verbose=0, callbacks=[csv_logger,es])
 	    model.reset_states()
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
@@ -100,8 +101,8 @@ def load_dataset():
     testX, testY = create_dataset(test, look_back)
 
     # reshape input to be [samples, time steps, features]
-    trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
-    testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
+    #trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
+    #testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
 
     # reshape input to be [samples, features, timesteps]
     trainX = np.reshape(trainX, (trainX.shape[0], trainX.shape[1], 1))
