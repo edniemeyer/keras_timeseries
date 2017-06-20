@@ -9,13 +9,12 @@ import math
 seed=7
 np.random.seed(seed)  # for reproducibility
 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error
+from processing import *
 
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation
+from keras.layers import Convolution1D, MaxPooling1D
 from keras.optimizers import SGD
 from keras.utils import np_utils
 from custom_callbacks import CriteriaStopping
@@ -25,20 +24,16 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 
 
 dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
-dataset = dataframe.values
-dataset = dataset.astype('float32')
+dataset = dataframe[1].tolist()
 
-scaler = MinMaxScaler(feature_range=(0, 1))
-#scaler = StandardScaler() #z-score
-dataset = scaler.fit_transform(dataset) #não posso fazer scale no dataset inteiro.. apenas no treino
-
-batch_size = 20
-nb_epoch = 2000
+batch_size = 128
+nb_epoch = 200
 patience = 50
 look_back = 7
 
-def evaluate_model(model, dataset, name, n_layers, hals):
-    X_train, Y_train, X_test, Y_test = dataset
+def evaluate_model(model, dataset, dadosp, name, n_layers, hals):
+    X_train, X_test, Y_train, Y_test = dataset
+    X_trainp, X_testp, Y_trainp, Y_testp = dadosp
 
     csv_logger = CSVLogger('output/%d_layers/%s.csv' % (n_layers, name))
     es = EarlyStopping(monitor='loss', patience=patience)
@@ -54,7 +49,11 @@ def evaluate_model(model, dataset, name, n_layers, hals):
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
 
-    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, callbacks=[csv_logger,es])
+    # reshape input to be [samples, time steps, features]
+    #X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
+    #X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+
+    history = model.fit(X_train, Y_train, batch_size=batch_size, nb_epoch=nb_epoch, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
@@ -64,46 +63,47 @@ def evaluate_model(model, dataset, name, n_layers, hals):
     # make predictions
     trainPredict = model.predict(X_train)
     testPredict = model.predict(X_test)
+    
+    
     # invert predictions
-    trainPredict = scaler.inverse_transform(trainPredict)
-    Y_train = scaler.inverse_transform([Y_train])
-    testPredict = scaler.inverse_transform(testPredict)
-    Y_test = scaler.inverse_transform([Y_test])
+    params = []
+    for xt in X_testp:
+        xt = np.array(xt)
+        mean_ = xt.mean()
+        scale_ = xt.std()
+        params.append([mean_, scale_])
+
+    new_predicted = []
+
+    for pred, par in zip(testPredict, params):
+        a = pred*par[1]
+        a += par[0]
+        new_predicted.append(a)
+
+
+    params = []
+    for xt in X_testp:
+        xt = np.array(xt)
+        mean_ = xt.mean()
+        scale_ = xt.std()
+        params.append([mean_, scale_])
+        
+    new_train_predicted= []
+
+    for pred, par in zip(trainPredict, params):
+        a = pred*par[1]
+        a += par[0]
+        new_train_predicted.append(a)
 
     # calculate root mean squared error
-    trainScore = math.sqrt(mean_squared_error(Y_train[0], trainPredict[:,0]))
+    trainScore = mean_squared_error(trainPredict, new_train_predicted)
     print('Train Score: %f RMSE' % (trainScore))
-    testScore = math.sqrt(mean_squared_error(Y_test[0], testPredict[:,0]))
+    testScore = mean_squared_error(testPredict, new_predicted)
     print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
     return trainScore, testScore, epochs, optimizer
 
-
-def create_dataset(dataset, look_back=1):
-	dataX, dataY = [], []
-	for i in range(len(dataset)-look_back-1):
-		a = dataset[i:(i+look_back), 0]
-		dataX.append(a)
-		dataY.append(dataset[i + look_back, 0])
-	return np.array(dataX), np.array(dataY)
-
-def load_dataset():
-    train_size = 1003
-    test_size = 1256 - train_size
-    train, test = dataset[0:train_size,:], dataset[train_size:train_size+test_size,:]
-    print(len(train), len(test))
-    trainX, trainY = create_dataset(train, look_back)
-    testX, testY = create_dataset(test, look_back)
-
-    # reshape input to be [samples, time steps, features]
-    #trainX = numpy.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
-    #testX = numpy.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-    
-    print(trainX.shape[0], 'train samples')
-    print(testX.shape[0], 'test samples')
-
-    return trainX, trainY, testX, testY
 
 def create_layer(name):
     if name == 'aabh':
@@ -141,28 +141,43 @@ def __main__(argv):
     n_layers = int(argv[0])
     print(n_layers,'layers')
 
-    dataset = load_dataset()
-    
-    #nonlinearities = ['aabh', 'abh', 'ah', 'ahrelu', 'srelu', 'prelu', 'lrelu', 'trelu', 'elu', 'pelu', 'psoftplus', 'sigmoid', 'relu', 'tanh', 'softplus']
     #nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
     nonlinearities = ['sigmoid', 'relu', 'tanh']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-(minute)NN CONFIG: batch size %d, es patience %d, max_epoch %d, scaler %s, look_back %d\n" % (batch_size, patience, nb_epoch, scaler, look_back))
-        fp.write("fn,RMSE_train,RMSE_test,epochs\n")
+        fp.write("-Convolutional NN\n")
 
     hals = []
+
+    TRAIN_SIZE = 30
+    TARGET_TIME = 1
+    LAG_SIZE = 1
+    EMB_SIZE = 1
+    
+    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=True)
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.9)
+
+    dados = X_train, X_test, Y_train, Y_test
+
+    Xp, Yp = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    Xp, Yp = np.array(Xp), np.array(Yp)
+    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.9)
+
+    dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
     for name in nonlinearities:
         model = Sequential()
 
-        model.add(Dense(4, input_dim=(look_back)))
-        #model.add(LSTM(4, input_shape=(1, look_back)))
+        #model.add(Dense(4, input_dim=(look_back)))
+        model.add(Convolution1D(input_shape = (TRAIN_SIZE, EMB_SIZE),nb_filter=8,filter_length=12,border_mode='valid',subsample_length=4))
+        model.add(MaxPooling1D(pool_length=2))
         HAL = create_layer(name)
         model.add(HAL)
         hals.append(HAL)
         for l in range(n_layers):
-            model.add(Dense(4))
+            model.add(Convolution1D(input_shape = (TRAIN_SIZE,EMB_SIZE),nb_filter=8,filter_length=12, border_mode='valid',subsample_length=4))
+            model.add(MaxPooling1D(pool_length=2))
             HAL = create_layer(name)
             model.add(HAL)
             hals.append(HAL)
@@ -170,7 +185,7 @@ def __main__(argv):
         model.add(HAL)
         model.summary()
 
-        trainScore, testScore, epochs, optimizer = evaluate_model(model, dataset, name, n_layers, hals)
+        trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers, hals)
 
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             fp.write("%s,%f,%f,%d,%s\n" % (name, trainScore, testScore, epochs, optimizer))
