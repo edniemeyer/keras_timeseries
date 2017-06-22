@@ -144,13 +144,17 @@ def __main__(argv):
 
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
-    for name in nonlinearities:
+    testScore_aux = 999999
+    f_aux = 0
+
+    for f in range(40,500,20):
+        name='relu'
         model = Sequential()
 
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
         #model.add(Activation(name))
 
-        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=64,kernel_size=6,activation=name,padding='causal',strides=1))
+        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=f,kernel_size=2,activation=name,padding='valid',strides=1))
         model.add(MaxPooling1D(pool_size=2))
         for l in range(n_layers):
             model.add(Conv1D(input_shape = (TRAIN_SIZE,EMB_SIZE),filters=8,kernel_size=12, activation=name,padding='valid',strides=4))
@@ -165,14 +169,19 @@ def __main__(argv):
         
         model.add(Dense(1))
         model.add(Activation('linear'))
-        model.summary()
+        #model.summary()
 
         trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers)
+        if(testScore_aux > testScore):
+            testScore_aux=testScore
+            f_aux = f
 
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            fp.write("%s,%f,%f,%d,%s\n" % (name, trainScore, testScore, epochs, optimizer))
+            fp.write("%i,%s,%f,%f,%d,%s\n" % (f, name, trainScore, testScore, epochs, optimizer))
 
         model = None
+
+    print("melhor parametro: %i" % f_aux)
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
