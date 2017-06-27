@@ -49,13 +49,7 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     #optimizer = "adadelta"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
-
-    # reshape input to be [samples, time steps, features]
-    X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
-    X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
-    #X_train = np.expand_dims(X_train, axis=2)
-    #X_test = np.expand_dims(X_test, axis=2)
-
+    
     history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
@@ -123,7 +117,7 @@ def __main__(argv):
     nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-Convolutional NN\n")
+        fp.write("-MLP NN\n")
 
     hals = []
 
@@ -151,17 +145,14 @@ def __main__(argv):
         name='relu'
         model = Sequential()
 
-        #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
-        #model.add(Activation(name))
+        model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+        model.add(Activation(name))
 
-        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=680,kernel_size=39,activation=name,padding='same',strides=17))
-        model.add(MaxPooling1D(pool_size=2))
         for l in range(n_layers):
-            model.add(Conv1D(input_shape = (TRAIN_SIZE,EMB_SIZE),filters=680,kernel_size=39, activation=name,padding='same',strides=17))
-            model.add(MaxPooling1D(pool_size=1))
+            model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+            model.add(Activation(name))
         
         model.add(Dropout(0.25))
-        model.add(Flatten())
 
         model.add(Dense(250))
         model.add(Dropout(0.25))
