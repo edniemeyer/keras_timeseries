@@ -159,7 +159,7 @@ def __main__(argv):
         model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=680,kernel_size=39,activation=name,padding='same',strides=17))
         model.add(MaxPooling1D(pool_size=2))
         for l in range(n_layers):
-            model.add(Conv1D(input_shape = (TRAIN_SIZE,EMB_SIZE),filters=680,kernel_size=39, activation=name,padding='same',strides=17))
+            model.add(Conv1D(filters=680,kernel_size=39, activation=name,padding='same',strides=17))
             model.add(MaxPooling1D(pool_size=1))
         
         model.add(Dropout(0.25))
