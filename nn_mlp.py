@@ -24,6 +24,8 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
+start_time = time.time()
+
 dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 dataset = dataframe[1].tolist()
 
@@ -100,11 +102,11 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     epochs = len(history.epoch)
 
     # fig = plt.figure()
-    # #plt.plot(Y_test[:150], color='black') # BLUE - trained RESULT
-    # #plt.plot(testPredict[:150], color='blue') # RED - trained PREDICTION
-    # plt.plot(Y_testp[:150], color='green') # GREEN - actual RESULT
-    # plt.plot(new_predicted[:150], color='red') # ORANGE - restored PREDICTION
-    # plt.show()
+    # plt.plot(Y_test[:150], color='black') # BLUE - trained RESULT
+    # plt.plot(testPredict[:150], color='blue') # RED - trained PREDICTION
+    #plt.plot(Y_testp[:150], color='green') # GREEN - actual RESULT
+    #plt.plot(new_predicted[:150], color='red') # ORANGE - restored PREDICTION
+    #plt.show()
 
     return trainScore, testScore, epochs, optimizer
 
@@ -167,8 +169,9 @@ def __main__(argv):
             testScore_aux=testScore
             f_aux = f
 
+        elapsed_time = (time.time() - start_time)
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            fp.write("%i,%s,%f,%f,%d,%s\n" % (f, name, trainScore, testScore, epochs, optimizer))
+            fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
 
         model = None
 
