@@ -33,7 +33,7 @@ start_time = time.time()
 # plt.show()
 # print(residuals.describe())
 
-p=30
+p=5
 d=1
 q=0
 
