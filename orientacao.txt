@@ -1,0 +1,6 @@
+Usar dados Open, High, Low, Close
+usar poucos filtros pra convolucional (testar com 2,3 .. 5)
+não pegar dados do dia anterior para rede convolucional (não da pra prever para 10:00, pois não existem dados de 9:30.. só da pra prever 
+a partir de 10:30)
+Ver o que é strides
+Usar duas camadas de convolucional
