@@ -127,7 +127,7 @@ def __main__(argv):
     nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-LSTM NN\n")
+        fp.write("-MINIDOLAR/LSTM NN\n")
 
     hals = []
 
