@@ -26,8 +26,10 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 
 start_time = time.time()
 
-dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
-dataset = dataframe[1].tolist()
+# dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
+# dataset = dataframe[1].tolist()
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
+dataset = dataframe['fechamento'].tolist()
 
 batch_size = 128
 nb_epoch = 420

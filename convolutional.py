@@ -26,8 +26,11 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 
 start_time = time.time()
 
-dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
-dataset = dataframe[1].tolist()
+#dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
+#dataset = dataframe[1].tolist()
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
+dataset = dataframe['fechamento'].tolist()
+
 
 batch_size = 128
 nb_epoch = 420
@@ -125,7 +128,7 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-Convolutional NN\n")
+        fp.write("-MINIDOLAR/Convolutional NN\n")
 
     hals = []
 
@@ -149,9 +152,9 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    #for name in nonlinearities:
-    for f in range(1,2):
-        name='relu'
+    for name in nonlinearities:
+    #for f in range(1,2):
+        #name='relu'
         model = Sequential()
 
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
