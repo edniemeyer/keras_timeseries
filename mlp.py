@@ -115,8 +115,8 @@ def __main__(argv):
     print(n_layers,'layers')
 
     #nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
-    #nonlinearities = ['sigmoid', 'relu', 'tanh']
-    nonlinearities = ['relu']
+    nonlinearities = ['sigmoid', 'relu', 'tanh']
+    #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MLP NN\n")
@@ -143,21 +143,18 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for f in range(1,2):
-        name='relu'
+    for name in nonlinearities:
+        #name='relu'
         model = Sequential()
 
-        model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+        model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
         model.add(Activation(name))
 
         for l in range(n_layers):
-            model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+            model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
             model.add(Activation(name))
         
-        model.add(Dropout(0.25))
-
-        model.add(Dense(250))
-        model.add(Dropout(0.25))
+        model.add(Dense(5))
         model.add(Activation(name))
         
         model.add(Dense(1))
@@ -165,13 +162,14 @@ def __main__(argv):
         #model.summary()
 
         trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers,nb_epoch)
-        if(testScore_aux > testScore):
-            testScore_aux=testScore
-            f_aux = f
+        # if(testScore_aux > testScore):
+        #     testScore_aux=testScore
+        #     f_aux = f
 
         elapsed_time = (time.time() - start_time)
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
 
         model = None
 
