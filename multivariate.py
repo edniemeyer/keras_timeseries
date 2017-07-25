@@ -20,18 +20,26 @@ sns.despine()
 
 
 #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]
-data_original = pd.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',',  engine='python', skiprows=8, decimal='.',header=None)
+# data_original = pd.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',',  engine='python', skiprows=8, decimal='.',header=None)
 
-openp = data_original.ix[:, 4].tolist()
-highp = data_original.ix[:, 2].tolist()
-lowp = data_original.ix[:, 3].tolist()
-closep = data_original.ix[:, 1].tolist()
-volumep = data_original.ix[:, 5].tolist()
+# openp = data_original.ix[:, 4].tolist()
+# highp = data_original.ix[:, 2].tolist()
+# lowp = data_original.ix[:, 3].tolist()
+# closep = data_original.ix[:, 1].tolist()
+# volumep = data_original.ix[:, 5].tolist()
+
+data_original = pd.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+
+openp = data_original.ix[:, 2].tolist()
+highp = data_original.ix[:, 3].tolist()
+lowp = data_original.ix[:, 4].tolist()
+closep = data_original.ix[:, 5].tolist()
+volumep = data_original.ix[:, 6].tolist()
 
 # data_chng = data_original.ix[:, 'Adj Close'].pct_change().dropna().tolist()
 
 WINDOW = 30
-EMB_SIZE = 4 #numero de colunas.. seria 5 se incluisse volume
+EMB_SIZE = 5 #numero de colunas.. seria 5 se incluisse volume
 STEP = 1
 FORECAST = 1
 
