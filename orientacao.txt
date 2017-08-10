@@ -4,3 +4,7 @@ não pegar dados do dia anterior para rede convolucional (não da pra prever par
 a partir de 10:30)
 Ver o que é strides
 Usar duas camadas de convolucional
+
+10/08:
+usar média em vez de close
+adaptar a implementação de hiperbolica dele e bihiperbolica do adilson/ygor pro keras atual

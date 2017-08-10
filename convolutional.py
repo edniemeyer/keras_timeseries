@@ -20,6 +20,7 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from custom_callbacks import CriteriaStopping
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard
+from hyperbolic_nonlinearities import *
 #from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
@@ -132,29 +133,30 @@ def __main__(argv):
 
     hals = []
 
-    TRAIN_SIZE = 30
+    TRAIN_SIZE = 60
     TARGET_TIME = 1
     LAG_SIZE = 1
     EMB_SIZE = 1
     
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=True)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.9)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.5)
 
     dados = X_train, X_test, Y_train, Y_test
 
     Xp, Yp = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     Xp, Yp = np.array(Xp), np.array(Yp)
-    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.9)
+    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.5)
 
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
     testScore_aux = 999999
     f_aux = 0
 
-    for name in nonlinearities:
-    #for f in range(1,2):
-        #name='relu'
+    #for name in nonlinearities:
+    #for f in np.arange(0.1,2,0.1):
+    for f in range(1,2):
+        name=Hyperbolic(rho=0.9)
         model = Sequential()
 
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
@@ -169,9 +171,9 @@ def __main__(argv):
         #model.add(Dropout(0.25))
         model.add(Flatten())
 
-        model.add(Dense(5))
+        #model.add(Dense(5))
         #model.add(Dropout(0.25))
-        model.add(Activation(name))
+        #model.add(Activation(name))
         
         model.add(Dense(1))
         model.add(Activation('linear'))

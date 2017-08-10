@@ -1,7 +1,7 @@
 import keras.backend as K
 import numpy as np
 from keras.engine import Layer
-from keras import initializations
+#from keras import initializations
 
 def _hyperbolicReLU(x, tau):
     return  (x + K.sqrt(x**2 + tau**2) ) /2
@@ -102,203 +102,203 @@ class Hyperbolic(Layer):
         base_config = super(Hyperbolic, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
-class AdaptativeAssymetricBiHyperbolic(Layer):
+# class AdaptativeAssymetricBiHyperbolic(Layer):
 
-    def __init__(self, lmbda_init='one', tau_1_init='glorot_normal', tau_2_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
-        self.supports_masking = True
-        self.lmbda_init = lmbda_init
-        self.tau_1_init = tau_1_init
-        self.tau_2_init = tau_2_init
-        self.mode = mode
-        self.initial_weights = weights
+#     def __init__(self, lmbda_init='one', tau_1_init='glorot_normal', tau_2_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
+#         self.supports_masking = True
+#         self.lmbda_init = lmbda_init
+#         self.tau_1_init = tau_1_init
+#         self.tau_2_init = tau_2_init
+#         self.mode = mode
+#         self.initial_weights = weights
 
-        if not isinstance(shared_axes, (list, tuple)):
-            self.shared_axes = [shared_axes]
-        else:
-            self.shared_axes = list(shared_axes)
-        super(AdaptativeAssymetricBiHyperbolic, self).__init__(**kwargs)
+#         if not isinstance(shared_axes, (list, tuple)):
+#             self.shared_axes = [shared_axes]
+#         else:
+#             self.shared_axes = list(shared_axes)
+#         super(AdaptativeAssymetricBiHyperbolic, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        #input_shape = input_shape[1:]
-        param_shape = list(input_shape[1:])
-        self.param_broadcast = [False] * len(param_shape)
-        if self.shared_axes[0] is not None:
-            for i in self.shared_axes:
-                param_shape[i - 1] = 1
-                self.param_broadcast[i - 1] = True
-        """
-        self.lmbda = K.variable(self.lambda_init * np.ones(input_shape),
-                                 name='{}_lambda'.format(self.name))
-        self.tau_1 = K.variable(self.tau_1_init * np.ones(input_shape),
-                                 name='{}_tau_1'.format(self.name))
-        self.tau_2 = K.variable(self.tau_2_init * np.ones(input_shape),
-                                 name='{}_tau_2'.format(self.name))
-        """
-        lmbda_init = initializations.get(self.lmbda_init)
-        tau_1_init = initializations.get(self.tau_1_init)
-        tau_2_init = initializations.get(self.tau_2_init)
+#     def build(self, input_shape):
+#         #input_shape = input_shape[1:]
+#         param_shape = list(input_shape[1:])
+#         self.param_broadcast = [False] * len(param_shape)
+#         if self.shared_axes[0] is not None:
+#             for i in self.shared_axes:
+#                 param_shape[i - 1] = 1
+#                 self.param_broadcast[i - 1] = True
+#         """
+#         self.lmbda = K.variable(self.lambda_init * np.ones(input_shape),
+#                                  name='{}_lambda'.format(self.name))
+#         self.tau_1 = K.variable(self.tau_1_init * np.ones(input_shape),
+#                                  name='{}_tau_1'.format(self.name))
+#         self.tau_2 = K.variable(self.tau_2_init * np.ones(input_shape),
+#                                  name='{}_tau_2'.format(self.name))
+#         """
+#         lmbda_init = initializations.get(self.lmbda_init)
+#         tau_1_init = initializations.get(self.tau_1_init)
+#         tau_2_init = initializations.get(self.tau_2_init)
 
-        self.lmbda = lmbda_init(param_shape,
-                                    name='{}_lmbda'.format(self.name))
-        self.tau_1 = tau_1_init(param_shape,
-                                    name='{}_tau_1'.format(self.name))
-        self.tau_2 = tau_2_init(param_shape,
-                                    name='{}_tau_2'.format(self.name))
+#         self.lmbda = lmbda_init(param_shape,
+#                                     name='{}_lmbda'.format(self.name))
+#         self.tau_1 = tau_1_init(param_shape,
+#                                     name='{}_tau_1'.format(self.name))
+#         self.tau_2 = tau_2_init(param_shape,
+#                                     name='{}_tau_2'.format(self.name))
 
-        self.trainable_weights = [self.lmbda, self.tau_1, self.tau_2]
+#         self.trainable_weights = [self.lmbda, self.tau_1, self.tau_2]
 
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
-
-
-    def call(self, x, mask=None):
-        if self.mode == 'basic':
-            return _assymetricBiHyperbolic(x, self.lmbda, self.tau_1, self.tau_2)
-        return _ext_assymetricBiHyperbolic(x, self.lmbda, self.tau_1, self.tau_2)
-
-    def get_config(self):
-        config = {'lmbda_init': self.lambda_init,
-                  'tau_1_init': self.tau_1_init,
-                  'tau_2_init': self.tau_2_init}
-        base_config = super(AdaptativeAssymetricBiHyperbolic, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
-
-class AdaptativeBiHyperbolic(Layer):
-
-    def __init__(self, lmbda_init='one', tau_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
-        self.supports_masking = True
-        self.lmbda_init = lmbda_init
-        self.tau_init = tau_init
-        self.mode = mode
-        self.initial_weights = weights
-
-        if not isinstance(shared_axes, (list, tuple)):
-            self.shared_axes = [shared_axes]
-        else:
-            self.shared_axes = list(shared_axes)
-        super(AdaptativeBiHyperbolic, self).__init__(**kwargs)
-
-    def build(self, input_shape):
-        #input_shape = input_shape[1:]
-        param_shape = list(input_shape[1:])
-        self.param_broadcast = [False] * len(param_shape)
-        if self.shared_axes[0] is not None:
-            for i in self.shared_axes:
-                param_shape[i - 1] = 1
-                self.param_broadcast[i - 1] = True
-
-        lmbda_init = initializations.get(self.lmbda_init)
-        tau_init = initializations.get(self.tau_init)
-
-        self.lmbda = lmbda_init(param_shape,
-                                    name='{}_lmbda'.format(self.name))
-        self.tau = tau_init(param_shape,
-                                    name='{}_tau'.format(self.name))
-
-        self.trainable_weights = [self.lmbda, self.tau]
-
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
+#         if self.initial_weights is not None:
+#             self.set_weights(self.initial_weights)
+#             del self.initial_weights
 
 
-    def call(self, x, mask=None):
-        if self.mode == 'basic':
-            return _biHyperbolic(x, self.lmbda, self.tau)
-        return _ext_biHyperbolic(x, self.lmbda, self.tau)
+#     def call(self, x, mask=None):
+#         if self.mode == 'basic':
+#             return _assymetricBiHyperbolic(x, self.lmbda, self.tau_1, self.tau_2)
+#         return _ext_assymetricBiHyperbolic(x, self.lmbda, self.tau_1, self.tau_2)
 
-    def get_config(self):
-        config = {'lmbda_init': self.lambda_init,
-                  'tau_init': self.tau_init}
-        base_config = super(AdaptativeBiHyperbolic, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+#     def get_config(self):
+#         config = {'lmbda_init': self.lambda_init,
+#                   'tau_1_init': self.tau_1_init,
+#                   'tau_2_init': self.tau_2_init}
+#         base_config = super(AdaptativeAssymetricBiHyperbolic, self).get_config()
+#         return dict(list(base_config.items()) + list(config.items()))
 
-class AdaptativeHyperbolic(Layer):
+# class AdaptativeBiHyperbolic(Layer):
 
-    def __init__(self, rho_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
-        self.supports_masking = True
-        self.rho_init = rho_init
-        self.mode = mode
-        self.initial_weights = weights
+#     def __init__(self, lmbda_init='one', tau_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
+#         self.supports_masking = True
+#         self.lmbda_init = lmbda_init
+#         self.tau_init = tau_init
+#         self.mode = mode
+#         self.initial_weights = weights
 
-        if not isinstance(shared_axes, (list, tuple)):
-            self.shared_axes = [shared_axes]
-        else:
-            self.shared_axes = list(shared_axes)
-        super(AdaptativeHyperbolic, self).__init__(**kwargs)
+#         if not isinstance(shared_axes, (list, tuple)):
+#             self.shared_axes = [shared_axes]
+#         else:
+#             self.shared_axes = list(shared_axes)
+#         super(AdaptativeBiHyperbolic, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        #input_shape = input_shape[1:]
-        param_shape = list(input_shape[1:])
-        self.param_broadcast = [False] * len(param_shape)
-        if self.shared_axes[0] is not None:
-            for i in self.shared_axes:
-                param_shape[i - 1] = 1
-                self.param_broadcast[i - 1] = True
+#     def build(self, input_shape):
+#         #input_shape = input_shape[1:]
+#         param_shape = list(input_shape[1:])
+#         self.param_broadcast = [False] * len(param_shape)
+#         if self.shared_axes[0] is not None:
+#             for i in self.shared_axes:
+#                 param_shape[i - 1] = 1
+#                 self.param_broadcast[i - 1] = True
 
-        rho_init = initializations.get(self.rho_init)
+#         lmbda_init = initializations.get(self.lmbda_init)
+#         tau_init = initializations.get(self.tau_init)
 
-        self.rho = rho_init(param_shape,
-                                    name='{}_rho'.format(self.name))
-        self.trainable_weights = [self.rho]
+#         self.lmbda = lmbda_init(param_shape,
+#                                     name='{}_lmbda'.format(self.name))
+#         self.tau = tau_init(param_shape,
+#                                     name='{}_tau'.format(self.name))
 
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
+#         self.trainable_weights = [self.lmbda, self.tau]
+
+#         if self.initial_weights is not None:
+#             self.set_weights(self.initial_weights)
+#             del self.initial_weights
 
 
-    def call(self, x, mask=None):
-        if self.mode == 'basic':
-            return _hyperbolic(x, self.rho)
-        return _ext_hyperbolic(x, self.rho)
+#     def call(self, x, mask=None):
+#         if self.mode == 'basic':
+#             return _biHyperbolic(x, self.lmbda, self.tau)
+#         return _ext_biHyperbolic(x, self.lmbda, self.tau)
 
-    def get_config(self):
-        config = {'rho_init': self.rho_init}
-        base_config = super(AdaptativeHyperbolic, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+#     def get_config(self):
+#         config = {'lmbda_init': self.lambda_init,
+#                   'tau_init': self.tau_init}
+#         base_config = super(AdaptativeBiHyperbolic, self).get_config()
+#         return dict(list(base_config.items()) + list(config.items()))
 
-class AdaptativeHyperbolicReLU(Layer):
-    '''Parametric Hyperbolic Smoothing Rectifier
-    '''
+# class AdaptativeHyperbolic(Layer):
 
-    def __init__(self, tau_init='glorot_normal', shared_axes=None, weights=None, **kwargs):
-        self.supports_masking = True
-        self.tau_init = tau_init
-        self.initial_weights = weights
+#     def __init__(self, rho_init='glorot_normal', mode='ext', shared_axes=None, weights=None, **kwargs):
+#         self.supports_masking = True
+#         self.rho_init = rho_init
+#         self.mode = mode
+#         self.initial_weights = weights
 
-        if not isinstance(shared_axes, (list, tuple)):
-            self.shared_axes = [shared_axes]
-        else:
-            self.shared_axes = list(shared_axes)
-        super(AdaptativeHyperbolicReLU, self).__init__(**kwargs)
+#         if not isinstance(shared_axes, (list, tuple)):
+#             self.shared_axes = [shared_axes]
+#         else:
+#             self.shared_axes = list(shared_axes)
+#         super(AdaptativeHyperbolic, self).__init__(**kwargs)
 
-    def build(self, input_shape):
-        #input_shape = input_shape[1:]
-        param_shape = list(input_shape[1:])
-        self.param_broadcast = [False] * len(param_shape)
-        if self.shared_axes[0] is not None:
-            for i in self.shared_axes:
-                param_shape[i - 1] = 1
-                self.param_broadcast[i - 1] = True
+#     def build(self, input_shape):
+#         #input_shape = input_shape[1:]
+#         param_shape = list(input_shape[1:])
+#         self.param_broadcast = [False] * len(param_shape)
+#         if self.shared_axes[0] is not None:
+#             for i in self.shared_axes:
+#                 param_shape[i - 1] = 1
+#                 self.param_broadcast[i - 1] = True
 
-        tau_init = initializations.get(self.tau_init)
+#         rho_init = initializations.get(self.rho_init)
 
-        self.tau = tau_init(param_shape,
-                                    name='{}_tau'.format(self.name))
-        self.trainable_weights = [self.tau]
+#         self.rho = rho_init(param_shape,
+#                                     name='{}_rho'.format(self.name))
+#         self.trainable_weights = [self.rho]
 
-        if self.initial_weights is not None:
-            self.set_weights(self.initial_weights)
-            del self.initial_weights
+#         if self.initial_weights is not None:
+#             self.set_weights(self.initial_weights)
+#             del self.initial_weights
 
-    def call(self, x, mask=None):
-        return _hyperbolicReLU(x, self.tau)
 
-    def get_config(self):
-        config = {'tau_init': self.tau_init}
-        base_config = super(AdaptativeHyperbolicReLU, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+#     def call(self, x, mask=None):
+#         if self.mode == 'basic':
+#             return _hyperbolic(x, self.rho)
+#         return _ext_hyperbolic(x, self.rho)
+
+#     def get_config(self):
+#         config = {'rho_init': self.rho_init}
+#         base_config = super(AdaptativeHyperbolic, self).get_config()
+#         return dict(list(base_config.items()) + list(config.items()))
+
+# class AdaptativeHyperbolicReLU(Layer):
+#     '''Parametric Hyperbolic Smoothing Rectifier
+#     '''
+
+#     def __init__(self, tau_init='glorot_normal', shared_axes=None, weights=None, **kwargs):
+#         self.supports_masking = True
+#         self.tau_init = tau_init
+#         self.initial_weights = weights
+
+#         if not isinstance(shared_axes, (list, tuple)):
+#             self.shared_axes = [shared_axes]
+#         else:
+#             self.shared_axes = list(shared_axes)
+#         super(AdaptativeHyperbolicReLU, self).__init__(**kwargs)
+
+#     def build(self, input_shape):
+#         #input_shape = input_shape[1:]
+#         param_shape = list(input_shape[1:])
+#         self.param_broadcast = [False] * len(param_shape)
+#         if self.shared_axes[0] is not None:
+#             for i in self.shared_axes:
+#                 param_shape[i - 1] = 1
+#                 self.param_broadcast[i - 1] = True
+
+#         tau_init = initializations.get(self.tau_init)
+
+#         self.tau = tau_init(param_shape,
+#                                     name='{}_tau'.format(self.name))
+#         self.trainable_weights = [self.tau]
+
+#         if self.initial_weights is not None:
+#             self.set_weights(self.initial_weights)
+#             del self.initial_weights
+
+#     def call(self, x, mask=None):
+#         return _hyperbolicReLU(x, self.tau)
+
+#     def get_config(self):
+#         config = {'tau_init': self.tau_init}
+#         base_config = super(AdaptativeHyperbolicReLU, self).get_config()
+#         return dict(list(base_config.items()) + list(config.items()))
 
 class PELU(Layer):
     '''Parametric Exponential Linear Unit
