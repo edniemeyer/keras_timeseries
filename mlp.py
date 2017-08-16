@@ -28,8 +28,8 @@ start_time = time.time()
 
 # dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 # dataset = dataframe[1].tolist()
-dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
-dataset = dataframe['fechamento'].tolist()
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+dataset = dataframe['media'].tolist()
 
 batch_size = 128
 nb_epoch = 420
@@ -132,21 +132,22 @@ def __main__(argv):
     
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=True)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.9)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.5)
 
     dados = X_train, X_test, Y_train, Y_test
 
     Xp, Yp = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     Xp, Yp = np.array(Xp), np.array(Yp)
-    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.9)
+    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.5)
 
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
     testScore_aux = 999999
     f_aux = 0
 
-    for name in nonlinearities:
-        #name='relu'
+    #for name in nonlinearities:
+    for f in range(1,2):
+        name='relu'
         model = Sequential()
 
         model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
@@ -155,9 +156,6 @@ def __main__(argv):
         for l in range(n_layers):
             model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
             model.add(Activation(name))
-        
-        model.add(Dense(5))
-        model.add(Activation(name))
         
         model.add(Dense(1))
         model.add(Activation('linear'))

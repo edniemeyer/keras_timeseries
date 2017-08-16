@@ -28,10 +28,10 @@ start_time = time.time()
 
 # dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 # dataset = dataframe[1].tolist()
-dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
-dataset = dataframe['fechamento'].tolist()
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+dataset = dataframe['media'].tolist()
 
-batch_size = 128
+batch_size = 1
 nb_epoch = 420
 patience = 50
 look_back = 7
@@ -60,8 +60,11 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     #X_train = np.expand_dims(X_train, axis=2)
     #X_test = np.expand_dims(X_test, axis=2)
 
-    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
+    #history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
+    for i in range(100):
+	    history = model.fit(X_train, Y_train, epochs=1, batch_size=batch_size, verbose=0, shuffle=False)
+	    model.reset_states()
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
     #testScore = model.evaluate(X_test, Y_test, verbose=0)
@@ -139,13 +142,13 @@ def __main__(argv):
     
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=True)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.9)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.5)
 
     dados = X_train, X_test, Y_train, Y_test
 
     Xp, Yp = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     Xp, Yp = np.array(Xp), np.array(Yp)
-    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.9)
+    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(Xp, Yp, percentage=0.5)
 
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
@@ -159,12 +162,14 @@ def __main__(argv):
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
         #model.add(Activation(name))
 
-        model.add(LSTM(input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True))
+        model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True, stateful=True))
         
         for l in range(n_layers):
-            model.add(LSTM(input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True))
+            if(l==n_layers-1):
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=False, stateful=True))
+            else:
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True, stateful=True))
         
-        model.add(LSTM(input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=False))
 
         model.add(Dense(1))
         model.add(Activation('linear'))

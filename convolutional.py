@@ -29,8 +29,8 @@ start_time = time.time()
 
 #dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 #dataset = dataframe[1].tolist()
-dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
-dataset = dataframe['fechamento'].tolist()
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+dataset = dataframe['media'].tolist()
 
 
 batch_size = 128
@@ -156,7 +156,8 @@ def __main__(argv):
     #for name in nonlinearities:
     #for f in np.arange(0.1,2,0.1):
     for f in range(1,2):
-        name=Hyperbolic(rho=0.9)
+        #name=Hyperbolic(rho=0.9)
+        name='relu'
         model = Sequential()
 
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
