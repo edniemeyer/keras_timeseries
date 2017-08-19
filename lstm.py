@@ -32,7 +32,7 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 dataset = dataframe['media'].tolist()
 
 batch_size = 1
-nb_epoch = 420
+nb_epoch = 100
 patience = 50
 look_back = 7
 
@@ -62,7 +62,7 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
 
     #history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
-    for i in range(100):
+    for i in range(nb_epoch):
 	    history = model.fit(X_train, Y_train, epochs=1, batch_size=batch_size, verbose=0, shuffle=False)
 	    model.reset_states()
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
@@ -71,8 +71,8 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     #print('Test Score: %f MSE (%f RMSE)' % (testScore, math.sqrt(testScore)))
 
     # make predictions (scaled)
-    trainPredict = model.predict(X_train)
-    testPredict = model.predict(X_test)
+    trainPredict = model.predict(X_train, batch_size=batch_size)
+    testPredict = model.predict(X_test, batch_size=batch_size)
     
     
     # invert predictions (back to original)
@@ -162,13 +162,19 @@ def __main__(argv):
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
         #model.add(Activation(name))
 
-        model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True, stateful=True))
+        model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), 
+        input_shape = (None, EMB_SIZE,), 
+        units=HIDDEN_RNN, return_sequences=True, stateful=True))
         
         for l in range(n_layers):
             if(l==n_layers-1):
-                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=False, stateful=True))
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), 
+                input_shape = (None, EMB_SIZE,),
+                units=HIDDEN_RNN, return_sequences=False, stateful=True))
             else:
-                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), input_shape = (None, EMB_SIZE,), units=HIDDEN_RNN, return_sequences=True, stateful=True))
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), 
+                input_shape = (None, EMB_SIZE,), 
+                units=HIDDEN_RNN, return_sequences=True, stateful=True))
         
 
         model.add(Dense(1))
