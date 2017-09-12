@@ -133,7 +133,7 @@ def __main__(argv):
 
     hals = []
 
-    TRAIN_SIZE = 60
+    TRAIN_SIZE = 30
     TARGET_TIME = 1
     LAG_SIZE = 1
     EMB_SIZE = 1
