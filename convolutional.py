@@ -106,9 +106,10 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
 
     # calculate root mean squared error
     trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    #trainScore = mean_squared_error(trainPredict, Y_train)
     #print('Train Score: %f RMSE' % (trainScore))
     testScore = mean_squared_error(new_predicted, Y_testp)
-    #print('Test Score: %f RMSE' % (testScore))
+    #testScore = mean_squared_error(testPredict, Y_test)
     epochs = len(history.epoch)
 
     # fig = plt.figure()

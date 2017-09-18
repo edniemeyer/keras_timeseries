@@ -103,9 +103,11 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
         new_train_predicted.append(a)
 
     # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    #trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    trainScore = mean_squared_error(trainPredict, Y_train)
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
+    #testScore = mean_squared_error(new_predicted, Y_testp)
+    testScore = mean_squared_error(testPredict, Y_test)
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
@@ -159,11 +161,11 @@ def __main__(argv):
     X, Y = [], []
     for i in range(0, len(data_original), STEP): 
         try:
-            o = openp[i:i+WINDOW]
-            h = highp[i:i+WINDOW]
-            l = lowp[i:i+WINDOW]
-            c = closep[i:i+WINDOW]
-            v = volumep[i:i+WINDOW]
+            o = openp[i:i+WINDOW+FORECAST]
+            h = highp[i:i+WINDOW+FORECAST]
+            l = lowp[i:i+WINDOW+FORECAST]
+            c = closep[i:i+WINDOW+FORECAST]
+            v = volumep[i:i+WINDOW+FORECAST]
 
             o = (np.array(o) - np.mean(o)) / np.std(o)
             h = (np.array(h) - np.mean(h)) / np.std(h)
@@ -174,8 +176,8 @@ def __main__(argv):
             x_i = closep[i:i+WINDOW]
             y_i = closep[i+WINDOW+FORECAST]  
 
-            timeseries = np.array(closep[i:i+WINDOW+FORECAST])
-            x_i = np.column_stack((o, h, l, c, v))
+            timeseries = np.array(c)
+            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
             y_i = timeseries[-1]
 
         except Exception as e:
