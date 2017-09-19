@@ -1,0 +1,4 @@
+19/09/2017
+usar média como target é pior, melhor usar fechamento
+usar O,H,L,C,V melhora os resultados para NN convolucional (colocar média como feature piora, por isso removi)
+convolucional > MLP > LSTM( ainda não parece estar otimizado?)

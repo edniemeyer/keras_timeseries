@@ -29,7 +29,7 @@ start_time = time.time()
 # dataframe = pandas.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],  engine='python', skiprows=8, decimal='.',header=None)
 # dataset = dataframe[1].tolist()
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-dataset = dataframe['media'].tolist()
+dataset = dataframe['fechamento'].tolist()
 
 batch_size = 1
 nb_epoch = 100
@@ -165,7 +165,7 @@ def __main__(argv):
         model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), 
         input_shape = (None, EMB_SIZE,), 
         units=HIDDEN_RNN, return_sequences=True, stateful=True))
-        
+        n_layers = n_layers+1 #para que o input 0 seja realmente uma camada, 1 serem 2, etc
         for l in range(n_layers):
             if(l==n_layers-1):
                 model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, 1), 
