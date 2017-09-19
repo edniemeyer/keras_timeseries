@@ -182,7 +182,6 @@ def __main__(argv):
             timeseries = np.array(c)
             #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
             x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            
             y_i = timeseries[-1]
 
         except Exception as e:
