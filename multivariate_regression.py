@@ -34,7 +34,7 @@ batch_size = 128
 nb_epoch = 420
 patience = 50
 look_back = 7
-EMB_SIZE = 5 #numero de colunas.. seria 5 se incluisse volume
+EMB_SIZE = 5 #numero de features
 
 def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     X_train, X_test, Y_train, Y_test = dataset
@@ -144,6 +144,7 @@ def __main__(argv):
 
     data_original = pd.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
 
+    averagep = data_original.ix[:, 1].tolist()
     openp = data_original.ix[:, 2].tolist()
     highp = data_original.ix[:, 3].tolist()
     lowp = data_original.ix[:, 4].tolist()
@@ -161,12 +162,14 @@ def __main__(argv):
     X, Y = [], []
     for i in range(0, len(data_original), STEP): 
         try:
+            #a = averagep[i:i+WINDOW+FORECAST]
             o = openp[i:i+WINDOW+FORECAST]
             h = highp[i:i+WINDOW+FORECAST]
             l = lowp[i:i+WINDOW+FORECAST]
             c = closep[i:i+WINDOW+FORECAST]
             v = volumep[i:i+WINDOW+FORECAST]
 
+            #a = (np.array(a) - np.mean(a)) / np.std(a)
             o = (np.array(o) - np.mean(o)) / np.std(o)
             h = (np.array(h) - np.mean(h)) / np.std(h)
             l = (np.array(l) - np.mean(l)) / np.std(l)
@@ -177,7 +180,9 @@ def __main__(argv):
             y_i = closep[i+WINDOW+FORECAST]  
 
             timeseries = np.array(c)
+            #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
             x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
+            
             y_i = timeseries[-1]
 
         except Exception as e:
@@ -193,17 +198,19 @@ def __main__(argv):
     Xp, Yp = [], []
     for i in range(0, len(data_original), STEP): 
         try:
-            o = openp[i:i+WINDOW]
-            h = highp[i:i+WINDOW]
-            l = lowp[i:i+WINDOW]
-            c = closep[i:i+WINDOW]
-            v = volumep[i:i+WINDOW]
+            #a = averagep[i:i+WINDOW+FORECAST]
+            o = openp[i:i+WINDOW+FORECAST]
+            h = highp[i:i+WINDOW+FORECAST]
+            l = lowp[i:i+WINDOW+FORECAST]
+            c = closep[i:i+WINDOW+FORECAST]
+            v = volumep[i:i+WINDOW+FORECAST]
 
             x_i = closep[i:i+WINDOW]
             y_i = closep[i+WINDOW+FORECAST]  
 
-            timeseries = np.array(closep[i:i+WINDOW+FORECAST])
-            x_i = np.column_stack((o, h, l, c, v))
+            timeseries = np.array(c)
+            #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
+            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
             y_i = timeseries[-1]
 
         except Exception as e:
