@@ -75,7 +75,7 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     # invert predictions (back to original)
     params = []
     for xt in X_testp:
-        xt = np.array(xt)
+        xt = np.array(xt[:,3]) # close
         mean_ = xt.mean()
         scale_ = xt.std()
         params.append([mean_, scale_])
@@ -90,7 +90,7 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
 
     params2 = []
     for xt in X_trainp:
-        xt = np.array(xt)
+        xt = np.array(xt[:,3]) # close
         mean_ = xt.mean()
         scale_ = xt.std()
         params2.append([mean_, scale_])
@@ -103,11 +103,18 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
         new_train_predicted.append(a)
 
     # calculate root mean squared error
-    #trainScore = mean_squared_error(new_train_predicted, Y_trainp)
-    trainScore = mean_squared_error(trainPredict, Y_train)
+    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
     #print('Train Score: %f RMSE' % (trainScore))
-    #testScore = mean_squared_error(new_predicted, Y_testp)
-    testScore = mean_squared_error(testPredict, Y_test)
+    testScore = mean_squared_error(new_predicted, Y_testp)
+    #print('Test Score: %f RMSE' % (testScore))
+    epochs = len(history.epoch)
+
+    # calculate root mean squared error
+    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    #trainScore = mean_squared_error(trainPredict, Y_train)
+    #print('Train Score: %f RMSE' % (trainScore))
+    testScore = mean_squared_error(new_predicted, Y_testp)
+    #testScore = mean_squared_error(testPredict, Y_test)
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
