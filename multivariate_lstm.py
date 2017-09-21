@@ -30,11 +30,12 @@ import seaborn as sns
 start_time = time.time()
 sns.despine()
 
-batch_size = 128
+batch_size = 4846
 nb_epoch = 420
 patience = 50
 look_back = 7
 EMB_SIZE = 5 #numero de features
+HIDDEN_RNN = 1
 
 def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     X_train, X_test, Y_train, Y_test = dataset
@@ -232,109 +233,43 @@ def __main__(argv):
 
 
     for f in range(1,2):
-            #name=Hyperbolic(rho=0.9)
-            name='relu'
-            model = Sequential()
+        name='relu'
+        model = Sequential()
 
-            #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
-            #model.add(Activation(name))
+        #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+        #model.add(Activation(name))
 
-            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=20,activation=name,padding='same',strides=1))
-            #model.add(MaxPooling1D(pool_size=2))
-            for l in range(n_layers):
-                model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=20,activation=name,padding='same',strides=1))
-                #model.add(MaxPooling1D(pool_size=1))
-            
-            #model.add(Dropout(0.25))
-            model.add(Flatten())
+        model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, EMB_SIZE), 
+        input_shape = (None, EMB_SIZE,), 
+        units=HIDDEN_RNN, return_sequences=True, stateful=True))
+        n_layers = n_layers+1 #para que o input 0 seja realmente uma camada, 1 serem 2, etc
+        for l in range(n_layers):
+            if(l==n_layers-1):
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, EMB_SIZE), 
+                input_shape = (None, EMB_SIZE,),
+                units=HIDDEN_RNN, return_sequences=False, stateful=True))
+            else:
+                model.add(LSTM(batch_input_shape=(batch_size, TRAIN_SIZE, EMB_SIZE), 
+                input_shape = (None, EMB_SIZE,), 
+                units=HIDDEN_RNN, return_sequences=True, stateful=True))
+        
 
-            #model.add(Dense(5))
-            #model.add(Dropout(0.25))
-            #model.add(Activation(name))
-            
-            model.add(Dense(1))
-            model.add(Activation('linear'))
-            #model.summary()
+        model.add(Dense(1))
+        model.add(Activation('linear'))
+        #model.summary()
 
-            trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers,nb_epoch)
-            # if(testScore_aux > testScore):
-            #     testScore_aux=testScore
-            #     f_aux = f
+        trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers,nb_epoch)
+        if(testScore_aux > testScore):
+            testScore_aux=testScore
+            f_aux = f
 
-            elapsed_time = (time.time() - start_time)
-            with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-                #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-                fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
-                
+        elapsed_time = (time.time() - start_time)
+        with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
+            fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
 
-            model = None
+        model = None
 
         #print("melhor parametro: %i" % f_aux)
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
-
-
-''' model = Sequential()
-model.add(Convolution1D(input_shape = (WINDOW, EMB_SIZE),
-                        nb_filter=16,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Convolution1D(nb_filter=8,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Flatten())
-
-model.add(Dense(64))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-
-
-model.add(Dense(1))
-model.add(Activation('linear'))
-
-opt = Nadam(lr=0.002)
-
-reduce_lr = ReduceLROnPlateau(monitor='val_acc', factor=0.9, patience=30, min_lr=0.000001, verbose=1)
-checkpointer = ModelCheckpoint(filepath="lolkek.hdf5", verbose=1, save_best_only=True)
-
-model.compile(loss='mean_squared_error', optimizer=opt)
-
-history = model.fit(X_train, Y_train, 
-          nb_epoch = 100, 
-          batch_size = 128, 
-          verbose=0, 
-          validation_data=(X_test, Y_test),
-          callbacks=[reduce_lr, checkpointer])
-
-model.load_weights("lolkek.hdf5")
-#pred = model.predict(np.array(X_test))
-
-trainPredict = model.predict(np.array(X_train))
-testPredict = model.predict(np.array(X_test))
-
-
-# calculate root mean squared error
-trainScore = mean_squared_error(trainPredict, Y_train)
-#print('Train Score: %f RMSE' % (trainScore))
-testScore = mean_squared_error(testPredict, Y_test)
-
-print(trainScore)
-
-print(testScore)
-
-# Classification
-# [[ 0.75510204  0.24489796]
-#  [ 0.46938776  0.53061224]]
-
-
-# for i in range(len(pred)):
-#     print Y_test[i], pred[i] '''

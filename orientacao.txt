@@ -8,3 +8,7 @@ Usar duas camadas de convolucional
 10/08:
 usar média em vez de close
 adaptar a implementação de hiperbolica dele e bihiperbolica do adilson/ygor pro keras atual
+
+
+21/09:
+Conv: alterar tamanho janelas(kernel_size) para ficar entre 20 e 30. Filtros botar 15
