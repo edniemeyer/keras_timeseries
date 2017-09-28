@@ -36,7 +36,7 @@ start_time = time.time()
 # plt.show()
 # print(residuals.describe())
 
-p=5
+p=1
 d=1
 q=0
 

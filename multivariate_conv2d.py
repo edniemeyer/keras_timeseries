@@ -16,7 +16,7 @@ np.random.seed(seed)  # for reproducibility
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.recurrent import LSTM, GRU
-from keras.layers import Conv1D, MaxPooling1D, AtrousConvolution1D, RepeatVector
+from keras.layers import Conv2D, MaxPooling2D, AtrousConvolution1D, RepeatVector
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint,ReduceLROnPlateau, TensorBoard
 from hyperbolic_nonlinearities import *
 from keras.layers.wrappers import Bidirectional
@@ -31,8 +31,8 @@ start_time = time.time()
 sns.despine()
 
 batch_size = 128
-nb_epoch = 4200
-patience = 500
+nb_epoch = 420
+patience = 50
 look_back = 7
 EMB_SIZE = 5 #numero de features
 
@@ -53,10 +53,10 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     #optimizer = "adadelta"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
-
+    n_images = 5
     # reshape input to be [samples, time steps, features]
-    X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], EMB_SIZE))
-    X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], EMB_SIZE))
+    X_train = np.reshape(X_train, (n_images, X_train.shape[0], X_train.shape[1], EMB_SIZE))
+    X_test = np.reshape(X_test, (n_images, X_test.shape[0], X_test.shape[1], EMB_SIZE))
     #X_train = np.expand_dims(X_train, axis=2)
     #X_test = np.expand_dims(X_test, axis=2)
 
@@ -231,7 +231,7 @@ def __main__(argv):
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
 
-    for f in range(20,30):
+    for f in range(10,11):
             #name=Hyperbolic(rho=0.9)
             name='relu'
             model = Sequential()
@@ -239,10 +239,10 @@ def __main__(argv):
             #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
             #model.add(Activation(name))
 
-            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=f,activation=name,padding='same',strides=1))
+            model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
             #model.add(MaxPooling1D(pool_size=2))
             for l in range(n_layers):
-                model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=f,activation=name,padding='same',strides=1))
+                model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
                 #model.add(MaxPooling1D(pool_size=1))
             
             #model.add(Dropout(0.25))
@@ -273,68 +273,3 @@ def __main__(argv):
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
-
-
-''' model = Sequential()
-model.add(Convolution1D(input_shape = (WINDOW, EMB_SIZE),
-                        nb_filter=16,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Convolution1D(nb_filter=8,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Flatten())
-
-model.add(Dense(64))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-
-
-model.add(Dense(1))
-model.add(Activation('linear'))
-
-opt = Nadam(lr=0.002)
-
-reduce_lr = ReduceLROnPlateau(monitor='val_acc', factor=0.9, patience=30, min_lr=0.000001, verbose=1)
-checkpointer = ModelCheckpoint(filepath="lolkek.hdf5", verbose=1, save_best_only=True)
-
-model.compile(loss='mean_squared_error', optimizer=opt)
-
-history = model.fit(X_train, Y_train, 
-          nb_epoch = 100, 
-          batch_size = 128, 
-          verbose=0, 
-          validation_data=(X_test, Y_test),
-          callbacks=[reduce_lr, checkpointer])
-
-model.load_weights("lolkek.hdf5")
-#pred = model.predict(np.array(X_test))
-
-trainPredict = model.predict(np.array(X_train))
-testPredict = model.predict(np.array(X_test))
-
-
-# calculate root mean squared error
-trainScore = mean_squared_error(trainPredict, Y_train)
-#print('Train Score: %f RMSE' % (trainScore))
-testScore = mean_squared_error(testPredict, Y_test)
-
-print(trainScore)
-
-print(testScore)
-
-# Classification
-# [[ 0.75510204  0.24489796]
-#  [ 0.46938776  0.53061224]]
-
-
-# for i in range(len(pred)):
-#     print Y_test[i], pred[i] '''
