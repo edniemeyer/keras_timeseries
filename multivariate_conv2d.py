@@ -53,12 +53,12 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     #optimizer = "adadelta"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
-    n_images = 5
     # reshape input to be [samples, time steps, features]
-    X_train = np.reshape(X_train, (n_images, X_train.shape[0], X_train.shape[1], EMB_SIZE))
-    X_test = np.reshape(X_test, (n_images, X_test.shape[0], X_test.shape[1], EMB_SIZE))
+    X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1], EMB_SIZE))
+    X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1], EMB_SIZE))
     #X_train = np.expand_dims(X_train, axis=2)
     #X_test = np.expand_dims(X_test, axis=2)
+    
 
     history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
@@ -137,7 +137,7 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/Convolutional-Multi NN\n")
+        fp.write("-MINIDOLAR/Convolutional2D-Multi NN\n")
 
     hals = []
     #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]
@@ -231,7 +231,7 @@ def __main__(argv):
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
 
-    for f in range(10,11):
+    for f in range(20,21):
             #name=Hyperbolic(rho=0.9)
             name='relu'
             model = Sequential()
@@ -239,11 +239,11 @@ def __main__(argv):
             #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
             #model.add(Activation(name))
 
-            model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
-            #model.add(MaxPooling1D(pool_size=2))
+            model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+            model.add(MaxPooling2D(pool_size=(1,1)))
             for l in range(n_layers):
-                model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
-                #model.add(MaxPooling1D(pool_size=1))
+                model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+                model.add(MaxPooling2D(pool_size=(1,1)))
             
             #model.add(Dropout(0.25))
             model.add(Flatten())

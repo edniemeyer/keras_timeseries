@@ -31,8 +31,8 @@ start_time = time.time()
 sns.despine()
 
 batch_size = 128
-nb_epoch = 4200
-patience = 500
+nb_epoch = 420
+patience = 50
 look_back = 7
 EMB_SIZE = 5 #numero de features
 
@@ -231,7 +231,7 @@ def __main__(argv):
     dadosp = X_trainp, X_testp, Y_trainp, Y_testp
 
 
-    for f in range(20,30):
+    for f in range(23,24):
             #name=Hyperbolic(rho=0.9)
             name='relu'
             model = Sequential()
@@ -245,7 +245,7 @@ def __main__(argv):
                 model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=f,activation=name,padding='same',strides=1))
                 #model.add(MaxPooling1D(pool_size=1))
             
-            #model.add(Dropout(0.25))
+            model.add(Dropout(0.5))
             model.add(Flatten())
 
             #model.add(Dense(5))
