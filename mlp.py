@@ -36,6 +36,11 @@ nb_epoch = 420
 patience = 50
 look_back = 7
 
+TRAIN_SIZE = 30
+TARGET_TIME = 1
+LAG_SIZE = 1
+EMB_SIZE = 1
+
 def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     X_train, X_test, Y_train, Y_test = dataset
     X_trainp, X_testp, Y_trainp, Y_testp = dadosp
@@ -67,33 +72,38 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     
     
     # invert predictions (back to original)
+    half_w = int(TRAIN_SIZE/2)
     params = []
     for xt in X_testp:
-        xt = np.array(xt)
+        xt = np.array(xt-xt[half_w])
         mean_ = xt.mean()
         scale_ = xt.std()
-        params.append([mean_, scale_])
+        half_window_ = xt[half_w]
+        params.append([mean_, scale_, half_window_])
 
     new_predicted = []
 
     for pred, par in zip(testPredict, params):
-        a = pred*par[1]
-        a += par[0]
+        #a = pred*par[1]
+        #a += par[0]
+        a = pred + par[2]
         new_predicted.append(a)
 
 
     params2 = []
     for xt in X_trainp:
-        xt = np.array(xt)
+        xt = np.array(xt-xt[half_w])
         mean_ = xt.mean()
         scale_ = xt.std()
-        params2.append([mean_, scale_])
+        half_window_ = xt[half_w]
+        params2.append([mean_, scale_, half_window_])
         
     new_train_predicted= []
 
     for pred, par in zip(trainPredict, params2):
-        a = pred*par[1]
-        a += par[0]
+        #a = pred*par[1]
+        #a += par[0]
+        a = pred + par[2]
         new_train_predicted.append(a)
 
     # calculate root mean squared error
@@ -125,10 +135,7 @@ def __main__(argv):
 
     hals = []
 
-    TRAIN_SIZE = 30
-    TARGET_TIME = 1
-    LAG_SIZE = 1
-    EMB_SIZE = 1
+    
     
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=True)
     X, Y = np.array(X), np.array(Y)
@@ -147,14 +154,14 @@ def __main__(argv):
 
     #for name in nonlinearities:
     for f in range(1,2):
-        name='relu'
+        name='tanh'
         model = Sequential()
 
-        model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
         model.add(Activation(name))
 
         for l in range(n_layers):
-            model.add(Dense(5, input_shape = (TRAIN_SIZE, )))
+            model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
             model.add(Activation(name))
         
         model.add(Dense(1))

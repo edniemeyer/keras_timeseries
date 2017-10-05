@@ -170,41 +170,6 @@ def __main__(argv):
     for i in range(0, len(data_original), STEP): 
         try:
             #a = averagep[i:i+WINDOW+FORECAST]
-            o = openp[i:i+WINDOW+FORECAST]
-            h = highp[i:i+WINDOW+FORECAST]
-            l = lowp[i:i+WINDOW+FORECAST]
-            c = closep[i:i+WINDOW+FORECAST]
-            v = volumep[i:i+WINDOW+FORECAST]
-
-            #a = (np.array(a) - np.mean(a)) / np.std(a)
-            o = (np.array(o) - np.mean(o)) / np.std(o)
-            h = (np.array(h) - np.mean(h)) / np.std(h)
-            l = (np.array(l) - np.mean(l)) / np.std(l)
-            c = (np.array(c) - np.mean(c)) / np.std(c)
-            v = (np.array(v) - np.mean(v)) / np.std(v)
-
-            x_i = closep[i:i+WINDOW]
-            y_i = closep[i+WINDOW+FORECAST]  
-
-            timeseries = np.array(c)
-            #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            y_i = timeseries[-1]
-
-        except Exception as e:
-            break
-
-        X.append(x_i)
-        Y.append(y_i)
-
-    X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, 0.5)
-    dados = X_train, X_test, Y_train, Y_test
-    
-    Xp, Yp = [], []
-    for i in range(0, len(data_original), STEP): 
-        try:
-            #a = averagep[i:i+WINDOW+FORECAST]
             o = openp[i:i+WINDOW]
             h = highp[i:i+WINDOW]
             l = lowp[i:i+WINDOW]
@@ -230,6 +195,34 @@ def __main__(argv):
         except Exception as e:
             break
 
+        X.append(x_i)
+        Y.append(y_i)
+
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, 0.5)
+    dados = X_train, X_test, Y_train, Y_test
+    
+    Xp, Yp = [], []
+    for i in range(0, len(data_original), STEP): 
+        try:
+            #a = averagep[i:i+WINDOW+FORECAST]
+            o = openp[i:i+WINDOW+FORECAST]
+            h = highp[i:i+WINDOW+FORECAST]
+            l = lowp[i:i+WINDOW+FORECAST]
+            c = closep[i:i+WINDOW+FORECAST]
+            v = volumep[i:i+WINDOW+FORECAST]
+
+            x_i = closep[i:i+WINDOW]
+            y_i = closep[i+WINDOW+FORECAST]  
+
+            timeseries = np.array(c)
+            #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
+            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
+            y_i = timeseries[-1]
+
+        except Exception as e:
+            break
+
         Xp.append(x_i)
         Yp.append(y_i)
 
@@ -240,19 +233,19 @@ def __main__(argv):
 
 
     for f in range(1,2):
-        name='relu'
+        name='tanh'
         model = Sequential()
 
-        model.add(Dense(5, input_shape = (TRAIN_SIZE, EMB_SIZE)))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
         model.add(Activation(name))
 
         for l in range(n_layers):
-            model.add(Dense(5, input_shape = (TRAIN_SIZE, EMB_SIZE)))
+            model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
             model.add(Activation(name))
         
         model.add(Flatten())
         model.add(Dense(1))
-        model.add(Activation('linear'))
+        model.add(Activation('tanh'))
         #model.summary()
 
         trainScore, testScore, epochs, optimizer = evaluate_model(model, dados, dadosp, name, n_layers,nb_epoch)
