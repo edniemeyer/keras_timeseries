@@ -40,20 +40,25 @@ p=1
 d=1
 q=0
 
-X = dataframe.values
-size = int(len(X) * 0.9)
-train, test = X[0:size], X[size:len(X)]
-history = [x for x in train]
-predictions = list()
-for t in range(len(test)):
-	model = ARIMA(history, order=(p,d,q))
-	model_fit = model.fit(disp=0)
-	output = model_fit.forecast()
-	yhat = output[0]
+WINDOW = 30
+STEP = 1
+FORECAST = 1
+
+predictions,test = [],[]
+for i in range(0, len(dataframe), STEP):
+	try:
+		x_i = np.asarray(dataframe[i:i+WINDOW])
+		y_i = dataframe[i+WINDOW+FORECAST]
+		model = ARIMA(x_i, order=(p,d,q))
+		model_fit = model.fit(disp=0)
+		output = model_fit.forecast()
+		yhat = output[0][0]
+	except Exception as e:
+		break
+	
 	predictions.append(yhat)
-	obs = test[t]
-	history.append(obs)
-	#print('predicted=%f, expected=%f' % (yhat, obs))
+	test.append(y_i)
+
 error = mean_squared_error(test, predictions)
 print('Test MSE: %.3f' % error)
 elapsed_time = (time.time() - start_time)
