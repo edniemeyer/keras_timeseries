@@ -170,12 +170,16 @@ def __main__(argv):
     for i in range(0, len(data_original), STEP): 
         try:
             #a = averagep[i:i+WINDOW+FORECAST]
-            o = openp[i:i+WINDOW+FORECAST]
-            h = highp[i:i+WINDOW+FORECAST]
-            l = lowp[i:i+WINDOW+FORECAST]
-            c = closep[i:i+WINDOW+FORECAST]
-            v = volumep[i:i+WINDOW+FORECAST]
+            o = openp[i:i+WINDOW]
+            h = highp[i:i+WINDOW]
+            l = lowp[i:i+WINDOW]
+            c = closep[i:i+WINDOW]
+            v = volumep[i:i+WINDOW]
+            forecasted_c = closep[i+WINDOW+FORECAST]
+            #scaling FORECASTED close
+            forecasted_c = (forecasted_c - np.mean(c)) / np.std(c)
 
+            #scaling WINDOW data
             #a = (np.array(a) - np.mean(a)) / np.std(a)
             o = (np.array(o) - np.mean(o)) / np.std(o)
             h = (np.array(h) - np.mean(h)) / np.std(h)
@@ -183,13 +187,10 @@ def __main__(argv):
             c = (np.array(c) - np.mean(c)) / np.std(c)
             v = (np.array(v) - np.mean(v)) / np.std(v)
 
-            x_i = closep[i:i+WINDOW]
-            y_i = closep[i+WINDOW+FORECAST]  
-
-            timeseries = np.array(c)
+            #timeseries = np.array(c.append(forecasted_c))
             #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            y_i = timeseries[-1]
+            x_i = np.column_stack((o, h, l, c, v))
+            y_i = forecasted_c
 
         except Exception as e:
             break
@@ -273,68 +274,3 @@ def __main__(argv):
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
-
-
-''' model = Sequential()
-model.add(Convolution1D(input_shape = (WINDOW, EMB_SIZE),
-                        nb_filter=16,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Convolution1D(nb_filter=8,
-                        filter_length=4,
-                        border_mode='same'))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-model.add(Dropout(0.5))
-
-model.add(Flatten())
-
-model.add(Dense(64))
-model.add(BatchNormalization())
-model.add(LeakyReLU())
-
-
-model.add(Dense(1))
-model.add(Activation('linear'))
-
-opt = Nadam(lr=0.002)
-
-reduce_lr = ReduceLROnPlateau(monitor='val_acc', factor=0.9, patience=30, min_lr=0.000001, verbose=1)
-checkpointer = ModelCheckpoint(filepath="lolkek.hdf5", verbose=1, save_best_only=True)
-
-model.compile(loss='mean_squared_error', optimizer=opt)
-
-history = model.fit(X_train, Y_train, 
-          nb_epoch = 100, 
-          batch_size = 128, 
-          verbose=0, 
-          validation_data=(X_test, Y_test),
-          callbacks=[reduce_lr, checkpointer])
-
-model.load_weights("lolkek.hdf5")
-#pred = model.predict(np.array(X_test))
-
-trainPredict = model.predict(np.array(X_train))
-testPredict = model.predict(np.array(X_test))
-
-
-# calculate root mean squared error
-trainScore = mean_squared_error(trainPredict, Y_train)
-#print('Train Score: %f RMSE' % (trainScore))
-testScore = mean_squared_error(testPredict, Y_test)
-
-print(trainScore)
-
-print(testScore)
-
-# Classification
-# [[ 0.75510204  0.24489796]
-#  [ 0.46938776  0.53061224]]
-
-
-# for i in range(len(pred)):
-#     print Y_test[i], pred[i] '''

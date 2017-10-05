@@ -63,9 +63,14 @@ def split_into_chunks(data, train, predict, step, binary=True, scale=True):
                 
             else:
                 timeseries = np.array(data[i:i+train+predict])
-                if scale: timeseries = (np.array(timeseries) - np.mean(timeseries)) / np.std(timeseries)
-                x_i = timeseries[:-1]
-                y_i = timeseries[-1]
+                if scale:
+                    y_i = timeseries[-1]
+                    y_i = (y_i - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
+                    x_i = (np.array(timeseries[:-1]) - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
+                    
+                else:
+                    x_i = timeseries[:-1]
+                    y_i = timeseries[-1]
             
         except:
             break

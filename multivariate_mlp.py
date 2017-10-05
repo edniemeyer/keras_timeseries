@@ -205,19 +205,27 @@ def __main__(argv):
     for i in range(0, len(data_original), STEP): 
         try:
             #a = averagep[i:i+WINDOW+FORECAST]
-            o = openp[i:i+WINDOW+FORECAST]
-            h = highp[i:i+WINDOW+FORECAST]
-            l = lowp[i:i+WINDOW+FORECAST]
-            c = closep[i:i+WINDOW+FORECAST]
-            v = volumep[i:i+WINDOW+FORECAST]
+            o = openp[i:i+WINDOW]
+            h = highp[i:i+WINDOW]
+            l = lowp[i:i+WINDOW]
+            c = closep[i:i+WINDOW]
+            v = volumep[i:i+WINDOW]
+            forecasted_c = closep[i+WINDOW+FORECAST]
+            #scaling FORECASTED close
+            forecasted_c = (forecasted_c - np.mean(c)) / np.std(c)
 
-            x_i = closep[i:i+WINDOW]
-            y_i = closep[i+WINDOW+FORECAST]  
+            #scaling WINDOW data
+            #a = (np.array(a) - np.mean(a)) / np.std(a)
+            o = (np.array(o) - np.mean(o)) / np.std(o)
+            h = (np.array(h) - np.mean(h)) / np.std(h)
+            l = (np.array(l) - np.mean(l)) / np.std(l)
+            c = (np.array(c) - np.mean(c)) / np.std(c)
+            v = (np.array(v) - np.mean(v)) / np.std(v)
 
-            timeseries = np.array(c)
+            #timeseries = np.array(c.append(forecasted_c))
             #x_i = np.column_stack((a[:-1], o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            x_i = np.column_stack((o[:-1], h[:-1], l[:-1], c[:-1], v[:-1]))
-            y_i = timeseries[-1]
+            x_i = np.column_stack((o, h, l, c, v))
+            y_i = forecasted_c
 
         except Exception as e:
             break
