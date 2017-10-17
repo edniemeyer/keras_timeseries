@@ -72,13 +72,13 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
     
     
     # invert predictions (back to original)
-    half_w = int(TRAIN_SIZE/2)
+    half_w = 11
     params = []
     for xt in X_testp:
+        half_window_ = xt[half_w]
         xt = np.array(xt-xt[half_w])
         mean_ = xt.mean()
         scale_ = xt.std()
-        half_window_ = xt[half_w]
         params.append([mean_, scale_, half_window_])
 
     new_predicted = []
@@ -92,10 +92,10 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
 
     params2 = []
     for xt in X_trainp:
+        half_window_ = xt[half_w]
         xt = np.array(xt-xt[half_w])
         mean_ = xt.mean()
         scale_ = xt.std()
-        half_window_ = xt[half_w]
         params2.append([mean_, scale_, half_window_])
         
     new_train_predicted= []
