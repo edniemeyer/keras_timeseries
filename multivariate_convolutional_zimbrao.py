@@ -36,7 +36,6 @@ patience = 50
 look_back = 7
 EMB_SIZE = 4 #numero de features
 
-
 train = pd.read_csv('minidolar/train.csv', sep = ',',  engine='python', decimal='.',header=0)
 test = pd.read_csv('minidolar/test.csv', sep = ',',  engine='python', decimal='.',header=0)
 
@@ -93,7 +92,6 @@ def evaluate_model(model, name, n_layers, ep):
     
     
     # invert predictions (back to original)
-    
     new_predicted = testPredict+test_shift.values.reshape(test_shift.size,1)
     new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 
@@ -132,28 +130,11 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/MLP-Multi NN\n")
+        fp.write("-MINIDOLAR/Convolutional-Multi NN\n")
 
     hals = []
     #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]
     #data_original = pd.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',',  engine='python', skiprows=8, decimal='.',header=None)
-
-    # openp = data_original.ix[:, 4].tolist()
-    # highp = data_original.ix[:, 2].tolist()
-    # lowp = data_original.ix[:, 3].tolist()
-    # closep = data_original.ix[:, 1].tolist()
-    # volumep = data_original.ix[:, 5].tolist()
-
-    #data_original = pd.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-    
-    #averagep = data_original.ix[:, 1].tolist()
-    #openp = data_original.ix[:, 2].tolist()
-    #highp = data_original.ix[:, 3].tolist()
-    #lowp = data_original.ix[:, 4].tolist()
-    #closep = data_original.ix[:, 5].tolist()
-    #volumep = data_original.ix[:, 6].tolist()
-
-    # data_chng = data_original.ix[:, 'Adj Close'].pct_change().dropna().tolist()
 
     WINDOW = 30
     TRAIN_SIZE=WINDOW
@@ -162,36 +143,45 @@ def __main__(argv):
     FORECAST = 1
 
     
-    for f in range(1,2):
-        name='relu'
-        model = Sequential()
+    for f in range(23,24):
+            #name=Hyperbolic(rho=0.9)
+            name='relu'
+            model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
-        model.add(Activation(name))
+            #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+            #model.add(Activation(name))
 
-        for l in range(n_layers):
-            model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
-            model.add(Activation(name))
-        
-        model.add(Flatten())
-        model.add(Dense(1))
-        model.add(Activation('linear'))
-        #model.summary()
+            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=f,activation=name,padding='same',strides=1))
+            #model.add(MaxPooling1D(pool_size=2))
+            for l in range(n_layers):
+                model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=f,activation=name,padding='same',strides=1))
+                #model.add(MaxPooling1D(pool_size=1))
+            
+            model.add(Dropout(0.5))
+            model.add(Flatten())
 
-        trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch)
-        # if(testScore_aux > testScore):
-        #     testScore_aux=testScore
-        #     f_aux = f
+            #model.add(Dense(5))
+            #model.add(Dropout(0.25))
+            #model.add(Activation(name))
+            
+            model.add(Dense(1))
+            model.add(Activation('linear'))
+            #model.summary()
 
-        elapsed_time = (time.time() - start_time)
-        with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch)
+            # if(testScore_aux > testScore):
+            #     testScore_aux=testScore
+            #     f_aux = f
 
-        model = None
+            elapsed_time = (time.time() - start_time)
+            with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
+                fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                #fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                
+
+            model = None
 
         #print("melhor parametro: %i" % f_aux)
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
-

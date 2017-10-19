@@ -16,7 +16,7 @@ np.random.seed(seed)  # for reproducibility
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.recurrent import LSTM, GRU
-from keras.layers import Conv1D, MaxPooling1D, AtrousConvolution1D, RepeatVector
+from keras.layers import Conv2D, MaxPooling2D, AtrousConvolution1D, RepeatVector
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint,ReduceLROnPlateau, TensorBoard
 from hyperbolic_nonlinearities import *
 from keras.layers.wrappers import Bidirectional
@@ -35,7 +35,6 @@ nb_epoch = 420
 patience = 50
 look_back = 7
 EMB_SIZE = 4 #numero de features
-
 
 train = pd.read_csv('minidolar/train.csv', sep = ',',  engine='python', decimal='.',header=0)
 test = pd.read_csv('minidolar/test.csv', sep = ',',  engine='python', decimal='.',header=0)
@@ -73,12 +72,12 @@ def evaluate_model(model, name, n_layers, ep):
     #optimizer = "adadelta"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
-
     # reshape input to be [samples, time steps, features]
-    X_train = np.reshape(X_train, (X_train.shape[0], int(X_train.shape[1]/EMB_SIZE), EMB_SIZE))
-    X_test = np.reshape(X_test, (X_test.shape[0], int(X_test.shape[1]/EMB_SIZE), EMB_SIZE))
+    X_train = np.reshape(X_train, (X_train.shape[0], 1, int(X_train.shape[1]/EMB_SIZE), EMB_SIZE))
+    X_test = np.reshape(X_test, (X_test.shape[0], 1, int(X_test.shape[1]/EMB_SIZE), EMB_SIZE))
     #X_train = np.expand_dims(X_train, axis=2)
     #X_test = np.expand_dims(X_test, axis=2)
+    
 
     history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
@@ -93,7 +92,6 @@ def evaluate_model(model, name, n_layers, ep):
     
     
     # invert predictions (back to original)
-    
     new_predicted = testPredict+test_shift.values.reshape(test_shift.size,1)
     new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 
@@ -132,28 +130,10 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/MLP-Multi NN\n")
+        fp.write("-MINIDOLAR/Convolutional2D-Multi NN\n")
 
     hals = []
-    #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]
-    #data_original = pd.read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',',  engine='python', skiprows=8, decimal='.',header=None)
-
-    # openp = data_original.ix[:, 4].tolist()
-    # highp = data_original.ix[:, 2].tolist()
-    # lowp = data_original.ix[:, 3].tolist()
-    # closep = data_original.ix[:, 1].tolist()
-    # volumep = data_original.ix[:, 5].tolist()
-
-    #data_original = pd.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
     
-    #averagep = data_original.ix[:, 1].tolist()
-    #openp = data_original.ix[:, 2].tolist()
-    #highp = data_original.ix[:, 3].tolist()
-    #lowp = data_original.ix[:, 4].tolist()
-    #closep = data_original.ix[:, 5].tolist()
-    #volumep = data_original.ix[:, 6].tolist()
-
-    # data_chng = data_original.ix[:, 'Adj Close'].pct_change().dropna().tolist()
 
     WINDOW = 30
     TRAIN_SIZE=WINDOW
@@ -161,37 +141,47 @@ def __main__(argv):
     STEP = 1
     FORECAST = 1
 
-    
-    for f in range(1,2):
-        name='relu'
-        model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
-        model.add(Activation(name))
 
-        for l in range(n_layers):
-            model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
-            model.add(Activation(name))
-        
-        model.add(Flatten())
-        model.add(Dense(1))
-        model.add(Activation('linear'))
-        #model.summary()
+    for f in range(20,21):
+            #name=Hyperbolic(rho=0.9)
+            name='relu'
+            model = Sequential()
 
-        trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch)
-        # if(testScore_aux > testScore):
-        #     testScore_aux=testScore
-        #     f_aux = f
+            #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+            #model.add(Activation(name))
 
-        elapsed_time = (time.time() - start_time)
-        with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+            #model.add(MaxPooling2D(pool_size=(1,1)))
+            for l in range(n_layers):
+                model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+                #model.add(MaxPooling2D(pool_size=(1,1)))
+            
+            model.add(Dropout(0.5))
+            model.add(Flatten())
 
-        model = None
+            #model.add(Dense(5))
+            #model.add(Dropout(0.25))
+            #model.add(Activation(name))
+            
+            model.add(Dense(1))
+            model.add(Activation('linear'))
+            #model.summary()
+
+            trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch)
+            # if(testScore_aux > testScore):
+            #     testScore_aux=testScore
+            #     f_aux = f
+
+            elapsed_time = (time.time() - start_time)
+            with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
+                fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                #fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                
+
+            model = None
 
         #print("melhor parametro: %i" % f_aux)
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
-
