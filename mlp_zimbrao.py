@@ -20,6 +20,7 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from custom_callbacks import CriteriaStopping
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard
+from keras import regularizers
 #from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
@@ -130,13 +131,14 @@ def __main__(argv):
         name='relu'
         model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
         model.add(Activation(name))
 
         for l in range(n_layers):
             model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
             model.add(Activation(name))
         
+        model.add(Dropout(0.25))
         model.add(Dense(1))
         model.add(Activation('linear'))
         #model.summary()

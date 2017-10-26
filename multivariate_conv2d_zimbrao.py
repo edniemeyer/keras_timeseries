@@ -151,7 +151,8 @@ def __main__(argv):
             #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
             #model.add(Activation(name))
 
-            model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+            model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(4,4),
+                    kernel_regularizer=regularizers.l2(0.01)))
             #model.add(MaxPooling2D(pool_size=(1,1)))
             for l in range(n_layers):
                 model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))

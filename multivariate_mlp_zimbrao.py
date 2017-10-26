@@ -166,13 +166,15 @@ def __main__(argv):
         name='relu'
         model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE),
+                kernel_regularizer=regularizers.l2(0.01)))
         model.add(Activation(name))
 
         for l in range(n_layers):
             model.add(Dense(12, input_shape = (TRAIN_SIZE, EMB_SIZE)))
             model.add(Activation(name))
         
+        model.add(Dropout(0.25))
         model.add(Flatten())
         model.add(Dense(1))
         model.add(Activation('linear'))
