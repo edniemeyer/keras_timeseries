@@ -138,7 +138,7 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/Convolutional-Multi NN\n")
+        fp.write("-MINIDOLAR/LSTM-Multi NN\n")
 
     hals = []
     #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]
