@@ -45,7 +45,7 @@ test_target = test['f0']
 test_close = test[['v3','v7','v11','v15','v19','v23','v27','v31','v35','v39','v43','v47','v51','v55','v59','v63','v67','v71','v75','v79','v83','v87','v91','v95','v99','v103','v107','v111','v115','v119']]
 
 batch_size = 10
-nb_epoch = 100
+nb_epoch = 10
 patience = 50
 look_back = 7
 
@@ -76,8 +76,9 @@ def evaluate_model(model, name, n_layers, ep):
 
     #history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
-    history = model.fit(X_train, Y_train, epochs=ep, batch_size=batch_size, verbose=0, shuffle=False)
-
+    for i in range(nb_epoch):
+	    history = model.fit(X_train, Y_train, epochs=1, batch_size=batch_size, verbose=0, shuffle=False)
+	    model.reset_states()
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
     #testScore = model.evaluate(X_test, Y_test, verbose=0)
@@ -117,7 +118,7 @@ def __main__(argv):
     nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/LSTM NN\n")
+        fp.write("-MINIDOLAR/LSTM-Stateful NN\n")
 
     hals = []
 
@@ -139,18 +140,18 @@ def __main__(argv):
         #model.add(Activation(name))
 
         # model.add(LSTM(batch_size=batch_size, 
-        #     input_shape = (TRAIN_SIZE, EMB_SIZE,), 
-        #     units=HIDDEN_RNN, return_sequences=False, stateful=False, dropout=0.2, recurrent_dropout=0.2))
+        #         input_shape = (TRAIN_SIZE, EMB_SIZE,), 
+        # units=HIDDEN_RNN, return_sequences=True, stateful=True, dropout=0.2, recurrent_dropout=0.2))
         n_layers = n_layers+1 #para que o input 0 seja realmente uma camada, 1 serem 2, etc
         for l in range(n_layers):
             if(l==n_layers-1):
                 model.add(LSTM(batch_size=batch_size, 
                 input_shape = (TRAIN_SIZE, EMB_SIZE,),
-                units=HIDDEN_RNN, return_sequences=False, stateful=False, dropout=0.2, recurrent_dropout=0.2))
+                units=HIDDEN_RNN, return_sequences=False, stateful=True, dropout=0.2, recurrent_dropout=0.2))
             else:
                 model.add(LSTM(batch_size=batch_size, 
                 input_shape = (TRAIN_SIZE, EMB_SIZE,), 
-                units=HIDDEN_RNN, return_sequences=True, stateful=False, dropout=0.2, recurrent_dropout=0.2))
+                units=HIDDEN_RNN, return_sequences=True, stateful=True, dropout=0.2, recurrent_dropout=0.2))
         
 
         model.add(Dense(1))

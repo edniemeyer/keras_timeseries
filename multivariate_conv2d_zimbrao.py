@@ -26,9 +26,8 @@ from keras.layers.advanced_activations import *
 from keras.optimizers import RMSprop, Adam, SGD, Nadam
 from keras.initializers import *
 
-import seaborn as sns
 start_time = time.time()
-sns.despine()
+
 
 batch_size = 128
 nb_epoch = 420
@@ -99,15 +98,6 @@ def evaluate_model(model, name, n_layers, ep):
     trainScore = mean_squared_error(new_train_predicted, Y_trainp)
     #print('Train Score: %f RMSE' % (trainScore))
     testScore = mean_squared_error(new_predicted, Y_testp)
-    #print('Test Score: %f RMSE' % (testScore))
-    epochs = len(history.epoch)
-
-    # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
-    #trainScore = mean_squared_error(trainPredict, Y_train)
-    #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
-    #testScore = mean_squared_error(testPredict, Y_test)
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
