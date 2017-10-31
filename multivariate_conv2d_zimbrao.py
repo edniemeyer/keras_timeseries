@@ -72,8 +72,8 @@ def evaluate_model(model, name, n_layers, ep):
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
     # reshape input to be [samples, time steps, features]
-    X_train = np.reshape(X_train, (X_train.shape[0], 1, int(X_train.shape[1]/EMB_SIZE), EMB_SIZE))
-    X_test = np.reshape(X_test, (X_test.shape[0], 1, int(X_test.shape[1]/EMB_SIZE), EMB_SIZE))
+    X_train = np.reshape(X_train, (X_train.shape[0], int(X_train.shape[1]/EMB_SIZE), EMB_SIZE, 1))
+    X_test = np.reshape(X_test, (X_test.shape[0], int(X_test.shape[1]/EMB_SIZE),EMB_SIZE, 1))
     #X_train = np.expand_dims(X_train, axis=2)
     #X_test = np.expand_dims(X_test, axis=2)
     
@@ -141,11 +141,12 @@ def __main__(argv):
             #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
             #model.add(Activation(name))
 
-            model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(4,4),
+            model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1),
                     kernel_regularizer=regularizers.l2(0.01)))
-            #model.add(MaxPooling2D(pool_size=(1,1)))
+            model.add(MaxPooling2D(pool_size=(1,1)))
             for l in range(n_layers):
-                model.add(Conv2D(input_shape = (1, TRAIN_SIZE, EMB_SIZE),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1)))
+                model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1),
+                    kernel_regularizer=regularizers.l2(0.01)))
                 #model.add(MaxPooling2D(pool_size=(1,1)))
             
             model.add(Dropout(0.5))
