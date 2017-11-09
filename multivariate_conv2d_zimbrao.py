@@ -30,8 +30,8 @@ start_time = time.time()
 
 
 batch_size = 128
-nb_epoch = 420
-patience = 50
+nb_epoch = 4200
+patience = 500
 look_back = 7
 EMB_SIZE = 4 #numero de features
 
@@ -133,7 +133,7 @@ def __main__(argv):
 
 
 
-    for f in range(20,21):
+    for f in range(1,50):
             #name=Hyperbolic(rho=0.9)
             name='relu'
             model = Sequential()
@@ -141,11 +141,11 @@ def __main__(argv):
             #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
             #model.add(Activation(name))
 
-            model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1),
+            model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(3,1),activation=name,padding='valid',strides=(1,1),
                     kernel_regularizer=regularizers.l2(0.01)))
-            model.add(MaxPooling2D(pool_size=(1,1)))
+            #model.add(MaxPooling2D(pool_size=(1,1)))
             for l in range(n_layers):
-                model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(5,f),activation=name,padding='same',strides=(1,1),
+                model.add(Conv2D(input_shape = (TRAIN_SIZE, EMB_SIZE, 1),filters=15,kernel_size=(3,1),activation=name,padding='valid',strides=(1,1),
                     kernel_regularizer=regularizers.l2(0.01)))
                 #model.add(MaxPooling2D(pool_size=(1,1)))
             
