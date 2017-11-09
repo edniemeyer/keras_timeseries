@@ -136,11 +136,11 @@ def __main__(argv):
         #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
         #model.add(Activation(name))
 
-        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='same',strides=1,
+        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='causal',strides=1,
                 kernel_regularizer=regularizers.l2(0.01)))
         #model.add(MaxPooling1D(pool_size=2))
         for l in range(n_layers):
-            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='same',strides=1))
+            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='causal',strides=1))
             #model.add(MaxPooling1D(pool_size=1))
         
         model.add(Dropout(0.25))
