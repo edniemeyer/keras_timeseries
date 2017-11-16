@@ -38,6 +38,11 @@ X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_hig
 X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
 X_train = np.column_stack((X_train,Y_train)) # fica 121 "features"
 
+#apenas close
+#X_train, X_test, Y_train, Y_test =  np.array(train_close),  np.array(test_close),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
+#X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
+#X_train = np.column_stack((X_train,Y_train))
+
 
 def exec_time(start, msg):
 	end = time.time()
@@ -126,17 +131,20 @@ def train(X_train, generator, discriminator, GAN, epochs=6000, verbose_step=250,
 	
 		if(e % verbose_step == 0):
 			print(str(e) + ": d_loss =", d_loss, "| g_loss =", g_loss)
+			trainPredict = generator.predict( np.delete(X_train, -1, axis=1))
 			testPredict = generator.predict(X_test)
 			new_predicted = testPredict+test_shift.values.reshape(test_shift.size,1)
-    		#new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
+			new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 			testScore = mean_squared_error(new_predicted, Y_testp)
+			trainScore = mean_squared_error(new_train_predicted, Y_trainp)
 			print(testScore)
+			print(trainScore)
 			#plotGeneratedImages(e, generator, output_dir)
 	
 
 	
 	exec_time(start_train, "Training")
-	#generate_graphics(times, d_lossses, g_losses, output_dir)
+	generate_graphics(times, d_lossses, g_losses, output_dir)
 
 def generate_graphics(times, d_lossses, g_losses, output_dir):
 	plt.close('all')
