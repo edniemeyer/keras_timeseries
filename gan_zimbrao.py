@@ -8,10 +8,11 @@ import numpy as np
 from keras.optimizers import Adam
 from keras.initializers import RandomNormal
 from keras.models import Model, Sequential
-from keras.layers import Reshape, Dense, Dropout, Flatten, Conv2D, LeakyReLU, Activation, Input
+from keras.layers import Reshape, Dense, Dropout, Flatten, Conv2D, LeakyReLU, Activation, Input, concatenate
 import matplotlib.pyplot as plt
 import time
 import pandas as pd
+from sklearn.metrics import mean_squared_error
 
 np.random.seed(7)
 
@@ -33,6 +34,10 @@ test_high = test[['v1','v5','v9','v13','v17','v21','v25','v29','v33','v37','v41'
 test_low = test[['v2','v6','v10','v14','v18','v22','v26','v30','v34','v38','v42','v46','v50','v54','v58','v62','v66','v70','v74','v78','v82','v86','v90','v94','v98','v102','v106','v110','v114','v118']]
 test_close = test[['v3','v7','v11','v15','v19','v23','v27','v31','v35','v39','v43','v47','v51','v55','v59','v63','v67','v71','v75','v79','v83','v87','v91','v95','v99','v103','v107','v111','v115','v119']]
 
+X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_high.values,train_low.values,train_close.values)),  np.column_stack((test_open.values,test_high.values,test_low.values,test_close.values)),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
+X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
+X_train = np.column_stack((X_train,Y_train)) # fica 121 "features"
+
 
 def exec_time(start, msg):
 	end = time.time()
@@ -48,7 +53,8 @@ def generator_model(opt):
 	model.add(LeakyReLU(0.2))
 	model.add(Dense(1024))
 	model.add(LeakyReLU(0.2))
-	model.add(Dense(121))
+	#model.add(Dense(121)) #output 120+previsao
+	model.add(Dense(1)) #output so previsao
 	model.add(Activation('tanh'))
 
 	model.compile(loss='binary_crossentropy', optimizer=opt)
@@ -76,7 +82,8 @@ def gan_model(D, G, opt):
 	D.trainable = False
 
 	gan_input = Input(shape=(120,))
-	gan_output = D(G(gan_input))
+	x = concatenate([gan_input, G(gan_input)])
+	gan_output = D(x)
 	gan = Model(gan_input, gan_output)
 	gan.compile(loss='binary_crossentropy', optimizer=opt)
 
@@ -98,8 +105,8 @@ def train(X_train, generator, discriminator, GAN, epochs=6000, verbose_step=250,
 		imageBatch = input_data[:int(input_data.shape[0]/2)]
 		generator_data = np.delete(input_data[int(input_data.shape[0]/2):], -1, axis=1)
 
-		G_images = generator.predict(noise)
-		#G_images = np.column_stack((generator_data,G_images))
+		G_images = generator.predict(generator_data)
+		G_images = np.column_stack((generator_data,G_images))
 		X = np.concatenate([imageBatch, G_images])
 
 		y = np.zeros(2*batch_size)
@@ -111,16 +118,23 @@ def train(X_train, generator, discriminator, GAN, epochs=6000, verbose_step=250,
 		noise = np.random.normal(0, 1, size=[batch_size, 120])
 		y = np.ones(batch_size)
 		discriminator.trainable = False
-		g_loss = GAN.train_on_batch(noise, y)
+		g_loss = GAN.train_on_batch(generator_data, y)
 
 		d_lossses.append(d_loss)
 		g_losses.append(g_loss)
 		times.append(time.time() - start)
-
+	
 		if(e % verbose_step == 0):
 			print(str(e) + ": d_loss =", d_loss, "| g_loss =", g_loss)
+			testPredict = generator.predict(X_test)
+			new_predicted = testPredict+test_shift.values.reshape(test_shift.size,1)
+    		#new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
+			testScore = mean_squared_error(new_predicted, Y_testp)
+			print(testScore)
 			#plotGeneratedImages(e, generator, output_dir)
+	
 
+	
 	exec_time(start_train, "Training")
 	#generate_graphics(times, d_lossses, g_losses, output_dir)
 
@@ -167,10 +181,7 @@ def main():
 			shutil.rmtree(folder)
 		os.makedirs(folder)
 	
-	X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_high.values,train_low.values,train_close.values)),  np.column_stack((test_open.values,test_high.values,test_low.values,test_close.values)),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
-	X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
-	X_train = np.column_stack((X_train,Y_train)) # fica 121 "features"
-
+	
 	opt = Adam(lr=0.0002, beta_1=0.5)
 
 	generator = generator_model(opt)
@@ -178,6 +189,7 @@ def main():
 	GAN = gan_model(discriminator, generator, opt)
 
 	train(X_train, generator, discriminator, GAN, output_dir=folder)
+
 
 if __name__ == '__main__':
 	start = time.time()

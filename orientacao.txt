@@ -17,3 +17,7 @@ Conv: alterar tamanho janelas(kernel_size) para ficar entre 20 e 30. Filtros bot
 28/09:
 fazer teste com Conv2D, kernel_size de 5x(20 a 30) - tratar como uma "imagem"
 escrever e ler sobre Redes MLP e CNN (talvez GAN se conseguir bons resultados) para começar a parte de revisão de literatura da tese
+
+
+16/11:
+GAN: gerar 4 previsoes (OHLC) em vez de apenas o fechamento
