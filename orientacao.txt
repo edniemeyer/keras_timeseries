@@ -21,3 +21,6 @@ escrever e ler sobre Redes MLP e CNN (talvez GAN se conseguir bons resultados) p
 
 16/11:
 GAN: gerar 4 previsoes (OHLC) em vez de apenas o fechamento
+
+23/11:
+PLS_regression: gerar 4 previsoes também (OHLC)
