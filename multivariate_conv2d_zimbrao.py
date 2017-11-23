@@ -133,7 +133,7 @@ def __main__(argv):
 
 
 
-    for f in range(1,50):
+    for f in range(1,2):
             #name=Hyperbolic(rho=0.9)
             name='relu'
             model = Sequential()
