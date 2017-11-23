@@ -2,6 +2,7 @@ from pandas import read_csv
 from pandas import datetime
 from pandas import DataFrame
 
+import math
 import pandas as pd
 
 from processing import *
@@ -36,9 +37,9 @@ start_time = time.time()
 # plt.show()
 # print(residuals.describe())
 
-p=1
-d=1
-q=0
+p=3
+d=2
+q=1
 
 WINDOW = 30
 STEP = 1
@@ -59,11 +60,11 @@ for i in range(0, len(dataframe), STEP):
 	predictions.append(yhat)
 	test.append(y_i)
 
-error = mean_squared_error(test, predictions)
-print('Test MSE: %.3f' % error)
+error = math.sqrt(mean_squared_error(test, predictions))
+print('Test RMSE: %.3f' % error)
 elapsed_time = (time.time() - start_time)
 with open("output/arima.csv", "a") as fp:
-	fp.write("p %i, d %i, q %i, mse %f --%s seconds\n" % (p, d, q, error, elapsed_time))
+	fp.write("p %i, d %i, q %i, rmse %f --%s seconds\n" % (p, d, q, error, elapsed_time))
 # plot
 #plt.plot(test)
 #plt.plot(predictions, color='red')
