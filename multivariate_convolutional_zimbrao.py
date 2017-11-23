@@ -31,8 +31,8 @@ start_time = time.time()
 sns.despine()
 
 batch_size = 128
-nb_epoch = 420
-patience = 50
+nb_epoch = 4200
+patience = 500
 look_back = 7
 EMB_SIZE = 4 #numero de features
 
@@ -96,21 +96,13 @@ def evaluate_model(model, name, n_layers, ep):
     new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 
     # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
+    testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
-    # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
-    #trainScore = mean_squared_error(trainPredict, Y_train)
-    #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
-    #testScore = mean_squared_error(testPredict, Y_test)
-    #print('Test Score: %f RMSE' % (testScore))
-    epochs = len(history.epoch)
-
+    
     # fig = plt.figure()
     # plt.plot(Y_test[:150], color='black') # BLUE - trained RESULT
     # plt.plot(testPredict[:150], color='blue') # RED - trained PREDICTION

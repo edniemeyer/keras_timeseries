@@ -2,6 +2,7 @@ using PLSRegressor
 using DataFrames;
 
 
+nfactors = 14
 
 train = readtable("minidolar/train.csv", separator = ',')
 test = readtable("minidolar/test.csv", separator = ',')
@@ -20,7 +21,7 @@ Y_train = Array(train_target)
 X_test = Array(test_close)
 Y_test = Array(test_target)
 
-model          = PLSRegressor.fit(X_train,Y_train,nfactors=2)
+model          = PLSRegressor.fit(X_train,Y_train,nfactors=nfactors)
 Y_pred        = PLSRegressor.predict(model,X_test)
 
 Y_testp = Y_test + Array(test_shift)
@@ -29,14 +30,14 @@ Y_predp = Y_pred + Array(test_shift)
 print("[PLS1] rmse error : $(sqrt(mean((Y_test .- Y_pred).^2)))\n")
 
 
-# # nonlinear learning 
-# model          = PLSRegressor.fit(X_train,Y_train,nfactors=2,kernel="rbf",width=0.1)
-# Y_test         = PLSRegressor.predict(model,X_test)
+# nonlinear learning 
+model          = PLSRegressor.fit(X_train,Y_train,nfactors=2,kernel="rbf",width=100.0)
+Y_test         = PLSRegressor.predict(model,X_test)
 
-# Y_testp = Y_test + Array(test_shift)
-# Y_predp = Y_pred + Array(test_shift)
+Y_testp = Y_test + Array(test_shift)
+Y_predp = Y_pred + Array(test_shift)
 
-# print("[KPLS] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
+print("[KPLS] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
 
 
 
@@ -50,7 +51,7 @@ Y_train = Array(train_target)
 X_test = Array(test_ohlc)
 Y_test = Array(test_target)
 
-model          = PLSRegressor.fit(X_train,Y_train,nfactors=2)
+model          = PLSRegressor.fit(X_train,Y_train,nfactors=nfactors)
 Y_pred        = PLSRegressor.predict(model,X_test)
 
 Y_testp = Y_test + Array(test_shift)
@@ -59,36 +60,36 @@ Y_predp = Y_pred + Array(test_shift)
 print("[PLS1] rmse error : $(sqrt(mean((Y_test .- Y_pred).^2)))\n")
 
 
-# # nonlinear learning
-# model          = PLSRegressor.fit(X_train,Y_train,nfactors=2,kernel="rbf",width=0.1)
-# Y_test         = PLSRegressor.predict(model,X_test)
+# nonlinear learning
+model          = PLSRegressor.fit(X_train,Y_train,nfactors=2,kernel="rbf",width=100.0)
+Y_test         = PLSRegressor.predict(model,X_test)
 
-# Y_testp = Y_test + Array(test_shift)
-# Y_predp = Y_pred + Array(test_shift)
+Y_testp = Y_test + Array(test_shift)
+Y_predp = Y_pred + Array(test_shift)
 
-# print("[KPLS] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
+print("[KPLS] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
 
 
 
-min_rmse = 10
-global best_pred
-global best_w = 10
-global best_g = 10
+# min_rmse = 10
+# global best_pred
+# global best_w = 10
+# global best_g = 10
 
-for g in [1,2],
-    w in linspace(0.01,3,10)
-    print(".")
-    model      = PLSRegressor.fit(X_train,Y_train,centralize=true,nfactors=g,kernel="rbf",width=w)
-    Y_pred     = PLSRegressor.predict(model,X_test)
-    rmse = sqrt(mean((Y_test .- Y_pred).^2))
-    if rmse < min_rmse
-       min_rmse = rmse
-       best_pred = Y_pred[:]
-       best_g    = g
-       best_w    = w
-   end
-end
+# for g in [1,2],
+#     w in linspace(0.01,3,10)
+#     print(".")
+#     model      = PLSRegressor.fit(X_train,Y_train,centralize=true,nfactors=g,kernel="rbf",width=w)
+#     Y_pred     = PLSRegressor.predict(model,X_test)
+#     rmse = sqrt(mean((Y_test .- Y_pred).^2))
+#     if rmse < min_rmse
+#        min_rmse = rmse
+#        best_pred = Y_pred[:]
+#        best_g    = g
+#        best_w    = w
+#    end
+# end
 
-print("[KPLS] min mse error : $(min_rmse)")
-print("[KPLS] best factor : $(best_g)")
-print("[KPLS] best width : $(best_w)")
+# print("[KPLS] min mse error : $(min_rmse)")
+# print("[KPLS] best factor : $(best_g)")
+# print("[KPLS] best width : $(best_w)")

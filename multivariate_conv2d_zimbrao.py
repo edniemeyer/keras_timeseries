@@ -95,9 +95,9 @@ def evaluate_model(model, name, n_layers, ep):
     new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 
     # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
+    testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 

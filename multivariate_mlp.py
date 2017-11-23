@@ -102,18 +102,12 @@ def evaluate_model(model, dataset, dadosp, name, n_layers, ep):
         a += par[0]
         new_train_predicted.append(a)
 
-    # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
-    #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
-    #print('Test Score: %f RMSE' % (testScore))
-    epochs = len(history.epoch)
 
     # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
     #trainScore = mean_squared_error(trainPredict, Y_train)
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
+    testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
     #testScore = mean_squared_error(testPredict, Y_test)
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)

@@ -45,7 +45,7 @@ test_target = test['f0']
 test_close = test[['v3','v7','v11','v15','v19','v23','v27','v31','v35','v39','v43','v47','v51','v55','v59','v63','v67','v71','v75','v79','v83','v87','v91','v95','v99','v103','v107','v111','v115','v119']]
 
 batch_size = 10
-nb_epoch = 10
+nb_epoch = 100
 patience = 50
 look_back = 7
 
@@ -94,9 +94,9 @@ def evaluate_model(model, name, n_layers, ep):
     new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
 
     # calculate root mean squared error
-    trainScore = mean_squared_error(new_train_predicted, Y_trainp)
+    trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = mean_squared_error(new_predicted, Y_testp)
+    testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
     #print('Test Score: %f RMSE' % (testScore))
     epochs = nb_epoch
 

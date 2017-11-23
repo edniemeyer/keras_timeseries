@@ -5,6 +5,7 @@ import os
 import shutil
 from keras.datasets import mnist
 import numpy as np
+import math
 from keras.optimizers import Adam
 from keras.initializers import RandomNormal
 from keras.models import Model, Sequential
@@ -135,10 +136,10 @@ def train(X_train, generator, discriminator, GAN, epochs=6000, verbose_step=250,
 			testPredict = generator.predict(X_test)
 			new_predicted = testPredict+test_shift.values.reshape(test_shift.size,1)
 			new_train_predicted= trainPredict+train_shift.values.reshape(train_shift.size,1)
-			testScore = mean_squared_error(new_predicted, Y_testp)
-			trainScore = mean_squared_error(new_train_predicted, Y_trainp)
-			print(testScore)
-			print(trainScore)
+			testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
+			trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
+			print("RMSE treino: %f"% trainScore)
+			print("RMSE test: %f" % testScore)
 			#plotGeneratedImages(e, generator, output_dir)
 	
 
