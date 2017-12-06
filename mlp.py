@@ -30,6 +30,7 @@ start_time = time.time()
 # dataset = dataframe[1].tolist()
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
 dataset = dataframe['fechamento'].tolist()
+media  = dataframe['media'].tolist()
 
 batch_size = 128
 nb_epoch = 420

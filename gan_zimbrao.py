@@ -35,9 +35,23 @@ test_high = test[['v1','v5','v9','v13','v17','v21','v25','v29','v33','v37','v41'
 test_low = test[['v2','v6','v10','v14','v18','v22','v26','v30','v34','v38','v42','v46','v50','v54','v58','v62','v66','v70','v74','v78','v82','v86','v90','v94','v98','v102','v106','v110','v114','v118']]
 test_close = test[['v3','v7','v11','v15','v19','v23','v27','v31','v35','v39','v43','v47','v51','v55','v59','v63','v67','v71','v75','v79','v83','v87','v91','v95','v99','v103','v107','v111','v115','v119']]
 
+
+# obtendo target para O,H,L
+train_l_target = []
+train_h_target = []
+train_o_target = []
+for i in range(X_trainp.shape[0]-1):
+    train_l_target.append(X_trainp[i+1][118]-train_shift[i])
+    train_h_target.append(X_trainp[i+1][117]-train_shift[i])
+    train_o_target.append(X_trainp[i+1][116]-train_shift[i])
+
+
+
+
 X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_high.values,train_low.values,train_close.values)),  np.column_stack((test_open.values,test_high.values,test_low.values,test_close.values)),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
 X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
 X_train = np.column_stack((X_train,Y_train)) # fica 121 "features"
+
 
 #apenas close
 #X_train, X_test, Y_train, Y_test =  np.array(train_close),  np.array(test_close),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
