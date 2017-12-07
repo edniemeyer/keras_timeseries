@@ -27,7 +27,7 @@ Y_pred        = PLSRegressor.predict(model,X_test)
 Y_testp = Y_test + Array(test_shift)
 Y_predp = Y_pred + Array(test_shift)
 
-print("[PLS1] rmse error : $(sqrt(mean((Y_test .- Y_pred).^2)))\n")
+print("[PLS1] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
 
 
 # nonlinear learning 
@@ -57,7 +57,7 @@ Y_pred        = PLSRegressor.predict(model,X_test)
 Y_testp = Y_test + Array(test_shift)
 Y_predp = Y_pred + Array(test_shift)
 
-print("[PLS1] rmse error : $(sqrt(mean((Y_test .- Y_pred).^2)))\n")
+print("[PLS1] rmse error : $(sqrt(mean((Y_testp .- Y_predp).^2)))\n")
 
 
 # nonlinear learning

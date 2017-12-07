@@ -2,3 +2,8 @@
 usar média como target é pior, melhor usar fechamento
 usar O,H,L,C,V melhora os resultados para NN convolucional (colocar média como feature piora, por isso removi)
 convolucional > MLP > LSTM( ainda não parece estar otimizado?)
+
+
+7/12/2017
+realizar RMSE de previsao dos OHLC será menor devido a previsão ser mais precisa para O principalmente, mas tb H e L
+Prever OHLC como Target não muda nada a previsão se for só C com target
