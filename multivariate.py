@@ -15,8 +15,8 @@ from keras.layers.advanced_activations import *
 from keras.optimizers import RMSprop, Adam, SGD, Nadam
 from keras.initializers import *
 
-import seaborn as sns
-sns.despine()
+
+
 
 
 #data_original = pd.read_csv('./data/AAPL1216.csv')[::-1]

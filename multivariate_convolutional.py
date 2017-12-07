@@ -26,9 +26,9 @@ from keras.layers.advanced_activations import *
 from keras.optimizers import RMSprop, Adam, SGD, Nadam
 from keras.initializers import *
 
-import seaborn as sns
+
 start_time = time.time()
-sns.despine()
+
 
 batch_size = 128
 nb_epoch = 420
