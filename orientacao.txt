@@ -24,3 +24,7 @@ GAN: gerar 4 previsoes (OHLC) em vez de apenas o fechamento
 
 23/11:
 PLS_regression: gerar 4 previsoes também (OHLC)
+
+07/12:
+Gerar grafico de candles com OHLC
+Prever H e L separados
