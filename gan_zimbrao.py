@@ -36,18 +36,47 @@ test_low = test[['v2','v6','v10','v14','v18','v22','v26','v30','v34','v38','v42'
 test_close = test[['v3','v7','v11','v15','v19','v23','v27','v31','v35','v39','v43','v47','v51','v55','v59','v63','v67','v71','v75','v79','v83','v87','v91','v95','v99','v103','v107','v111','v115','v119']]
 
 
-# obtendo target para O,H,L
+# obtendo train target para O,H,L
 train_l_target = []
 train_h_target = []
 train_o_target = []
-for i in range(X_trainp.shape[0]-1):
-    train_l_target.append(X_trainp[i+1][118]-train_shift[i])
-    train_h_target.append(X_trainp[i+1][117]-train_shift[i])
-    train_o_target.append(X_trainp[i+1][116]-train_shift[i])
+for i in range(train_shift.shape[0]-1):
+    train_l_target.append(np.array(train_low)[i+1][29]+train_shift[i+1]-train_shift[i])
+    train_h_target.append(np.array(train_high)[i+1][29]+train_shift[i+1]-train_shift[i])
+    train_o_target.append(np.array(train_open)[i+1][29]+train_shift[i+1]-train_shift[i])
+
+    
+train_ohlc_target = np.column_stack((train_o_target, train_h_target, train_l_target, train_target[:-1]))
+
+# obtendo test target para O,H,L
+test_l_target = []
+test_h_target = []
+test_o_target = []
+for i in range(test_shift.shape[0]-1):
+    test_l_target.append(np.array(test_low)[i+1][29]+test_shift[i+1]-test_shift[i])
+    test_h_target.append(np.array(test_high)[i+1][29]+test_shift[i+1]-test_shift[i])
+    test_o_target.append(np.array(test_open)[i+1][29]+test_shift[i+1]-test_shift[i])
+
+    
+test_ohlc_target = np.column_stack((test_o_target, test_h_target, test_l_target, test_target[:-1]))
+
+#removendo ultimo elemento pq é perdido ao calcular os targets O,H e L
+train_shift = train_shift[:-1]
+train_target = train_target[:-1]
+train_open = train_open[:-1]
+train_high = train_high[:-1]
+train_low = train_low[:-1]
+train_close = train_close[:-1]
+
+test_shift = test_shift[:-1]
+test_target = test_target[:-1]
+test_open = test_open[:-1]
+test_high = test_high[:-1]
+test_low = test_low[:-1]
+test_close = test_close[:-1]
 
 
-
-
+#X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_high.values,train_low.values,train_close.values)),  np.column_stack((test_open.values,test_high.values,test_low.values,test_close.values)),  np.array(train_target.values.reshape(train_ohlc_target.size,1)),  np.array(test_target.values.reshape(test_ohlc_target.size,1)) #target OHLC
 X_train, X_test, Y_train, Y_test =  np.column_stack((train_open.values,train_high.values,train_low.values,train_close.values)),  np.column_stack((test_open.values,test_high.values,test_low.values,test_close.values)),  np.array(train_target.values.reshape(train_target.size,1)),  np.array(test_target.values.reshape(test_target.size,1))
 X_trainp, X_testp, Y_trainp, Y_testp = X_train+train_shift.values.reshape(train_shift.size,1), X_test+test_shift.values.reshape(test_shift.size,1), Y_train+train_shift.values.reshape(train_shift.size,1), Y_test + test_shift.values.reshape(test_shift.size,1)
 X_train = np.column_stack((X_train,Y_train)) # fica 121 "features"
