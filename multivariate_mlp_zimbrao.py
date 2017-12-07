@@ -5,6 +5,8 @@ import math
 from utils import *
 
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pylab as plt
 from sklearn.metrics import mean_squared_error
 import time

@@ -10,6 +10,8 @@ from keras.optimizers import Adam
 from keras.initializers import RandomNormal
 from keras.models import Model, Sequential
 from keras.layers import Reshape, Dense, Dropout, Flatten, Conv2D, LeakyReLU, Activation, Input, concatenate
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.finance
 import time
