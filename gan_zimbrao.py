@@ -96,12 +96,12 @@ def exec_time(start, msg):
 
 def generator_model(opt):
 	model = Sequential()
-	model.add(Dense(256, input_dim=120, kernel_initializer=RandomNormal(stddev=0.02)))
-	model.add(LeakyReLU(0.2))
+	model.add(Dense(256, input_dim=120, kernel_initializer=RandomNormal(stddev=0.1)))
+	model.add(LeakyReLU(0.4))
 	model.add(Dense(512))
-	model.add(LeakyReLU(0.2))
+	model.add(LeakyReLU(0.4))
 	model.add(Dense(1024))
-	model.add(LeakyReLU(0.2))
+	model.add(LeakyReLU(0.4))
 	#model.add(Dense(121)) #output 120+previsao
 	model.add(Dense(1)) #output so previsao
 	model.add(Activation('tanh'))
@@ -113,15 +113,15 @@ def generator_model(opt):
 def discriminator_model(opt):
 	model = Sequential()
 
-	model.add(Dense(1024, input_dim=121, kernel_initializer=RandomNormal(stddev=0.02)))
-	model.add(LeakyReLU(0.2))
-	model.add(Dropout(0.3))
+	model.add(Dense(1024, input_dim=121, kernel_initializer=RandomNormal(stddev=0.1)))
+	model.add(LeakyReLU(0.4))
+	model.add(Dropout(0.5))
 	model.add(Dense(512))
-	model.add(LeakyReLU(0.2))
-	model.add(Dropout(0.3))
+	model.add(LeakyReLU(0.4))
+	model.add(Dropout(0.5))
 	model.add(Dense(256))
-	model.add(LeakyReLU(0.2))
-	model.add(Dropout(0.3))
+	model.add(LeakyReLU(0.4))
+	model.add(Dropout(0.5))
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile(loss='binary_crossentropy', optimizer=opt)
 
