@@ -28,3 +28,7 @@ PLS_regression: gerar 4 previsoes também (OHLC)
 07/12:
 Gerar grafico de candles com OHLC
 Prever H e L separados
+
+25/01:
+Comparar normalização adaptativa com sem normalização. Isso ja daria tese.
+usar BTC Dezembro/2017
