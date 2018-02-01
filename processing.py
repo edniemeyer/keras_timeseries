@@ -7,11 +7,11 @@ Created on Tue May 17 15:37:40 2016
 
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
 from sklearn.metrics import mean_squared_error, classification_report
 import matplotlib.pylab as plt
 import datetime as dt
 import time
+import normalizer
 
 
 def load_snp_returns():
