@@ -1,18 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 17 15:37:40 2016
-
-@author: Alex
-"""
-
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_squared_error, classification_report
 import matplotlib.pylab as plt
 import datetime as dt
 import time
-import normalizer
-
+from normalizer import *
 
 def load_snp_returns():
     f = open('table.csv', 'rb').readlines()[1:]
@@ -47,7 +39,7 @@ def load_snp_close():
 
 def split_into_chunks(data, train, predict, step, binary=True, scale=True):
     X, Y = [], []
-    for i in range(0, len(data), step):
+    for i in range(0, len(data)-train-predict, step):
         try:
             x_i = data[i:i+train]
             y_i = data[i+train+predict]
@@ -84,7 +76,7 @@ def split_into_chunks(data, train, predict, step, binary=True, scale=True):
 
 def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, scale=True):
     X, Y, shift = [], [], []
-    for i in range(0, len(data), step):
+    for i in range(0, len(data)-train-predict, step):
         try:
             x_i = data[i:i+train]
             y_i = data[i+train+predict]
@@ -155,13 +147,13 @@ def create_Xt_Yt(X, y, percentage=0.8):
 def create_Xt_Yt_adaptive(X, y, shift, percentage=0.8):
     X_train = X[0:int(len(X) * percentage)]
     Y_train = y[0:int(len(y) * percentage)]
-    shift_train = y[0:int(len(shift) * percentage)]
+    shift_train = shift[0:int(len(shift) * percentage)]
     
     #X_train, Y_train = shuffle_in_unison(X_train, Y_train)
 
     X_test = X[int(len(X) * percentage):]
     Y_test = y[int(len(y) * percentage):]
-    shift_test = y[int(len(shift) * percentage):]
+    shift_test = shift[int(len(shift) * percentage):]
 
     return X_train, X_test, Y_train, Y_test, shift_train, shift_test
 
@@ -189,3 +181,141 @@ def create_Xt_Yt_adaptive(X, y, shift, percentage=0.8):
 #     for key,value in dftest[4].items():
 #         dfoutput['Critical Value (%s)'%key] = value
 #     print(dfoutput)
+
+
+
+#minmax normalization without sliding windows
+
+def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
+    # X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    # X, Y = np.array(X), np.array(Y)
+    # X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
+    #
+    # X_normalizado, scaler = minMaxNormalize(X_train.tolist())
+
+    train, test = create_Train_Test(dataset, 0.35)
+    train_normalizado, scaler = minMaxNormalize(train.values.reshape(-1,1))
+
+    dataset_norm = minMaxNormalizeOver(dataset.values.reshape(-1,1), scaler)
+
+    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
+    return X_train, X_test, Y_train, Y_test, scaler
+
+def nn_mm_den(X_train, X_test, Y_train, Y_test, scaler):
+    X_train = minMaxDenormalize(X_train, scaler)
+    X_test = minMaxDenormalize(X_test, scaler)
+    Y_train = minMaxDenormalize(Y_train, scaler)
+    Y_test = minMaxDenormalize(Y_test, scaler)
+    X_train, X_test, Y_train, Y_test = np.array(X_train), np.array(X_test), np.array(Y_train), np.array(Y_test)
+    return X_train, X_test, Y_train, Y_test
+
+
+#minmax normalization with sliding windows
+
+def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
+
+    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
+
+    X_train_n, X_test_n, Y_train_n, Y_test_n, scaler_train, scaler_test = [],[],[],[],[],[]
+    for i in range(X_train.shape[0]):
+        X_normalizado, scaler = minMaxNormalize(X_train[i].reshape(-1,1)) # shape(30,1)
+        X_train_n.append(X_normalizado.reshape(-1)) # shape(30)
+        Y_train_n.append(minMaxNormalizeOver(Y_train[i], scaler).reshape(-1))
+        scaler_train.append(scaler)
+
+    for i in range(X_test.shape[0]):
+        X_normalizado, scaler = minMaxNormalize(X_test[i].reshape(-1, 1))  # shape(30,1)
+        X_test_n.append(X_normalizado.reshape(-1))  # shape(30)
+        Y_test_n.append(minMaxNormalizeOver(Y_test[i], scaler).reshape(-1))
+        scaler_test.append(scaler)
+
+    X_train, X_test, Y_train, Y_test = np.array(X_train_n), np.array(X_test_n), np.array(Y_train_n), np.array(Y_test_n)
+    return X_train, X_test, Y_train, Y_test, scaler_train, scaler_test
+
+def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
+    X_train_d, X_test_d, Y_train_d, Y_test_d = [], [], [], []
+    for i in range(X_train.shape[0]):
+        X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
+        X_train_d.append(X_denormalizado)
+        Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
+        Y_train_d.append(Y_denormalizado)
+
+    for i in range(X_test.shape[0]):
+        X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
+        X_test_d.append(X_denormalizado)
+        Y_denormalizado = minMaxDenormalize(Y_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
+        Y_test_d.append(Y_denormalizado)
+
+    X_train, X_test, Y_train, Y_test = np.array(X_train_d), np.array(X_test_d), np.array(Y_train_d), np.array(Y_test_d)
+    return X_train, X_test, Y_train, Y_test
+
+
+#z-score normalization
+def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
+    train, test = create_Train_Test(dataset, 0.35)
+    train_normalizado, scaler = zNormalize(train.values.reshape(-1,1))
+
+    dataset_norm = zNormalizeOver(dataset.values.reshape(-1,1), scaler)
+
+    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
+    return X_train, X_test, Y_train, Y_test, scaler
+
+def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
+    X_train = zDenormalize(X_train, scaler)
+    X_test = zDenormalize(X_test, scaler)
+    Y_train = zDenormalize(Y_train, scaler)
+    Y_test = zDenormalize(Y_test, scaler)
+    X_train, X_test, Y_train, Y_test = np.array(X_train), np.array(X_test), np.array(Y_train), np.array(Y_test)
+    return X_train, X_test, Y_train, Y_test
+
+
+#adaptive normalization (Adaptive Normalization: A Novel Data Normalization Approach for  Non-Stationary Time Series)
+
+def nn_an(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
+    X, Y, shift = split_into_chunks_adaptive(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
+                                             scale=True)
+    X, Y, shift = np.array(X), np.array(Y), np.array(shift)
+    X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift, percentage=0.35)
+    X_train_n, X_test_n, Y_train_n, Y_test_n, scaler_train, scaler_test = [], [], [], [], [], []
+    for i in range(X_train.shape[0]):
+        X_normalizado, scaler = minMaxNormalize(X_train[i].reshape(-1, 1))  # shape(30,1)
+        X_train_n.append(X_normalizado.reshape(-1))  # shape(30)
+        Y_train_n.append(minMaxNormalizeOver(Y_train[i], scaler).reshape(-1))
+        scaler_train.append(scaler)
+
+    for i in range(X_test.shape[0]):
+        X_normalizado, scaler = minMaxNormalize(X_test[i].reshape(-1, 1))  # shape(30,1)
+        X_test_n.append(X_normalizado.reshape(-1))  # shape(30)
+        Y_test_n.append(minMaxNormalizeOver(Y_test[i], scaler).reshape(-1))
+        scaler_test.append(scaler)
+
+    X_train, X_test, Y_train, Y_test = np.array(X_train_n), np.array(X_test_n), np.array(Y_train_n), np.array(Y_test_n)
+    return X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test
+
+
+def nn_an_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test):
+    X_train_d, X_test_d, Y_train_d, Y_test_d = [], [], [], []
+    for i in range(X_train.shape[0]):
+        X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
+        X_denormalizado = X_denormalizado * shift_train[i]
+        X_train_d.append(X_denormalizado)
+        Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
+        Y_denormalizado = Y_denormalizado * shift_train[i]
+        Y_train_d.append(Y_denormalizado)
+
+    for i in range(X_test.shape[0]):
+        X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
+        X_denormalizado = X_denormalizado * shift_test[i]
+        X_test_d.append(X_denormalizado)
+        Y_denormalizado = minMaxDenormalize(Y_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
+        Y_denormalizado = Y_denormalizado * shift_test[i]
+        Y_test_d.append(Y_denormalizado)
+
+    X_train, X_test, Y_train, Y_test = np.array(X_train_d), np.array(X_test_d), np.array(Y_train_d), np.array(Y_test_d)
+    return X_train, X_test, Y_train, Y_test

@@ -16,8 +16,8 @@ def minMaxNormalize(x):
 
 def minMaxNormalizeOver(x, scaler):
     X = scaler.transform(x)
-    X[X>1.0] = 1.0 # limit top
-    X[X<-1.0] = -1.0 #limit bottom
+    #X[X>1.0] = 1.0 # limit top
+    #X[X<-1.0] = -1.0 #limit bottom
     return X
 
 
@@ -35,4 +35,3 @@ def zNormalizeOver(x, scaler):
 
 def zDenormalize(x, scaler):
     return scaler.inverse_transform(x)
-
