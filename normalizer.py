@@ -4,10 +4,14 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 def decimalNormalize(x):
-  return (x / 10^np.log10(max(x)))
+  return (np.array(x) / 10**np.log10(max(x)))
 
-def decimalDenormalize (x,maxvec):
-  return (x*(10^np.log10(maxvec)))
+def decimalNormalizeOver(x,maximum):
+  return (np.array(x) / 10**np.log10(maximum))
+
+
+def decimalDenormalize (x,maximum):
+  return (np.array(x)*(10**np.log10(maximum)))
 
 def minMaxNormalize(x):
     scaler = MinMaxScaler(feature_range=(-1, 1))

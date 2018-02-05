@@ -274,6 +274,26 @@ def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
     X_train, X_test, Y_train, Y_test = np.array(X_train), np.array(X_test), np.array(Y_train), np.array(Y_test)
     return X_train, X_test, Y_train, Y_test
 
+#decimal normalization
+def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
+    train, test = create_Train_Test(dataset, 0.35)
+    train_normalizado = decimalNormalize(train.values.reshape(-1,1))
+
+    dataset_norm = decimalNormalizeOver(dataset.values.reshape(-1,1), max(train))
+
+    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = np.array(X), np.array(Y)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
+    return X_train, X_test, Y_train, Y_test, max(train)
+
+def nn_ds_den(X_train, X_test, Y_train, Y_test, maximum):
+    X_train = decimalDenormalize(X_train, maximum)
+    X_test = decimalDenormalize(X_test, maximum)
+    Y_train = decimalDenormalize(Y_train, maximum)
+    Y_test = decimalDenormalize(Y_test, maximum)
+    X_train, X_test, Y_train, Y_test = np.array(X_train), np.array(X_test), np.array(Y_train), np.array(Y_test)
+    return X_train, X_test, Y_train, Y_test
+
 
 #adaptive normalization (Adaptive Normalization: A Novel Data Normalization Approach for  Non-Stationary Time Series)
 

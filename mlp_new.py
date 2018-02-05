@@ -58,7 +58,8 @@ def evaluate_model(model, name, n_layers, ep):
     #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     #X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
-    X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    #X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=False)
     X, Y = np.array(X), np.array(Y)
@@ -96,7 +97,8 @@ def evaluate_model(model, name, n_layers, ep):
     #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
     #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
     #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
-    X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+    X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
 
     # calculate root mean squared error
     trainScore = math.sqrt(mean_squared_error(new_train_predicted[1:], Y_trainp[:-1]))
