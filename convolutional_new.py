@@ -20,13 +20,13 @@ from keras.optimizers import SGD
 from keras.utils import np_utils
 from custom_callbacks import CriteriaStopping
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard
+from hyperbolic_nonlinearities import *
 from keras import regularizers
 #from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
 start_time = time.time()
-
 
 #USD-BRL
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
@@ -40,7 +40,6 @@ ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
 dataset = dataset.iloc[4:]
 ewm_dolar = ewm_dolar.iloc[4:]
 
-
 batch_size = 128
 nb_epoch = 4200
 patience = 500
@@ -51,18 +50,16 @@ TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
-def evaluate_model(model, name, n_layers, ep):
-    #X_train, X_test, Y_train, Y_test = dataset
-    #X_trainp, X_testp, Y_trainp, Y_testp = dadosp
 
-    #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
-    #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
-    #X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
-    X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+def evaluate_model(model, name, n_layers, ep):
+    X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+    # X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+    # X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    #X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
-                                             scale=False)
+                             scale=False)
     X, Y = np.array(X), np.array(Y)
-    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.35)
+    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y, percentage=0.35)
 
 
     csv_logger = CSVLogger('output/%d_layers/%s.csv' % (n_layers, name))
@@ -78,7 +75,13 @@ def evaluate_model(model, name, n_layers, ep):
     #optimizer = "adadelta"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
-    
+
+    # reshape input to be [samples, time steps, features]
+    X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+    X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+    #X_train = np.expand_dims(X_train, axis=2)
+    #X_test = np.expand_dims(X_test, axis=2)
+
     history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
@@ -92,17 +95,16 @@ def evaluate_model(model, name, n_layers, ep):
     
     
     # invert predictions (back to original)
-
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
-    X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+    X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
+    # X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
+    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict,scaler)
+    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict,scaler)
 
     # calculate root mean squared error
     trainScore = math.sqrt(mean_squared_error(new_train_predicted[1:], Y_trainp[:-1]))
-    #print('Train Score: %f RMSE' % (trainScore))
+    # print('Train Score: %f RMSE' % (trainScore))
     testScore = math.sqrt(mean_squared_error(new_predicted[1:], Y_testp[:-1]))
-    #print('Test Score: %f RMSE' % (testScore))
+    #testScore = mean_squared_error(testPredict, Y_test)
     epochs = len(history.epoch)
 
     # fig = plt.figure()
@@ -123,28 +125,38 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-MINIDOLAR/MLP NN\n")
+        fp.write("-MINIDOLAR/Convolutional NN\n")
 
     hals = []
 
-    
     
     testScore_aux = 999999
     f_aux = 0
 
     #for name in nonlinearities:
+    #for f in np.arange(0.1,2,0.1):
     for f in range(1,2):
+        #name=Hyperbolic(rho=0.9)
         name='relu'
         model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
-        model.add(Activation(name))
+        #model.add(Dense(500, input_shape = (TRAIN_SIZE, )))
+        #model.add(Activation(name))
 
+        model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='causal',strides=1,
+                kernel_regularizer=regularizers.l2(0.01)))
+        #model.add(MaxPooling1D(pool_size=2))
         for l in range(n_layers):
-            model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
-            model.add(Activation(name))
+            model.add(Conv1D(input_shape = (TRAIN_SIZE, EMB_SIZE),filters=5,kernel_size=2,activation=name,padding='causal',strides=1))
+            #model.add(MaxPooling1D(pool_size=1))
         
         model.add(Dropout(0.25))
+        model.add(Flatten())
+
+        #model.add(Dense(5))
+        #model.add(Dropout(0.25))
+        #model.add(Activation(name))
+        
         model.add(Dense(1))
         model.add(Activation('linear'))
         #model.summary()
@@ -158,10 +170,11 @@ def __main__(argv):
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
             fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            
 
         model = None
 
-    print("melhor parametro: %i" % f_aux)
+    #print("melhor parametro: %i" % f_aux)
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])

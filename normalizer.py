@@ -7,7 +7,7 @@ def decimalNormalize(x):
   return (x / 10^np.log10(max(x)))
 
 def decimalDenormalize (x,maxvec):
-  return (x*(10^log10(maxvec)))
+  return (x*(10^np.log10(maxvec)))
 
 def minMaxNormalize(x):
     scaler = MinMaxScaler(feature_range=(-1, 1))
