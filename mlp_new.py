@@ -51,15 +51,19 @@ TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
-def evaluate_model(model, name, n_layers, ep):
+def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
     #X_trainp, X_testp, Y_trainp, Y_testp = dadosp
-
-    #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
-    #X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
-    #X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
-    #X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
-    X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    if (normalization == 'AN'):
+        X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+    if (normalization == 'SW'):
+        X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+    if (normalization == 'MM'):
+        X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    if (normalization == 'ZS'):
+        X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+    if (normalization == 'DS'):
+        X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=False)
     X, Y = np.array(X), np.array(Y)
@@ -90,15 +94,24 @@ def evaluate_model(model, name, n_layers, ep):
     # make predictions (scaled)
     trainPredict = model.predict(X_train)
     testPredict = model.predict(X_test)
-    
-    
-    # invert predictions (back to original)
 
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
-    #X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
-    X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
+
+    # invert predictions (back to original)
+    if (normalization == 'AN'):
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
+    if (normalization == 'SW'):
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
+    if (normalization == 'MM'):
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
+    if (normalization == 'ZS'):
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+    if (normalization == 'DS'):
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
+
+    np.savetxt("output/previsto.csv", new_predicted[1:])
+    np.savetxt("output/real.csv", Y_testp[:-1])
+    np.savetxt("output/previsto_treino.csv", new_train_predicted[1:])
+    np.savetxt("output/real_treino.csv", Y_trainp[:-1])
 
     # calculate root mean squared error
     trainScore = math.sqrt(mean_squared_error(new_train_predicted[1:], Y_trainp[:-1]))
@@ -124,6 +137,7 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
+    normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MINIDOLAR/MLP NN\n")
 
@@ -135,8 +149,10 @@ def __main__(argv):
     f_aux = 0
 
     #for name in nonlinearities:
+    #for normalization in normalizations:
     for f in range(1,2):
         name='relu'
+        normalization = 'AN'
         model = Sequential()
 
         model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
@@ -151,7 +167,7 @@ def __main__(argv):
         model.add(Activation('linear'))
         #model.summary()
 
-        trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch)
+        trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization)
         # if(testScore_aux > testScore):
         #     testScore_aux=testScore
         #     f_aux = f
@@ -159,7 +175,7 @@ def __main__(argv):
         elapsed_time = (time.time() - start_time)
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            fp.write("%s,%s,%f,%f,%d,%s --%s seconds\n" % (name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
 
         model = None
 
