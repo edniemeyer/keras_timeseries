@@ -19,11 +19,11 @@ dataframe = dataframe['fechamento']
 start_time = time.time()
 
 
-#test_stationarity(dataframe)
-
-#plt.plot(dataset)
-#autocorrelation_plot(dataframe)
-#plt.show()
+# test_stationarity(dataframe)
+#
+# plt.plot(dataframe.values)
+# autocorrelation_plot(dataframe)
+# plt.show()
 
 
 # model = ARIMA(dataframe.as_matrix(), order=(5,1,0))
@@ -37,9 +37,9 @@ start_time = time.time()
 # plt.show()
 # print(residuals.describe())
 
-p=3
-d=2
-q=1
+p=0
+d=0
+q=0
 
 WINDOW = 30
 STEP = 1

@@ -21,9 +21,14 @@ ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
 dataset = dataset.iloc[4:]
 ewm_dolar = ewm_dolar.iloc[4:]
 
-X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
 
-X_train, X_test, Y_train, Y_test = nn_ds_den(X_train, X_test, Y_train, Y_test, maximum)
+X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+
+X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2 = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+
+# X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+#
+# X_train, X_test, Y_train, Y_test = nn_ds_den(X_train, X_test, Y_train, Y_test, maximum)
 
 #import matplotlib.pyplot as plt
 #plt.plot(dataset_norm)

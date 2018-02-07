@@ -42,7 +42,7 @@ ewm_dolar = ewm_dolar.iloc[4:]
 
 
 batch_size = 128
-nb_epoch = 4200
+nb_epoch = 20000
 patience = 500
 look_back = 7
 
@@ -50,6 +50,11 @@ TRAIN_SIZE = 30
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
+
+X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
+                                             scale=False)
+X, Y = np.array(X), np.array(Y)
+X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.35)
 
 def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
@@ -64,10 +69,7 @@ def evaluate_model(model, name, n_layers, ep, normalization):
         X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'DS'):
         X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
-    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
-                                             scale=False)
-    X, Y = np.array(X), np.array(Y)
-    X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.35)
+
 
 
     csv_logger = CSVLogger('output/%d_layers/%s.csv' % (n_layers, name))
@@ -84,7 +86,9 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
     
-    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
+    #history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
+    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1,
+                        callbacks=[csv_logger])
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
@@ -108,15 +112,20 @@ def evaluate_model(model, name, n_layers, ep, normalization):
     if (normalization == 'DS'):
         X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
 
-    np.savetxt("output/previsto.csv", new_predicted[1:])
-    np.savetxt("output/real.csv", Y_testp[:-1])
-    np.savetxt("output/previsto_treino.csv", new_train_predicted[1:])
-    np.savetxt("output/real_treino.csv", Y_trainp[:-1])
+    # np.savetxt("output/previsto.csv", new_predicted)
+    # np.savetxt("output/real.csv", Y_testp)
+    # np.savetxt("output/previsto_treino.csv", new_train_predicted)
+    # np.savetxt("output/real_treino.csv", Y_trainp)
+
+    # np.savetxt("output/x_test-meu.csv", X_testp)
+    # np.savetxt("output/y_test-meu.csv", Y_testp)
+    # np.savetxt("output/x_treino-meu.csv", X_trainp)
+    # np.savetxt("output/y_treino-meu.csv", Y_trainp)
 
     # calculate root mean squared error
-    trainScore = math.sqrt(mean_squared_error(new_train_predicted[1:], Y_trainp[:-1]))
+    trainScore = math.sqrt(mean_squared_error(new_train_predicted, Y_trainp))
     #print('Train Score: %f RMSE' % (trainScore))
-    testScore = math.sqrt(mean_squared_error(new_predicted[1:], Y_testp[:-1]))
+    testScore = math.sqrt(mean_squared_error(new_predicted, Y_testp))
     #print('Test Score: %f RMSE' % (testScore))
     epochs = len(history.epoch)
 
@@ -137,7 +146,8 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
-    normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
+    #normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
+    normalizations = ['AN', 'SW']
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MINIDOLAR/MLP NN\n")
 
@@ -149,10 +159,10 @@ def __main__(argv):
     f_aux = 0
 
     #for name in nonlinearities:
-    #for normalization in normalizations:
-    for f in range(1,2):
-        name='relu'
-        normalization = 'AN'
+    for normalization in normalizations:
+    # for f in range(1,2):
+        name='tanh'
+        # normalization = 'AN'
         model = Sequential()
 
         model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
