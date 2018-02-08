@@ -42,7 +42,7 @@ ewm_dolar = ewm_dolar.iloc[4:]
 
 
 batch_size = 128
-nb_epoch = 20000
+nb_epoch = 5000
 patience = 500
 look_back = 7
 
@@ -54,13 +54,13 @@ EMB_SIZE = 1
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=False)
 X, Y = np.array(X), np.array(Y)
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.35)
+X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.90)
 
 def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
     #X_trainp, X_testp, Y_trainp, Y_testp = dadosp
     if (normalization == 'AN'):
-        X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     if (normalization == 'SW'):
         X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     if (normalization == 'MM'):
@@ -79,6 +79,7 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
     
     #sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)
+    # sgd = SGD(lr=0.64, momentum=0.8, nesterov=False)
 
     #optimizer = sgd
     optimizer = "adam"
@@ -102,7 +103,7 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
     # invert predictions (back to original)
     if (normalization == 'AN'):
-        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test, shift_train, shift_test)
+        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler, shift_train, shift_test)
     if (normalization == 'SW'):
         X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
     if (normalization == 'MM'):
