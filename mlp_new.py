@@ -33,16 +33,16 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 dataset = dataframe['fechamento']
 media  = dataframe['media'].tolist()
 
-ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
+ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
 
 
 #removendo NaN
-dataset = dataset.iloc[4:]
-ewm_dolar = ewm_dolar.iloc[4:]
+dataset = dataset.iloc[29:]
+ewm_dolar = ewm_dolar.iloc[29:]
 
 
 batch_size = 128
-nb_epoch = 5000
+nb_epoch = 10000
 patience = 500
 look_back = 7
 
@@ -54,7 +54,7 @@ EMB_SIZE = 1
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=False)
 X, Y = np.array(X), np.array(Y)
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.90)
+X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.80)
 
 def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
@@ -163,7 +163,7 @@ def __main__(argv):
     for normalization in normalizations:
     # for f in range(1,2):
         name='tanh'
-        # normalization = 'AN'
+        #normalization = 'MM'
         model = Sequential()
 
         model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
