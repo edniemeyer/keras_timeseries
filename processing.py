@@ -95,7 +95,7 @@ def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, sca
                 #shift_i = np.mean(timeseries[:-1])
 
                 if scale:
-                    timeseries = timeseries-shift_i
+                    timeseries = timeseries/shift_i
                     y_i = timeseries[-1]
                     #y_i = (y_i - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
                     #x_i = (np.array(timeseries[:-1]) - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
@@ -113,30 +113,30 @@ def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, sca
 
     return X, Y, shift
 
-
-def split_into_chunks_adaptive_try(data, ewm, train, predict, step):
-    X, Y, shift, R = [], [], [], []
-    data, ewm = np.array(data), np.array(ewm)
-    #generating new sequence R with adaptive normalization
-
-    for i in range(0, len(data)-train-predict, step):
-        try:
-            for j in range(1, len(data[i:i+train+predict]) + 1, 1):  #for not having 0 division, it has to start at 1, so add that 1 in the end
-                R.append(data[i:i+train+predict][int(np.ceil(j / (train + predict)) * (j - 1) % (train + predict))]
-                         / ewm[i:i+train+predict][int(np.ceil(j / (train + predict)))])
-                shift.append(ewm[i:i+train+predict][int(np.ceil(j / (train + predict)))])
-
-            timeseries = np.array(R[i:i + train + predict])
-            x_i = timeseries[:-1]
-            y_i = timeseries[-1]
-
-        except:
-            break
-
-        X.append(x_i)
-        Y.append(y_i)
-
-    return X, Y, shift, R
+#
+# def split_into_chunks_adaptive_try(data, ewm, train, predict, step):
+#     X, Y, shift, R = [], [], [], []
+#     data, ewm = np.array(data), np.array(ewm)
+#     #generating new sequence R with adaptive normalization
+#
+#     for i in range(0, len(data)-train-predict, step):
+#         try:
+#             for j in range(1, len(data[i:i+train+predict]) + 1, 1):  #for not having 0 division, it has to start at 1, so add that 1 in the end
+#                 R.append(data[i:i+train+predict][int(np.ceil(j / (train + predict)) * (j - 1) % (train + predict))]
+#                          / ewm[i:i+train+predict][int(np.ceil(j / (train + predict)))])
+#                 shift.append(ewm[i:i+train+predict][int(np.ceil(j / (train + predict)))])
+#
+#             timeseries = np.array(R[i:i + train + predict])
+#             x_i = timeseries[:-1]
+#             y_i = timeseries[-1]
+#
+#         except:
+#             break
+#
+#         X.append(x_i)
+#         Y.append(y_i)
+#
+#     return X, Y, shift, R
 
 
 
@@ -247,7 +247,7 @@ def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
-
+    X_train, Y_train = remove_outliers(X_train, Y_train)
     X_train_n, X_test_n, Y_train_n, Y_test_n, scaler_train, scaler_test = [],[],[],[],[],[]
     for i in range(X_train.shape[0]):
         X_normalizado, scaler = minMaxNormalize(X_train[i].reshape(-1,1)) # shape(30,1)
@@ -285,6 +285,7 @@ def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
 #z-score normalization
 def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     train, test = create_Train_Test(dataset, 0.80)
+    train, test = remove_outliers(train, test)
     train_normalizado, scaler = zNormalize(train.values.reshape(-1,1))
 
     dataset_norm = zNormalizeOver(dataset.values.reshape(-1,1), scaler)
@@ -305,6 +306,7 @@ def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
 #decimal normalization
 def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     train, test = create_Train_Test(dataset, 0.80)
+    train, test = remove_outliers(train, test)
     train_normalizado = decimalNormalize(train.values.reshape(-1,1))
 
     dataset_norm = decimalNormalizeOver(dataset.values.reshape(-1,1), max(train))
@@ -330,6 +332,7 @@ def nn_an(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
                                              scale=True)
     X, Y, shift = np.array(X), np.array(Y), np.array(shift)
     X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift, percentage=0.80)
+    X_train, Y_train, shift_train = remove_outliers_adaptive(X_train,Y_train, shift_train)
     sample_normalizado, scaler = minMaxNormalize(X_train.reshape(-1,1))# global scaler over sample set, as said on the article
     X_train_n, X_test_n, Y_train_n, Y_test_n= [], [], [], []
     for i in range(X_train.shape[0]):
@@ -350,25 +353,61 @@ def nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
     X_train_d, X_test_d, Y_train_d, Y_test_d = [], [], [], []
     for i in range(X_train.shape[0]):
         X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1)
-        X_denormalizado = X_denormalizado + shift_train[i]
+        X_denormalizado = X_denormalizado * shift_train[i]
         X_train_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler).reshape(-1)
-        Y_denormalizado = Y_denormalizado + shift_train[i]
+        Y_denormalizado = Y_denormalizado * shift_train[i]
         Y_train_d.append(Y_denormalizado)
 
     for i in range(X_test.shape[0]):
         X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler).reshape(-1)
-        X_denormalizado = X_denormalizado + shift_test[i]
+        X_denormalizado = X_denormalizado * shift_test[i]
         X_test_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_test[i].reshape(-1, 1), scaler).reshape(-1)
-        Y_denormalizado = Y_denormalizado + shift_test[i]
+        Y_denormalizado = Y_denormalizado * shift_test[i]
         Y_test_d.append(Y_denormalizado)
 
     X_train, X_test, Y_train, Y_test = np.array(X_train_d), np.array(X_test_d), np.array(Y_train_d), np.array(Y_test_d)
     return X_train, X_test, Y_train, Y_test
 
+def remove_outliers(X_train, Y_train, alpha = 1.5):
+    q3 = np.percentile(X_train, 75)
+    q1 = np.percentile(X_train, 25)
+    IQR = q3 - q1
+    lq1 = q1 - alpha*IQR
+    hq3 = q3 + alpha*IQR
+    new_X_train = []
+    new_Y_train = []
 
-#TODO: adapt to python
+    for i in range(len(X_train)):
+        cond = (X_train[i] >= lq1) & (X_train[i] <= hq3)
+        if (cond.all()):
+            new_X_train.append(X_train[i])
+            new_Y_train.append(Y_train[i])
+
+    return np.array(new_X_train), np.array(new_Y_train)
+
+
+def remove_outliers_adaptive(X_train, Y_train, shift_train, alpha = 1.5):
+    q3 = np.percentile(X_train, 75)
+    q1 = np.percentile(X_train, 25)
+    IQR = q3 - q1
+    lq1 = q1 - alpha*IQR
+    hq3 = q3 + alpha*IQR
+    new_X_train = []
+    new_Y_train = []
+    new_shift_train = []
+
+    for i in range(len(X_train)):
+        cond = (X_train[i] >= lq1) & (X_train[i] <= hq3)
+        if (cond.all()):
+            new_X_train.append(X_train[i])
+            new_Y_train.append(Y_train[i])
+            new_shift_train.append(shift_train[i])
+
+    return np.array(new_X_train), np.array(new_Y_train), np.array(new_shift_train)
+
+
 # ts.outliers.boxplot <- function(data, alpha = 1.5)
 # {
 #   org = nrow(data)

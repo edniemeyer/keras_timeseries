@@ -41,20 +41,15 @@ dataset = dataset.iloc[29:]
 ewm_dolar = ewm_dolar.iloc[29:]
 
 
-batch_size = 128
-nb_epoch = 10000
+batch_size = 512
+nb_epoch = 3000
 patience = 500
-look_back = 7
 
 TRAIN_SIZE = 30
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
-X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
-                                             scale=False)
-X, Y = np.array(X), np.array(Y)
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.80)
 
 def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
@@ -72,7 +67,7 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
 
 
-    csv_logger = CSVLogger('output/%d_layers/%s.csv' % (n_layers, name))
+    csv_logger = CSVLogger('output/%d_layers/%s_%s.csv' % (n_layers, name, normalization))
     es = EarlyStopping(monitor='loss', patience=patience)
     #mcp = ModelCheckpoint('output/mnist_adaptative_%dx800/%s.checkpoint' % (n_layers, name), save_weights_only=True)
     #tb = TensorBoard(log_dir='output/mnist_adaptative_%dx800' % n_layers, histogram_freq=1, write_graph=False, write_images=False)
@@ -103,15 +98,31 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
     # invert predictions (back to original)
     if (normalization == 'AN'):
-        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler, shift_train, shift_test)
+        #originals
+        X_trainp, X_testp, Y_trainp, Y_testp = nn_an_den(X_train, X_test, Y_train, Y_test,
+                                                                          scaler, shift_train, shift_test)
+        #predicted
+        X_trainp, X_testp, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler, shift_train, shift_test)
+        print(len(X_trainp))
     if (normalization == 'SW'):
+        X_trainp, X_testp, Y_trainp, Y_testp = nn_sw_den(X_train, X_test, Y_train, Y_test,
+                                                         scaler_train, scaler_test)
         X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
+        print(len(X_trainp))
     if (normalization == 'MM'):
-        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
+        X_trainp, X_testp, Y_trainp, Y_testp = nn_mm_den(X_train, X_test, Y_train, Y_test,
+                                                                          scaler)
+        X_trainp, X_testp, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
+
     if (normalization == 'ZS'):
-        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+        X_trainp, X_testp, Y_trainp, Y_testp = nn_zs_den(X_train, X_test, Y_train, Y_test,
+                                                         scaler)
+        X_trainp, X_testp, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
+
     if (normalization == 'DS'):
-        X_trainp2, X_testp2, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
+        X_trainp, X_testp, Y_trainp, Y_testp = nn_ds_den(X_train, X_test, Y_train, Y_test,
+                                                         maximum)
+        X_trainp, X_testp, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
 
     # np.savetxt("output/previsto.csv", new_predicted)
     # np.savetxt("output/real.csv", Y_testp)
@@ -166,7 +177,7 @@ def __main__(argv):
         #normalization = 'MM'
         model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_regularizer=regularizers.l2(0.01)))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_normal', kernel_regularizer=regularizers.l2(0.01)))
         model.add(Activation(name))
 
         for l in range(n_layers):
