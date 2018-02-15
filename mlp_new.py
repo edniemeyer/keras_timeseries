@@ -16,10 +16,10 @@ from processing import *
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout, Flatten
 from keras.layers import Conv1D, MaxPooling1D
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 from keras.utils import np_utils
 from custom_callbacks import CriteriaStopping
-from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard
+from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras import regularizers
 #from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
 #from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
@@ -33,17 +33,17 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 dataset = dataframe['fechamento']
 media  = dataframe['media'].tolist()
 
-ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
+ewm_dolar = dataset.ewm(span=8, min_periods=8).mean()
 
 
 #removendo NaN
-dataset = dataset.iloc[29:]
-ewm_dolar = ewm_dolar.iloc[29:]
+dataset = dataset.iloc[7:]
+ewm_dolar = ewm_dolar.iloc[7:]
 
 
-batch_size = 512
-nb_epoch = 3000
-patience = 500
+batch_size = 64
+nb_epoch = 500
+patience = 50
 
 TRAIN_SIZE = 30
 TARGET_TIME = 1
@@ -68,23 +68,32 @@ def evaluate_model(model, name, n_layers, ep, normalization):
 
 
     csv_logger = CSVLogger('output/%d_layers/%s_%s.csv' % (n_layers, name, normalization))
-    es = EarlyStopping(monitor='loss', patience=patience)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss')
+    es = EarlyStopping(monitor='val_loss', patience=patience)
     #mcp = ModelCheckpoint('output/mnist_adaptative_%dx800/%s.checkpoint' % (n_layers, name), save_weights_only=True)
     #tb = TensorBoard(log_dir='output/mnist_adaptative_%dx800' % n_layers, histogram_freq=1, write_graph=False, write_images=False)
 
     
     #sgd = SGD(lr=0.01, momentum=0.9, nesterov=True)
-    # sgd = SGD(lr=0.64, momentum=0.8, nesterov=False)
+    #sgd = SGD(lr=0.64, momentum=0.8, nesterov=False)
 
     #optimizer = sgd
-    optimizer = "adam"
+    #optimizer = Adam(lr=0.002)
+    optimizer = 'adam'
     #optimizer = "adadelta"
+    #optimizer = "nadam"
 
     model.compile(loss='mean_squared_error', optimizer=optimizer)
     
-    #history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
-    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1,
-                        callbacks=[csv_logger])
+    history = model.fit(X_train, Y_train, batch_size=batch_size, epochs=ep, verbose=0, validation_split=0.1, callbacks=[csv_logger,es])
+
+    # plt.plot(history.history['loss'])
+    # plt.plot(history.history['val_loss'])
+    # plt.title('model loss')
+    # plt.ylabel('loss')
+    # plt.xlabel('epoch')
+    # plt.legend(['train', 'test'], loc='upper left')
+    # plt.show()
 
     #trainScore = model.evaluate(X_train, Y_train, verbose=0)
     #print('Train Score: %f MSE (%f RMSE)' % (trainScore, math.sqrt(trainScore)))
@@ -177,16 +186,18 @@ def __main__(argv):
         #normalization = 'MM'
         model = Sequential()
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_normal', kernel_regularizer=regularizers.l2(0.01)))
+        model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='he_uniform', kernel_regularizer=regularizers.l2(0.01)))
         model.add(Activation(name))
+        model.add(Dropout(0.25))
 
         for l in range(n_layers):
             model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
             model.add(Activation(name))
+           # model.add(Dropout(0.25))
         
-        model.add(Dropout(0.25))
+
         model.add(Dense(1))
-        model.add(Activation('linear'))
+        model.add(Activation(name))
         #model.summary()
 
         trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization)
@@ -198,7 +209,6 @@ def __main__(argv):
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
             fp.write("%s,%s,%f,%f,%d,%s --%s seconds\n" % (name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
-
         model = None
 
     print("melhor parametro: %i" % f_aux)
