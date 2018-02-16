@@ -28,17 +28,17 @@ from keras import regularizers
 start_time = time.time()
 
 
-#USD-BRL
-dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-dataset = dataframe['fechamento']
-media  = dataframe['media'].tolist()
+#BTC-USD
+btc = pandas.read_csv('btc-usd.csv', sep = ',',  engine='python', decimal='.',header=0)
+dataset = btc['close']
 
-ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
+
+ewm_btc = dataset.ewm(span=30, min_periods=30).mean()
 
 
 #removendo NaN
 dataset = dataset.iloc[29:]
-ewm_dolar = ewm_dolar.iloc[29:]
+ewm_btc = ewm_btc.iloc[29:]
 
 
 batch_size = 64
@@ -60,7 +60,7 @@ def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
     #X_trainp, X_testp, Y_trainp, Y_testp = dadosp
     if (normalization == 'AN'):
-        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test = nn_an(dataset, ewm_btc, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'SW'):
         X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     if (normalization == 'MM'):

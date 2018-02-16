@@ -151,6 +151,20 @@ def shuffle_in_unison(a, b):
         shuffled_b[new_index] = b[old_index]
     return shuffled_a, shuffled_b
 
+def shuffle_in_unison_adaptive(a, b, c):
+    # courtsey http://stackoverflow.com/users/190280/josh-bleecher-snyder
+    assert len(a) == len(b)
+    assert len(b) == len(c)
+    shuffled_a = np.empty(a.shape, dtype=a.dtype)
+    shuffled_b = np.empty(b.shape, dtype=b.dtype)
+    shuffled_c = np.empty(c.shape, dtype=c.dtype)
+    permutation = np.random.permutation(len(a))
+    for old_index, new_index in enumerate(permutation):
+        shuffled_a[new_index] = a[old_index]
+        shuffled_b[new_index] = b[old_index]
+        shuffled_c[new_index] = c[old_index]
+    return shuffled_a, shuffled_b, shuffled_c
+
 
 def create_Train_Test(data, percentage=0.8):
     Train = data[0:int(len(data) * percentage)]
@@ -176,7 +190,7 @@ def create_Xt_Yt_adaptive(X, y, shift, percentage=0.8):
     Y_train = y[0:int(len(y) * percentage)]
     shift_train = shift[0:int(len(shift) * percentage)]
     
-    #X_train, Y_train = shuffle_in_unison(X_train, Y_train)
+    #X_train, Y_train, shift_train = shuffle_in_unison_adaptive(X_train, Y_train, shift_train)
 
     X_test = X[int(len(X) * percentage):]
     Y_test = y[int(len(y) * percentage):]
@@ -370,7 +384,7 @@ def nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
     X_train, X_test, Y_train, Y_test = np.array(X_train_d), np.array(X_test_d), np.array(Y_train_d), np.array(Y_test_d)
     return X_train, X_test, Y_train, Y_test
 
-def remove_outliers(X_train, Y_train, alpha = 1.5):
+def remove_outliers(X_train, Y_train, alpha = 3.0):
     q3 = np.percentile(X_train, 75)
     q1 = np.percentile(X_train, 25)
     IQR = q3 - q1
@@ -388,7 +402,7 @@ def remove_outliers(X_train, Y_train, alpha = 1.5):
     return np.array(new_X_train), np.array(new_Y_train)
 
 
-def remove_outliers_adaptive(X_train, Y_train, shift_train, alpha = 1.5):
+def remove_outliers_adaptive(X_train, Y_train, shift_train, alpha = 3.0):
     q3 = np.percentile(X_train, 75)
     q1 = np.percentile(X_train, 25)
     IQR = q3 - q1
