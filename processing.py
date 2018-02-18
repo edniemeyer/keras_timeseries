@@ -165,13 +165,13 @@ def shuffle_in_unison_adaptive(a, b, c):
         shuffled_c[new_index] = c[old_index]
     return shuffled_a, shuffled_b, shuffled_c
 
-
-def create_Train_Test(data, percentage=0.8):
-    Train = data[0:int(len(data) * percentage)]
-
-    Test = data[int(len(data) * percentage):]
-
-    return Train, Test
+#
+# def create_Train_Test(data, percentage=0.8):
+#     Train = data[0:int(len(data) * percentage)]
+#
+#     Test = data[int(len(data) * percentage):]
+#
+#     return Train, Test
 
 
 def create_Xt_Yt(X, y, percentage=0.8):
@@ -234,15 +234,25 @@ def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     #
     # X_normalizado, scaler = minMaxNormalize(X_train.tolist())
 
-    train, test = create_Train_Test(dataset, 0.80)
-    train_normalizado, scaler = minMaxNormalize(train.values.reshape(-1,1))
-
-    dataset_norm = minMaxNormalizeOver(dataset.values.reshape(-1,1), scaler)
-    #dataset_norm, scaler = minMaxNormalize(dataset.values.reshape(-1, 1))
-
-    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+
+    #saving original shapes
+    X_train_shape = X_train.shape
+    X_test_shape = X_test.shape
+
+    X_train, scaler = minMaxNormalize(X_train.reshape(-1,1))
+    X_train = X_train.reshape(X_train_shape)
+
+    X_test = minMaxNormalizeOver(X_test.reshape(-1,1), scaler)
+    X_test = X_test.reshape(X_test_shape)
+
+    Y_train = minMaxNormalizeOver(Y_train.reshape(-1,1), scaler)
+    Y_test = minMaxNormalizeOver(Y_test.reshape(-1,1), scaler)
+
     return X_train, X_test, Y_train, Y_test, scaler
 
 def nn_mm_den(X_train, X_test, Y_train, Y_test, scaler):
@@ -261,7 +271,7 @@ def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
-    X_train, Y_train = remove_outliers(X_train, Y_train)
+    #X_train, Y_train = remove_outliers(X_train, Y_train)
     X_train_n, X_test_n, Y_train_n, Y_test_n, scaler_train, scaler_test = [],[],[],[],[],[]
     for i in range(X_train.shape[0]):
         X_normalizado, scaler = minMaxNormalize(X_train[i].reshape(-1,1)) # shape(30,1)
@@ -346,7 +356,7 @@ def nn_an(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
                                              scale=True)
     X, Y, shift = np.array(X), np.array(Y), np.array(shift)
     X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift, percentage=0.80)
-    X_train, Y_train, shift_train = remove_outliers_adaptive(X_train,Y_train, shift_train)
+    #X_train, Y_train, shift_train = remove_outliers_adaptive(X_train,Y_train, shift_train)
     sample_normalizado, scaler = minMaxNormalize(X_train.reshape(-1,1))# global scaler over sample set, as said on the article
     X_train_n, X_test_n, Y_train_n, Y_test_n= [], [], [], []
     for i in range(X_train.shape[0]):
