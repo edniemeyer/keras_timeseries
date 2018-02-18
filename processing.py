@@ -228,12 +228,6 @@ def test_stationarity(timeseries):
 #minmax normalization without sliding windows
 
 def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
-    # X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
-    # X, Y = np.array(X), np.array(Y)
-    # X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.35)
-    #
-    # X_normalizado, scaler = minMaxNormalize(X_train.tolist())
-
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
@@ -308,15 +302,24 @@ def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
 
 #z-score normalization
 def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
-    train, test = create_Train_Test(dataset, 0.80)
-    train, test = remove_outliers(train, test)
-    train_normalizado, scaler = zNormalize(train.values.reshape(-1,1))
-
-    dataset_norm = zNormalizeOver(dataset.values.reshape(-1,1), scaler)
-
-    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+
+    # saving original shapes
+    X_train_shape = X_train.shape
+    X_test_shape = X_test.shape
+
+    X_train, scaler = zNormalize(X_train.reshape(-1, 1))
+    X_train = X_train.reshape(X_train_shape)
+
+    X_test = zNormalizeOver(X_test.reshape(-1, 1), scaler)
+    X_test = X_test.reshape(X_test_shape)
+
+    Y_train = zNormalizeOver(Y_train.reshape(-1, 1), scaler)
+    Y_test = zNormalizeOver(Y_test.reshape(-1, 1), scaler)
     return X_train, X_test, Y_train, Y_test, scaler
 
 def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
@@ -329,16 +332,28 @@ def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
 
 #decimal normalization
 def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
-    train, test = create_Train_Test(dataset, 0.80)
-    train, test = remove_outliers(train, test)
-    train_normalizado = decimalNormalize(train.values.reshape(-1,1))
-
-    dataset_norm = decimalNormalizeOver(dataset.values.reshape(-1,1), max(train))
-
-    X, Y = split_into_chunks(dataset_norm.reshape(-1), TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+    X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
-    return X_train, X_test, Y_train, Y_test, max(train)
+
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+
+    maximum = max(X_train.reshape(-1))
+
+    # saving original shapes
+    X_train_shape = X_train.shape
+    X_test_shape = X_test.shape
+
+    X_train = decimalNormalize(X_train.reshape(-1, 1))
+    X_train = X_train.reshape(X_train_shape)
+
+
+    X_test = decimalNormalizeOver(X_test.reshape(-1, 1), maximum)
+    X_test = X_test.reshape(X_test_shape)
+
+    Y_train = decimalNormalizeOver(Y_train.reshape(-1, 1), maximum)
+    Y_test = decimalNormalizeOver(Y_test.reshape(-1, 1), maximum)
+    return X_train, X_test, Y_train, Y_test, maximum
 
 def nn_ds_den(X_train, X_test, Y_train, Y_test, maximum):
     X_train = decimalDenormalize(X_train, maximum)
