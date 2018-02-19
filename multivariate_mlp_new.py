@@ -27,11 +27,11 @@ start_time = time.time()
 
 batch_size = 64
 nb_epoch = 1000
-patience = 500
+patience = 1000
 EMB_SIZE = 4 #numero de features
 
 
-TRAIN_SIZE = 30
+TRAIN_SIZE = 15
 TARGET_TIME = 1
 LAG_SIZE = 1
 
@@ -44,13 +44,13 @@ ewm = closep.ewm(span=30, min_periods=30).mean()
 
 #removendo NaN
 data_original = data_original.iloc[29:]
-ewm = ewm.iloc[29:]
+ewm = np.array(ewm.iloc[29:])
 
 #averagep = data_original.ix[:, 1].tolist()
-openp = data_original.ix[:, 2].tolist()
-highp = data_original.ix[:, 3].tolist()
-lowp = data_original.ix[:, 4].tolist()
-closep = data_original.ix[:, 5].tolist()
+openp = data_original.iloc[:, 2].tolist()
+highp = data_original.iloc[:, 3].tolist()
+lowp = data_original.iloc[:, 4].tolist()
+closep = data_original.iloc[:, 5].tolist()
 #volumep = data_original.ix[:, 6].tolist()
 
 

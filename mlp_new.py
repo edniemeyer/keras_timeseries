@@ -30,8 +30,8 @@ ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
 
 
 #removendo NaN
-dataset = dataset.iloc[29:]
-ewm_dolar = ewm_dolar.iloc[29:]
+dataset = np.array(dataset.iloc[29:])
+ewm_dolar = np.array(ewm_dolar.iloc[29:])
 
 
 batch_size = 64

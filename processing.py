@@ -41,8 +41,8 @@ def split_into_chunks(data, train, predict, step, binary=True, scale=True):
     X, Y = [], []
     for i in range(0, len(data)-train-predict, step):
         try:
-            x_i = data.values[i:i+train]
-            y_i = data.values[i+train+predict]
+            x_i = data[i:i+train]
+            y_i = data[i+train+predict]
             
             # Use it only for daily return time series
             if binary:
@@ -80,8 +80,8 @@ def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, sca
         try:
             # Use it only for daily return time series
             if binary:
-                x_i = data.values[i:i + train]
-                y_i = data.values[i + train + predict]
+                x_i = data[i:i + train]
+                y_i = data[i + train + predict]
                 if y_i > 0.:
                     y_i = [1., 0.]
                 else:
@@ -90,8 +90,8 @@ def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, sca
                 if scale: x_i = (np.array(x_i) - np.mean(x_i)) / np.std(x_i)
                 
             else:
-                timeseries = np.array(data.values[i:i+train+predict])
-                shift_i = np.array(ewm.values[i])
+                timeseries = np.array(data[i:i+train+predict])
+                shift_i = np.array(ewm[i])
                 #shift_i = np.mean(timeseries[:-1])
 
                 if scale:

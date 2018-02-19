@@ -14,16 +14,10 @@ from processing import *
 
 
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Dropout, Flatten
-from keras.layers import Conv1D, MaxPooling1D
+from keras.layers.core import Dense, Activation, Dropout
 from keras.optimizers import SGD, Adam
-from keras.utils import np_utils
-from custom_callbacks import CriteriaStopping
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras import regularizers
-#from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
-#from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
-
 
 start_time = time.time()
 
@@ -37,15 +31,15 @@ ewm_btc = dataset.ewm(span=30, min_periods=30).mean()
 
 
 #removendo NaN
-dataset = dataset.iloc[29:]
-ewm_btc = ewm_btc.iloc[29:]
+dataset = np.array(dataset.iloc[29:])
+ewm_btc = np.array(ewm_btc.iloc[29:])
 
 
 batch_size = 64
-nb_epoch = 5000
-patience = 500
+nb_epoch = 1000
+patience = 1000
 
-TRAIN_SIZE = 30
+TRAIN_SIZE = 15
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
@@ -172,7 +166,7 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
-    #normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
+    # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     normalizations = ['AN', 'SW']
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-BTC/MLP NN\n")

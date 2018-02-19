@@ -27,7 +27,7 @@ start_time = time.time()
 
 batch_size = 64
 nb_epoch = 1000
-patience = 500
+patience = 1000
 EMB_SIZE = 4 #numero de features
 
 
@@ -44,7 +44,7 @@ ewm = closep.ewm(span=30, min_periods=30).mean()
 
 #removendo NaN
 data_original = data_original.iloc[29:]
-ewm = ewm.iloc[29:]
+ewm = np.array(ewm.iloc[29:])
 
 #averagep = data_original.ix[:, 1].tolist()
 openp = data_original['open'].tolist()
