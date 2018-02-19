@@ -1,6 +1,5 @@
 from __future__ import print_function
 import sys
-import json
 import numpy as np
 import pandas
 import math
@@ -14,15 +13,10 @@ from processing import *
 
 
 from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Dropout, Flatten
-from keras.layers import Conv1D, MaxPooling1D
+from keras.layers.core import Dense, Activation, Dropout
 from keras.optimizers import SGD, Adam
-from keras.utils import np_utils
-from custom_callbacks import CriteriaStopping
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras import regularizers
-#from hyperbolic_nonlinearities import AdaptativeAssymetricBiHyperbolic, AdaptativeBiHyperbolic, AdaptativeHyperbolicReLU, AdaptativeHyperbolic, PELU
-#from keras.layers.advanced_activations import ParametricSoftplus, SReLU, PReLU, ELU, LeakyReLU, ThresholdedReLU
 
 
 start_time = time.time()
@@ -31,7 +25,6 @@ start_time = time.time()
 #USD-BRL
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
 dataset = dataframe['fechamento']
-media  = dataframe['media'].tolist()
 
 ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
 
@@ -42,10 +35,10 @@ ewm_dolar = ewm_dolar.iloc[29:]
 
 
 batch_size = 64
-nb_epoch = 5000
-patience = 500
+nb_epoch = 1000
+patience = 1000
 
-TRAIN_SIZE = 30
+TRAIN_SIZE = 15
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
@@ -172,7 +165,7 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
-    #normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
+    # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     normalizations = ['AN', 'SW']
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MINIDOLAR/MLP NN\n")
