@@ -172,12 +172,12 @@ def __main__(argv):
     n_layers = int(argv[0])
     print(n_layers,'layers')
 
-    #nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
+    # nonlinearities = ['aabh', 'abh', 'ah', 'sigmoid', 'relu', 'tanh']
     nonlinearities = ['sigmoid', 'relu', 'tanh']
-    #nonlinearities = ['relu']
+    # nonlinearities = ['relu']
 
-    # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
-    normalizations = ['AN', 'SW']
+    normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
+    # normalizations = ['AN', 'SW']
 
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MINIDOLAR/MLP-Multi NN\n")
@@ -209,7 +209,8 @@ def __main__(argv):
         elapsed_time = (time.time() - start_time)
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            fp.write("%s,%s,%f,%f,%d,%s --%s seconds\n" % (
+            name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
 
         model = None
 

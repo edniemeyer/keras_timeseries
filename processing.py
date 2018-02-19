@@ -237,6 +237,8 @@ def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     #saving original shapes
     X_train_shape = X_train.shape
     X_test_shape = X_test.shape
+    Y_train_shape = Y_train.shape
+    Y_test_shape = Y_test.shape
 
     X_train, scaler = minMaxNormalize(X_train.reshape(-1,1))
     X_train = X_train.reshape(X_train_shape)
@@ -245,15 +247,33 @@ def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X_test = X_test.reshape(X_test_shape)
 
     Y_train = minMaxNormalizeOver(Y_train.reshape(-1,1), scaler)
+    Y_train = Y_train.reshape(Y_train_shape)
+
     Y_test = minMaxNormalizeOver(Y_test.reshape(-1,1), scaler)
+    Y_test = Y_test.reshape(Y_test_shape)
+
 
     return X_train, X_test, Y_train, Y_test, scaler
 
 def nn_mm_den(X_train, X_test, Y_train, Y_test, scaler):
-    X_train = minMaxDenormalize(X_train, scaler)
-    X_test = minMaxDenormalize(X_test, scaler)
-    Y_train = minMaxDenormalize(Y_train, scaler)
-    Y_test = minMaxDenormalize(Y_test, scaler)
+    X_train_shape = X_train.shape
+    X_test_shape = X_test.shape
+    Y_train_shape = Y_train.shape
+    Y_test_shape = Y_test.shape
+
+    X_train = minMaxDenormalize(X_train.reshape(-1, 1), scaler)
+    X_train = X_train.reshape(X_train_shape)
+
+    X_test = minMaxDenormalize(X_test.reshape(-1, 1), scaler)
+    X_test = X_test.reshape(X_test_shape)
+
+    Y_train = minMaxDenormalize(Y_train.reshape(-1, 1), scaler)
+    Y_train = Y_train.reshape(Y_train_shape)
+
+    Y_test = minMaxDenormalize(Y_test.reshape(-1, 1), scaler)
+    Y_test = Y_test.reshape(Y_test_shape)
+
+
     X_train, X_test, Y_train, Y_test = np.array(X_train), np.array(X_test), np.array(Y_train), np.array(Y_test)
     return X_train, X_test, Y_train, Y_test
 
@@ -330,6 +350,8 @@ def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     # saving original shapes
     X_train_shape = X_train.shape
     X_test_shape = X_test.shape
+    Y_train_shape = Y_train.shape
+    Y_test_shape = Y_test.shape
 
     X_train, scaler = zNormalize(X_train.reshape(-1, 1))
     X_train = X_train.reshape(X_train_shape)
@@ -338,7 +360,11 @@ def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X_test = X_test.reshape(X_test_shape)
 
     Y_train = zNormalizeOver(Y_train.reshape(-1, 1), scaler)
+    Y_train = Y_train.reshape(Y_train_shape)
+
     Y_test = zNormalizeOver(Y_test.reshape(-1, 1), scaler)
+    Y_test = Y_test.reshape(Y_test_shape)
+
     return X_train, X_test, Y_train, Y_test, scaler
 
 def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
@@ -362,6 +388,8 @@ def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     # saving original shapes
     X_train_shape = X_train.shape
     X_test_shape = X_test.shape
+    Y_train_shape = Y_train.shape
+    Y_test_shape = Y_test.shape
 
     X_train = decimalNormalize(X_train.reshape(-1, 1))
     X_train = X_train.reshape(X_train_shape)
@@ -371,7 +399,11 @@ def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X_test = X_test.reshape(X_test_shape)
 
     Y_train = decimalNormalizeOver(Y_train.reshape(-1, 1), maximum)
+    Y_train = Y_train.reshape(Y_train_shape)
+
     Y_test = decimalNormalizeOver(Y_test.reshape(-1, 1), maximum)
+    Y_test = Y_test.reshape(Y_test_shape)
+
     return X_train, X_test, Y_train, Y_test, maximum
 
 def nn_ds_den(X_train, X_test, Y_train, Y_test, maximum):

@@ -209,7 +209,8 @@ def __main__(argv):
         elapsed_time = (time.time() - start_time)
         with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
             #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%f,%f,%d,%s --%s seconds\n" % (name, trainScore, testScore, epochs, optimizer, elapsed_time))
+            fp.write("%s,%s,%f,%f,%d,%s --%s seconds\n" % (
+            name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
 
         model = None
 
