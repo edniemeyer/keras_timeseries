@@ -60,7 +60,7 @@ dataset = np.column_stack((openp, highp, lowp, closep))
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
 X, Y = np.array(X), np.array(Y)
 
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.80)
+X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y)
 Y_trainp, Y_testp = Y_trainp[:,3], Y_testp[:,3] #getting just close as target
 
 def evaluate_model(model, name, n_layers, ep, normalization):

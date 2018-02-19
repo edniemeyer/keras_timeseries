@@ -230,7 +230,7 @@ def test_stationarity(timeseries):
 def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
     X_train, Y_train = remove_outliers(X_train, Y_train)
 
@@ -264,7 +264,7 @@ def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
 
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
     if X_train.ndim > 2:
         train_shape = X_train.shape[-1]
@@ -323,7 +323,7 @@ def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
 def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
     X_train, Y_train = remove_outliers(X_train, Y_train)
 
@@ -353,7 +353,7 @@ def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
 def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
-    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+    X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
     X_train, Y_train = remove_outliers(X_train, Y_train)
 
@@ -389,7 +389,7 @@ def nn_an(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y, shift = split_into_chunks_adaptive(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=True)
     X, Y, shift = np.array(X), np.array(Y), np.array(shift)
-    X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift, percentage=0.80)
+    X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift)
     #X_train, Y_train, shift_train = remove_outliers_adaptive(X_train,Y_train, shift_train)
 
     if X_train.ndim > 2:

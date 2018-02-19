@@ -54,7 +54,7 @@ EMB_SIZE = 1
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
                                              scale=False)
 X, Y = np.array(X), np.array(Y)
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y,  percentage=0.80)
+X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y)
 
 def evaluate_model(model, name, n_layers, ep, normalization):
     #X_train, X_test, Y_train, Y_test = dataset
