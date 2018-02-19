@@ -265,33 +265,52 @@ def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y, percentage=0.80)
+
+    if X_train.ndim > 2:
+        train_shape = X_train.shape[-1]
+
     #X_train, Y_train = remove_outliers(X_train, Y_train)
     X_train_n, X_test_n, Y_train_n, Y_test_n, scaler_train, scaler_test = [],[],[],[],[],[]
     for i in range(X_train.shape[0]):
         X_normalizado, scaler = minMaxNormalize(X_train[i].reshape(-1,1)) # shape(30,1)
-        X_train_n.append(X_normalizado.reshape(-1)) # shape(30)
-        Y_train_n.append(minMaxNormalizeOver(Y_train[i], scaler).reshape(-1))
+        if X_train.ndim > 2:
+            X_train_n.append(X_normalizado.reshape(-1, train_shape)) # shape(30)
+        else:
+            X_train_n.append(X_normalizado.reshape(-1))
+        Y_train_n.append(minMaxNormalizeOver(Y_train[i].reshape(-1, 1), scaler).reshape(-1))
         scaler_train.append(scaler)
 
     for i in range(X_test.shape[0]):
         X_normalizado, scaler = minMaxNormalize(X_test[i].reshape(-1, 1))  # shape(30,1)
-        X_test_n.append(X_normalizado.reshape(-1))  # shape(30)
-        Y_test_n.append(minMaxNormalizeOver(Y_test[i], scaler).reshape(-1))
+        if X_train.ndim > 2:
+            X_test_n.append(X_normalizado.reshape(-1, train_shape))  # shape(30, shape)
+        else:
+            X_test_n.append(X_normalizado.reshape(-1))  # shape(30)
+        Y_test_n.append(minMaxNormalizeOver(Y_test[i].reshape(-1, 1), scaler).reshape(-1))
         scaler_test.append(scaler)
 
     X_train, X_test, Y_train, Y_test = np.array(X_train_n), np.array(X_test_n), np.array(Y_train_n), np.array(Y_test_n)
     return X_train, X_test, Y_train, Y_test, scaler_train, scaler_test
 
 def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
+    if X_train.ndim > 2:
+        train_shape = X_train.shape[-1]
+
     X_train_d, X_test_d, Y_train_d, Y_test_d = [], [], [], []
     for i in range(X_train.shape[0]):
-        X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
+        if X_train.ndim > 2:
+            X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1, train_shape)
+        else:
+            X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
         X_train_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler_train[i]).reshape(-1)
         Y_train_d.append(Y_denormalizado)
 
     for i in range(X_test.shape[0]):
-        X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
+        if X_train.ndim > 2:
+            X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1, train_shape)
+        else:
+            X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
         X_test_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_test[i].reshape(-1, 1), scaler_test[i]).reshape(-1)
         Y_test_d.append(Y_denormalizado)
@@ -372,26 +391,42 @@ def nn_an(dataset, ewm, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y, shift = np.array(X), np.array(Y), np.array(shift)
     X_train, X_test, Y_train, Y_test, shift_train, shift_test = create_Xt_Yt_adaptive(X, Y, shift, percentage=0.80)
     #X_train, Y_train, shift_train = remove_outliers_adaptive(X_train,Y_train, shift_train)
+
+    if X_train.ndim > 2:
+        train_shape = X_train.shape[-1]
+
     sample_normalizado, scaler = minMaxNormalize(X_train.reshape(-1,1))# global scaler over sample set, as said on the article
     X_train_n, X_test_n, Y_train_n, Y_test_n= [], [], [], []
     for i in range(X_train.shape[0]):
         X_normalizado = minMaxNormalizeOver(X_train[i].reshape(-1, 1), scaler)  # shape(30,1)
-        X_train_n.append(X_normalizado.reshape(-1))  # shape(30)
-        Y_train_n.append(minMaxNormalizeOver(Y_train[i], scaler).reshape(-1))
+        if X_train.ndim > 2:
+            X_train_n.append(X_normalizado.reshape(-1, train_shape))
+        else:
+            X_train_n.append(X_normalizado.reshape(-1))
+        Y_train_n.append(minMaxNormalizeOver(Y_train[i].reshape(-1, 1), scaler).reshape(-1))
 
     for i in range(X_test.shape[0]):
-        X_normalizado = minMaxNormalizeOver(X_test[i].reshape(-1, 1), scaler)  # shape(30,1)
-        X_test_n.append(X_normalizado.reshape(-1))  # shape(30)
-        Y_test_n.append(minMaxNormalizeOver(Y_test[i], scaler).reshape(-1))
+        X_normalizado = minMaxNormalizeOver(X_test[i].reshape(-1, 1), scaler)  # shape(TRAIN_SIZE*shape,1)
+        if X_train.ndim > 2:
+            X_test_n.append(X_normalizado.reshape(-1, train_shape))  # shape(TRAIN_SIZE, shape)
+        else:
+            X_test_n.append(X_normalizado.reshape(-1))  # shape(TRAIN_SIZE, )
+        Y_test_n.append(minMaxNormalizeOver(Y_test[i].reshape(-1, 1), scaler).reshape(-1))
 
     X_train, X_test, Y_train, Y_test = np.array(X_train_n), np.array(X_test_n), np.array(Y_train_n), np.array(Y_test_n)
     return X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test
 
 
 def nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test):
+    if X_train.ndim > 2:
+        train_shape = X_train.shape[-1]
+
     X_train_d, X_test_d, Y_train_d, Y_test_d = [], [], [], []
     for i in range(X_train.shape[0]):
-        X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1)
+        if X_train.ndim > 2:
+            X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1, train_shape)
+        else:
+            X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1)
         X_denormalizado = X_denormalizado * shift_train[i]
         X_train_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler).reshape(-1)
@@ -399,7 +434,10 @@ def nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
         Y_train_d.append(Y_denormalizado)
 
     for i in range(X_test.shape[0]):
-        X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler).reshape(-1)
+        if X_train.ndim > 2:
+            X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler).reshape(-1, train_shape)
+        else:
+            X_denormalizado = minMaxDenormalize(X_test[i].reshape(-1, 1), scaler).reshape(-1)
         X_denormalizado = X_denormalizado * shift_test[i]
         X_test_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_test[i].reshape(-1, 1), scaler).reshape(-1)
