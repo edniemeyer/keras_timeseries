@@ -18,8 +18,8 @@ ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
 
 
 #removendo NaN
-dataset = dataset.iloc[4:]
-ewm_dolar = ewm_dolar.iloc[4:]
+dataset = np.array(dataset.iloc[4:])
+ewm_dolar = np.array(ewm_dolar.iloc[4:])
 
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
 X, Y = np.array(X), np.array(Y)
