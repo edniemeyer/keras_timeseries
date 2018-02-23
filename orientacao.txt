@@ -32,3 +32,13 @@ Prever H e L separados
 25/01:
 Comparar normalização adaptativa com sem normalização. Isso ja daria tese.
 usar BTC Dezembro/2017
+
+
+23/02:
+Reunião com Ogasawara:
+-Usar TSPred do R com arima (Prever usando o treino e ir caminhando pela timeseries até chegar no ultimo sample)
+(Arima deve usar toda a timeseries para calculo) (Não precisa normalizar)
+-Usar diferenciação em vez de divisão (justificar com a função cos(x) que daria divisão por zero devido a média móvel nela)
+-Cenário por minuto desfavorável para AN, pq nas viradas de dia podem existir outlier (AN trabalha com inércia, não espera mudanças bruscas)(remover outlier de treino e teste)
+-Diminuir janelas deve melhorar (iterar até achar um ideal para cada dataset)
+-Alterar K das médias móveis tb altera (iterar até achar um ideal tb)

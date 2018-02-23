@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import numpy as np
 import pandas
@@ -24,38 +23,27 @@ start_time = time.time()
 
 #USD-BRL
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-dataset = dataframe['fechamento']
+dataset_original = dataframe['fechamento']
 
-ewm_dolar = dataset.ewm(span=30, min_periods=30).mean()
-
-
-#removendo NaN
-dataset = np.array(dataset.iloc[29:])
-ewm_dolar = np.array(ewm_dolar.iloc[29:])
 
 
 batch_size = 64
 nb_epoch = 1000
 patience = 1000
-
-TRAIN_SIZE = 15
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
 
-X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False,
-                                             scale=False)
-X, Y = np.array(X), np.array(Y)
-X_trainp, X_testp, Y_trainp, Y_testp = create_Xt_Yt(X, Y)
 
-def evaluate_model(model, name, n_layers, ep, normalization):
+
+def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset, ewm_dolar):
     #X_train, X_test, Y_train, Y_test = dataset
     #X_trainp, X_testp, Y_trainp, Y_testp = dadosp
     if (normalization == 'AN'):
-        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     if (normalization == 'SW'):
-        X_train, X_test, Y_train, Y_test, scaler_train, scaler_test = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
     if (normalization == 'MM'):
         X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'ZS'):
@@ -102,33 +90,22 @@ def evaluate_model(model, name, n_layers, ep, normalization):
     trainPredict = model.predict(X_train)
     testPredict = model.predict(X_test)
 
-
     # invert predictions (back to original)
     if (normalization == 'AN'):
-        #originals
-        X_trainp, X_testp3, Y_trainp, Y_testp3 = nn_an_den(X_train, X_test, Y_train, Y_test,
-                                                                          scaler, shift_train, shift_test)
-        #predicted
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler, shift_train, shift_test)
-        print(len(X_trainp))
+        print(len(X_trainp3))
+
     if (normalization == 'SW'):
-        X_trainp, X_testp3, Y_trainp, Y_testp3 = nn_sw_den(X_train, X_test, Y_train, Y_test,
-                                                        scaler_train, scaler_test)
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
-        print(len(X_trainp))
+        print(len(X_trainp3))
+
     if (normalization == 'MM'):
-        X_trainp, X_testp3, Y_trainp, Y_testp3 = nn_mm_den(X_train, X_test, Y_train, Y_test,
-                                                                         scaler)
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
 
     if (normalization == 'ZS'):
-        X_trainp, X_testp3, Y_trainp, Y_testp3 = nn_zs_den(X_train, X_test, Y_train, Y_test,
-                                                        scaler)
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_zs_den(X_train, X_test, trainPredict, testPredict, scaler)
 
     if (normalization == 'DS'):
-        X_trainp, X_testp3, Y_trainp, Y_testp3 = nn_ds_den(X_train, X_test, Y_train, Y_test,
-                                                        maximum)
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_ds_den(X_train, X_test, trainPredict, testPredict, maximum)
 
     # np.savetxt("output/previsto.csv", new_predicted)
@@ -172,44 +149,50 @@ def __main__(argv):
 
     hals = []
 
-    
-    
-    testScore_aux = 999999
-    f_aux = 0
+    # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
+    # with outlier removal: TRAIN_SIZE=4 k=3
 
-    #for name in nonlinearities:
-    for normalization in normalizations:
-    # for f in range(1,2):
-        name='tanh'
-        #normalization = 'MM'
-        model = Sequential()
+    for o in range(2, 3):
+        TRAIN_SIZE = 7 #seems to be the best
 
-        model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
-        model.add(Activation(name))
-        model.add(Dropout(0.25))
+        k = 25
 
-        for l in range(n_layers):
-            model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+        ewm_dolar = dataset_original.ewm(span=k, min_periods=k).mean()
+
+        # removendo NaN
+        dataset = np.array(dataset_original.iloc[k - 1:])
+        ewm_dolar = np.array(ewm_dolar.iloc[k - 1:])
+
+        #for name in nonlinearities:
+        for normalization in normalizations:
+        # for f in range(1,2):
+            name='tanh'
+            model = Sequential()
+
+            model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
             model.add(Activation(name))
-           # model.add(Dropout(0.25))
-        
+            model.add(Dropout(0.25))
 
-        model.add(Dense(1))
-        model.add(Activation(name))
-        #model.summary()
+            for l in range(n_layers):
+                model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+                model.add(Activation(name))
+               # model.add(Dropout(0.25))
 
-        trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization)
-        # if(testScore_aux > testScore):
-        #     testScore_aux=testScore
-        #     f_aux = f
 
-        elapsed_time = (time.time() - start_time)
-        with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-            #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-            fp.write("%s,%s,%f,%f,%d,%s --%s seconds\n" % (name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
-        model = None
+            model.add(Dense(1))
+            model.add(Activation(name))
+            #model.summary()
 
-    print("melhor parametro: %i" % f_aux)
+            trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization, TRAIN_SIZE, dataset, ewm_dolar)
+            # if(testScore_aux > testScore):
+            #     testScore_aux=testScore
+            #     f_aux = f
+
+            elapsed_time = (time.time() - start_time)
+            with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
+                #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                fp.write("%i,%s,%s,%f,%f,%d,%s --%s seconds\n" % (o, name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
+            model = None
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
