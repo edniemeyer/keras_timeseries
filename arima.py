@@ -37,8 +37,8 @@ start_time = time.time()
 # plt.show()
 # print(residuals.describe())
 
-p=0
-d=0
+p=1
+d=1
 q=0
 
 WINDOW = 30
@@ -46,10 +46,10 @@ STEP = 1
 FORECAST = 1
 
 predictions,test = [],[]
-for i in range(0, len(dataframe), STEP):
+for i in range(int(0.8*len(dataframe)), len(dataframe), STEP):
 	try:
-		x_i = np.asarray(dataframe[i:i+WINDOW])
-		y_i = dataframe[i+WINDOW+FORECAST]
+		x_i = np.asarray(dataframe[0:i]) #ARIMA have to use all timeseries
+		y_i = dataframe[i+FORECAST]
 		model = ARIMA(x_i, order=(p,d,q))
 		model_fit = model.fit(disp=0)
 		output = model_fit.forecast()
