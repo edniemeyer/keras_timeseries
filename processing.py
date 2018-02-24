@@ -314,7 +314,7 @@ def nn_sw(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
         scaler_test.append(scaler)
 
     X_train, X_test, Y_train, Y_test = np.array(X_train_n), np.array(X_test_n), np.array(Y_train_n), np.array(Y_test_n)
-    return X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, X_trainp, Y_trainp, X_testp, Y_testp
+    return X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, X_trainp, X_testp, Y_trainp, Y_testp
 
 def nn_sw_den(X_train, X_test, Y_train, Y_test, scaler_train, scaler_test):
     if X_train.ndim > 2:

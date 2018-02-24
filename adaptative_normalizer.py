@@ -26,9 +26,9 @@ X, Y = np.array(X), np.array(Y)
 
 X_train_, X_test_, Y_train_, Y_test_ = create_Xt_Yt(X, Y, percentage=0.80)
 
-X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
 
-X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2 = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
 
 
 X_trainp2, X_testp2, Y_trainp2, Y_testp2 = nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)

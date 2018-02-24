@@ -152,47 +152,48 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2, 3):
-        TRAIN_SIZE = 7 #seems to be the best
+    for o in range(2, 30):
+        for p in range(2,30):
+            TRAIN_SIZE = o #seems to be the best
 
-        k = 25
+            k = p
 
-        ewm_dolar = dataset_original.ewm(span=k, min_periods=k).mean()
+            ewm_dolar = dataset_original.ewm(span=k, min_periods=k).mean()
 
-        # removendo NaN
-        dataset = np.array(dataset_original.iloc[k - 1:])
-        ewm_dolar = np.array(ewm_dolar.iloc[k - 1:])
+            # removendo NaN
+            dataset = np.array(dataset_original.iloc[k - 1:])
+            ewm_dolar = np.array(ewm_dolar.iloc[k - 1:])
 
-        #for name in nonlinearities:
-        for normalization in normalizations:
-        # for f in range(1,2):
-            name='tanh'
-            model = Sequential()
+            #for name in nonlinearities:
+            for normalization in normalizations:
+            # for f in range(1,2):
+                name='tanh'
+                model = Sequential()
 
-            model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
-            model.add(Activation(name))
-            model.add(Dropout(0.25))
-
-            for l in range(n_layers):
-                model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+                model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
                 model.add(Activation(name))
-               # model.add(Dropout(0.25))
+                model.add(Dropout(0.25))
+
+                for l in range(n_layers):
+                    model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+                    model.add(Activation(name))
+                   # model.add(Dropout(0.25))
 
 
-            model.add(Dense(1))
-            model.add(Activation(name))
-            #model.summary()
+                model.add(Dense(1))
+                model.add(Activation(name))
+                #model.summary()
 
-            trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization, TRAIN_SIZE, dataset, ewm_dolar)
-            # if(testScore_aux > testScore):
-            #     testScore_aux=testScore
-            #     f_aux = f
+                trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers,nb_epoch, normalization, TRAIN_SIZE, dataset, ewm_dolar)
+                # if(testScore_aux > testScore):
+                #     testScore_aux=testScore
+                #     f_aux = f
 
-            elapsed_time = (time.time() - start_time)
-            with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-                #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
-                fp.write("%i,%s,%s,%f,%f,%d,%s --%s seconds\n" % (o, name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
-            model = None
+                elapsed_time = (time.time() - start_time)
+                with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
+                    #fp.write("%i,%s,%f,%f,%d,%s --%s seconds\n" % (f, name, trainScore, testScore, epochs, optimizer, elapsed_time))
+                    fp.write("w=%i,k=%i,%s,%s,%f,%f,%d,%s --%s seconds\n" % (o,p, name, normalization, trainScore, testScore, epochs, optimizer, elapsed_time))
+                model = None
 
 if __name__ == "__main__":
    __main__(sys.argv[1:])
