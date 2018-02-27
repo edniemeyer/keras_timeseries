@@ -29,6 +29,9 @@ TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
+# BTC-USD
+btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
+dataset = btc['close']
 
 def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset, ewm_btc):
     #X_train, X_test, Y_train, Y_test = dataset
@@ -147,16 +150,12 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(2, 30):
+    for o in range(2, 16):
         for p in range(2,30):
 
-            TRAIN_SIZE = o  # seems to be the best
+            TRAIN_SIZE = o
 
             k = p
-
-            # BTC-USD
-            btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
-            dataset = btc['close']
 
             ewm_btc = dataset.ewm(span=k, min_periods=k).mean()
 

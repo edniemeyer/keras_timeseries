@@ -152,9 +152,9 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2, 30):
+    for o in range(2, 16):
         for p in range(2,30):
-            TRAIN_SIZE = o #seems to be the best
+            TRAIN_SIZE = o
 
             k = p
 
