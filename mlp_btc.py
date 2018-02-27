@@ -21,6 +21,10 @@ from keras import regularizers
 
 start_time = time.time()
 
+# BTC-USD
+btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
+dataset_original = btc['close']
+
 batch_size = 64
 nb_epoch = 1000
 patience = 1000
@@ -29,9 +33,7 @@ TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
 
-# BTC-USD
-btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
-dataset = btc['close']
+
 
 def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset, ewm_btc):
     #X_train, X_test, Y_train, Y_test = dataset
@@ -157,7 +159,7 @@ def __main__(argv):
 
             k = p
 
-            ewm_btc = dataset.ewm(span=k, min_periods=k).mean()
+            ewm_btc = dataset_original.ewm(span=k, min_periods=k).mean()
 
             # removendo NaN
             dataset = np.array(dataset.iloc[k-1:])
