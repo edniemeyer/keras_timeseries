@@ -162,7 +162,7 @@ def __main__(argv):
             ewm_btc = dataset_original.ewm(span=k, min_periods=k).mean()
 
             # removendo NaN
-            dataset = np.array(dataset.iloc[k-1:])
+            dataset = np.array(dataset_original.iloc[k-1:])
             ewm_btc = np.array(ewm_btc.iloc[k-1:])
 
 
