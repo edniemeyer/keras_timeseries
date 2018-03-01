@@ -43,7 +43,7 @@ end_time <- Sys.time()
 
 elapsed_time = end_time - start_time
 
-writeLines(c('MINI Dollar,',RMSE.arima,',',elapsed_time), file='output/arimaR.csv')
+writeLines(paste('MINI Dollar',RMSE.arima,elapsed_time, sep=','), file='output/arimaR.csv')
 
 # BTC-USD
 
@@ -86,4 +86,4 @@ end_time <- Sys.time()
 
 elapsed_time = end_time - start_time
 
-writeLines(c('BTC-USD,',RMSE.arima,',',elapsed_time), file='output/arimaR.csv')
+writeLines(paste('BTC-USD',RMSE.arima,elapsed_time, sep=','), file='output/arimaR.csv')
