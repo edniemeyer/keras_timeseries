@@ -488,7 +488,7 @@ def nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
     X_train, X_test, Y_train, Y_test = np.array(X_train_d), np.array(X_test_d), np.array(Y_train_d), np.array(Y_test_d)
     return X_train, X_test, Y_train, Y_test
 
-def remove_outliers(X_train, Y_train, alpha = 1.5):
+def remove_outliers(X_train, Y_train, alpha = 3.0):
     q3 = np.percentile(X_train, 75)
     q1 = np.percentile(X_train, 25)
     IQR = q3 - q1
@@ -508,7 +508,7 @@ def remove_outliers(X_train, Y_train, alpha = 1.5):
     return np.array(new_X_train), np.array(new_Y_train)
 
 
-def remove_outliers_adaptive(X_train, Y_train, shift_train, X_trainp, Y_trainp, alpha = 1.5):
+def remove_outliers_adaptive(X_train, Y_train, shift_train, X_trainp, Y_trainp, alpha = 3.0):
     q3 = np.percentile(X_train, 75)
     q1 = np.percentile(X_train, 25)
     IQR = q3 - q1
