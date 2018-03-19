@@ -23,20 +23,41 @@ plt.rcParams.update(params)
 
 
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-series = pandas.Series(dataframe['fechamento'].values, index=dataframe['ts'])
-#y = np.array(dataframe['fechamento'].tolist())
-# Plot data
-plt.figure(1)
+
+# series = pandas.Series(dataframe['fechamento'].values, index=dataframe['ts'])
+# y = np.array(dataframe['fechamento'].tolist())
+# # Plot data
+# plt.figure(1)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# series[0:100].plot(label='WDOU16')
+# #plt.plot(y,'-b')
+# plt.xlabel('t')
+# plt.ylabel('MINI Dolar')
+# plt.legend()
+#
+# plt.savefig('plots/minidolar.eps')
+#
+
+
+y = dataframe['fechamento']
+
+ewm5 = y.ewm(span=5, min_periods=5).mean()
+ewm21 = y.ewm(span=21, min_periods=21).mean()
+
+
+pandas.Series(dataframe['fechamento'].values, index=dataframe['ts'])
+plt.figure(2)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-series[0:100].plot(label='WDOU16')
-#plt.plot(y,'-b')
+plt.plot(y[0:160])
+plt.plot(ewm5[0:160])
+plt.plot(ewm21[0:160])
 plt.xlabel('t')
 plt.ylabel('MINI Dolar')
-plt.legend()
+plt.legend(['original', 'EMA5', 'EMA21'])
 
-plt.savefig('plots/minidolar.eps')
-
+plt.savefig('plots/emas.eps')
 
 
 #USD-BRL
