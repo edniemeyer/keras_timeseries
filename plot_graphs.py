@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import pandas
 from matplotlib.pylab import sqrt
+from normalizer import *
 import numpy as np
 from datetime import datetime
 
@@ -39,25 +40,60 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 # plt.savefig('plots/minidolar.eps')
 #
 
+#EMAS
+# y = dataframe['fechamento']
+#
+# ewm5 = y.ewm(span=5, min_periods=5).mean()
+# ewm21 = y.ewm(span=21, min_periods=21).mean()
+#
+#
+# plt.figure(2)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y[0:160])
+# plt.plot(ewm5[0:160])
+# plt.plot(ewm21[0:160])
+# plt.xlabel('t')
+# plt.ylabel('MINI Dolar')
+# plt.legend(['original', 'EMA5', 'EMA21'])
+#
+# plt.savefig('plots/emas.eps')
+#
+
+#SW exemplo
+
+
+# y = dataframe['fechamento']
+#
+# hv, hv_scaler = minMaxNormalize(y[120:140].values.reshape(-1,1))
+# lv, lv_scaler= minMaxNormalize(y[50:70].values.reshape(-1,1))
+#
+# plt.figure(3)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(range(0,20),lv)
+# plt.plot(range(30,50),hv)
+# plt.legend(['SW #1', 'SW #2'])
+# plt.savefig('plots/sw_exemplo.eps')
+
+
+#AN exemplo
+
 
 y = dataframe['fechamento']
-
 ewm5 = y.ewm(span=5, min_periods=5).mean()
-ewm21 = y.ewm(span=21, min_periods=21).mean()
+serie, scaler = minMaxNormalize((y[0:540]/np.mean(y[0:540])).values.reshape(-1,1)) # um dia (para simplificar usei media)
 
+hv = minMaxNormalizeOver((y[120:140]/ewm5[120]).values.reshape(-1,1), scaler)
+lv= minMaxNormalizeOver((y[50:70]/ewm5[50]).values.reshape(-1,1), scaler)
 
-pandas.Series(dataframe['fechamento'].values, index=dataframe['ts'])
-plt.figure(2)
+plt.figure(4)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y[0:160])
-plt.plot(ewm5[0:160])
-plt.plot(ewm21[0:160])
-plt.xlabel('t')
-plt.ylabel('MINI Dolar')
-plt.legend(['original', 'EMA5', 'EMA21'])
-
-plt.savefig('plots/emas.eps')
+plt.plot(range(0,20),lv)
+plt.plot(range(30,50),hv)
+plt.legend(['AN #1', 'AN #2'])
+plt.savefig('plots/an_exemplo.eps')
 
 
 #USD-BRL
