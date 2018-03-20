@@ -78,22 +78,39 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 
 #AN exemplo
+#
+#
+# y = dataframe['fechamento']
+# ewm5 = y.ewm(span=5, min_periods=5).mean()
+# serie, scaler = minMaxNormalize((y[0:540]/np.mean(y[0:540])).values.reshape(-1,1)) # um dia (para simplificar usei media)
+#
+# hv = minMaxNormalizeOver((y[120:140]/ewm5[120]).values.reshape(-1,1), scaler)
+# lv= minMaxNormalizeOver((y[50:70]/ewm5[50]).values.reshape(-1,1), scaler)
+#
+# plt.figure(4)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(range(0,20),lv)
+# plt.plot(range(30,50),hv)
+# plt.legend(['AN #1', 'AN #2'])
+# plt.savefig('plots/an_exemplo.eps')
+
+
+#MM exemplo
 
 
 y = dataframe['fechamento']
-ewm5 = y.ewm(span=5, min_periods=5).mean()
-serie, scaler = minMaxNormalize((y[0:540]/np.mean(y[0:540])).values.reshape(-1,1)) # um dia (para simplificar usei media)
+y_1d = y[0:540]
 
-hv = minMaxNormalizeOver((y[120:140]/ewm5[120]).values.reshape(-1,1), scaler)
-lv= minMaxNormalizeOver((y[50:70]/ewm5[50]).values.reshape(-1,1), scaler)
+sample, scaler = minMaxNormalize(y_1d[0:90].values.reshape(-1,1))
+y_mm = minMaxNormalizeOver(y_1d.values.reshape(-1,1), scaler)
 
-plt.figure(4)
+plt.figure(5)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(range(0,20),lv)
-plt.plot(range(30,50),hv)
-plt.legend(['AN #1', 'AN #2'])
-plt.savefig('plots/an_exemplo.eps')
+plt.plot(y_mm)
+plt.xlabel('t(min)')
+plt.savefig('plots/mm_exemplo.eps')
 
 
 #USD-BRL
