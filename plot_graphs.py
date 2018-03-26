@@ -99,18 +99,40 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 #MM exemplo
 
 
+# y = dataframe['fechamento']
+# y_1d = y[0:540]
+#
+# sample, scaler = minMaxNormalize(y_1d[0:90].values.reshape(-1,1))
+# y_mm = minMaxNormalizeOver(y_1d.values.reshape(-1,1), scaler)
+#
+# plt.figure(5)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y_mm)
+# plt.xlabel('t(min)')
+# plt.savefig('plots/mm_exemplo.eps')
+#
+
+#Dec
+
 y = dataframe['fechamento']
 y_1d = y[0:540]
 
-sample, scaler = minMaxNormalize(y_1d[0:90].values.reshape(-1,1))
-y_mm = minMaxNormalizeOver(y_1d.values.reshape(-1,1), scaler)
+maximum = max(y_1d[0:90].values.reshape(-1))
 
-plt.figure(5)
+sample = decimalNormalize(y_1d[0:90].values.reshape(-1,1))
+y_dec = decimalNormalizeOver(y_1d.values.reshape(-1,1), maximum)
+
+plt.figure(6)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y_mm)
+plt.plot(y_dec)
+plt.plot(np.ones(540), 'r')
 plt.xlabel('t(min)')
-plt.savefig('plots/mm_exemplo.eps')
+plt.savefig('plots/dec_exemplo.eps')
+
+
+y_1d_new = decimalDenormalize(y_dec, maximum)
 
 
 #USD-BRL
