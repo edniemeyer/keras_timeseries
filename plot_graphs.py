@@ -115,25 +115,49 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 #Dec
 
+# y = dataframe['fechamento']
+# y_1d = y[0:540]
+#
+# maximum = max(y_1d[0:90].values.reshape(-1))
+#
+# sample = decimalNormalize(y_1d[0:90].values.reshape(-1,1))
+# y_dec = decimalNormalizeOver(y_1d.values.reshape(-1,1), maximum)
+#
+# plt.figure(6)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y_dec)
+# plt.plot(np.ones(540), 'r')
+# plt.xlabel('t(min)')
+# plt.savefig('plots/dec_exemplo.eps')
+#
+#
+# y_1d_new = decimalDenormalize(y_dec, maximum)
+
+
+#z-score
+
 y = dataframe['fechamento']
 y_1d = y[0:540]
 
-maximum = max(y_1d[0:90].values.reshape(-1))
+sample, scaler = zNormalize(y_1d[0:90].values.reshape(-1,1))
+y_z = zNormalizeOver(y_1d.values.reshape(-1,1), scaler)
 
-sample = decimalNormalize(y_1d[0:90].values.reshape(-1,1))
-y_dec = decimalNormalizeOver(y_1d.values.reshape(-1,1), maximum)
+y_z_total, sca =  zNormalize(y_1d.values.reshape(-1,1))
+sca.mean_
+np.sqrt(sca.var_)
 
-plt.figure(6)
+plt.figure(7)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y_dec)
-plt.plot(np.ones(540), 'r')
+plt.plot(y_z)
+plt.plot(y_z_total)
+plt.legend([(r'Z #1 ($\mu =%.2f, \sigma =%.2f$)'% (scaler.mean_,np.sqrt(scaler.var_))), (r'Z #2 ($\mu =%.2f, \sigma =%.2f$)' %(sca.mean_,np.sqrt(sca.var_)))])
 plt.xlabel('t(min)')
-plt.savefig('plots/dec_exemplo.eps')
+plt.savefig('plots/z_exemplo.eps')
 
 
-y_1d_new = decimalDenormalize(y_dec, maximum)
-
+y_1d_new = zDenormalize(y_z, scaler)
 
 #USD-BRL
 # dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
