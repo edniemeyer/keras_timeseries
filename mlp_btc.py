@@ -155,7 +155,7 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(14, 16):
+    for o in range(15, 16):
         for p in range(2,30):
 
             TRAIN_SIZE = o
