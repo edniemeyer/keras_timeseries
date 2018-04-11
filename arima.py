@@ -13,13 +13,14 @@ from statsmodels.tsa.arima_model import ARIMA
 #dataframe = read_csv('ibov_google_15jun2017_1min_15d.csv', sep = ',', usecols=[1],
 #  engine='python', skiprows=8, decimal='.',header=None)
 
-# dataframe = read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
-# dataframe = dataframe['fechamento']
+dataframe = read_csv('minidolar/wdo.csv', sep = '|', usecols=[5],  engine='python', decimal='.',header=0)
+dataframe = dataframe['fechamento']
+dataframe = dataframe[0:540]
 
 
 # BTC-USD
-btc = read_csv('btc-usd.csv', sep = ',',  engine='python', decimal='.',header=0)
-dataframe = btc['close']
+# btc = read_csv('btc-usd.csv', sep = ',',  engine='python', decimal='.',header=0)
+# dataframe = btc['close']
 
 
 start_time = time.time()
@@ -48,16 +49,15 @@ start_time = time.time()
 # DOLLAR ARIMA(0,1,1)
 # BTC ARIMA(3,1,5)
 
-p=0
+p=2
 d=1
 q=1
 
-WINDOW = 30
 STEP = 1
 FORECAST = 1
 
 predictions,test = [],[]
-for i in range(int(0.8*len(dataframe)), len(dataframe), STEP):
+for i in range(int(len(dataframe)-11), len(dataframe), STEP):
 	try:
 		x_i = np.asarray(dataframe[0:i]) #ARIMA have to use all timeseries
 		y_i = dataframe[i+FORECAST]
@@ -67,7 +67,7 @@ for i in range(int(0.8*len(dataframe)), len(dataframe), STEP):
 		yhat = output[0][0]
 	except Exception as e:
 		break
-	
+
 	predictions.append(yhat)
 	test.append(y_i)
 
