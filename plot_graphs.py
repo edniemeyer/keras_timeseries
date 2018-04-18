@@ -159,54 +159,78 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 #
 # y_1d_new = zDenormalize(y_z, scaler)
 
+
+
+
+Fs = 100
+f = 5
+sample = 100
+x = np.arange(sample)
+y = np.sin(2 * np.pi * f * x / Fs)
+ewm5 = pandas.DataFrame(y).ewm(span=5, min_periods=5).mean()
+
+plt.figure(8)
+plt.clf()
+plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+plt.plot(y)
+plt.plot(ewm5)
+plt.plot(np.zeros(len(y)), ':k')
+plt.xlabel('t')
+plt.legend(['sen(t)', 'EMA5'])
+plt.savefig('plots/an_avg_zero_problem.eps')
+
+
+
+
+
 #USD-BRL
-dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
-
-
-dataframe = dataframe.sort_values(['w','normalization','k'])
-
-df_an = dataframe.loc[dataframe['normalization'] == 'AN']
-df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
-
-for w in range(2,16):
-    plt.clf()
-    plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
-    plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
-    plt.legend(['AN','SW'])
-    plt.title('Model RMSE with Window size '+str(w)+ ' for MINI Dolar')
-    plt.ylabel('loss')
-    plt.xlabel('k')
-    plt.savefig('plots/dolar_rmse_k_w_'+str(w)+'.eps')
-
-
-for w in range(2,16):
-    plt.clf()
-    plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['train'], 'bo')
-    plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['train'], 'ro')
-    plt.legend(['AN','SW'])
-    plt.title('Model Train RMSE with Window size '+str(w)+ ' for MINI Dolar')
-    plt.ylabel('loss')
-    plt.xlabel('k')
-    plt.savefig('plots/dolar_train_rmse_k_w_' + str(w) + '.eps')
+# dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+#
+# dataframe = dataframe.sort_values(['w','normalization','k'])
+#
+# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.legend(['AN','SW'])
+#     plt.title('Model RMSE with Window size '+str(w)+ ' for MINI Dolar')
+#     plt.ylabel('loss')
+#     plt.xlabel('k')
+#     plt.savefig('plots/dolar_rmse_k_w_'+str(w)+'.eps')
+#
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['train'], 'bo')
+#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['train'], 'ro')
+#     plt.legend(['AN','SW'])
+#     plt.title('Model Train RMSE with Window size '+str(w)+ ' for MINI Dolar')
+#     plt.ylabel('loss')
+#     plt.xlabel('k')
+#     plt.savefig('plots/dolar_train_rmse_k_w_' + str(w) + '.eps')
 
 
 
 
 #BTC
-dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
-
-
-dataframe = dataframe.sort_values(['w','normalization','k'])
-
-df_an = dataframe.loc[dataframe['normalization'] == 'AN']
-df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
-
-for w in range(2,16):
-    plt.clf()
-    plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
-    plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
-    plt.legend(['AN','SW'])
-    plt.title('Model RMSE with Window size '+str(w)+ ' for BTC')
-    plt.ylabel('loss')
-    plt.xlabel('k')
-    plt.savefig('plots/btc_rmse_k_w_' + str(w) + '.eps')
+# dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+#
+# dataframe = dataframe.sort_values(['w','normalization','k'])
+#
+# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.legend(['AN','SW'])
+#     plt.title('Model RMSE with Window size '+str(w)+ ' for BTC')
+#     plt.ylabel('loss')
+#     plt.xlabel('k')
+#     plt.savefig('plots/btc_rmse_k_w_' + str(w) + '.eps')
