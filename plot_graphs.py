@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime
 
 
-fig_width_pt = 326.0  # Get this from LaTeX using \showthe\columnwidth
+fig_width_pt = 406.0  # Get this from LaTeX using \showthe\columnwidth
 inches_per_pt = 1.0/72.27               # Convert pt to inch
 golden_mean = (sqrt(5)-1.0)/2.0         # Aesthetic ratio
 fig_width = fig_width_pt*inches_per_pt  # width in inches
@@ -137,27 +137,51 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 #z-score
 
-y = dataframe['fechamento']
-y_1d = y[0:540]
+# y = dataframe['fechamento']
+# y_1d = y[0:540]
+#
+# sample, scaler = zNormalize(y_1d[0:90].values.reshape(-1,1))
+# y_z = zNormalizeOver(y_1d.values.reshape(-1,1), scaler)
+#
+# y_z_total, sca =  zNormalize(y_1d.values.reshape(-1,1))
+# sca.mean_
+# np.sqrt(sca.var_)
+#
+# plt.figure(7)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y_z)
+# plt.plot(y_z_total)
+# plt.legend([(r'Z #1 ($\mu =%.2f, \sigma =%.2f$)'% (scaler.mean_,np.sqrt(scaler.var_))), (r'Z #2 ($\mu =%.2f, \sigma =%.2f$)' %(sca.mean_,np.sqrt(sca.var_)))])
+# plt.xlabel('t(min)')
+# plt.savefig('plots/z_exemplo.eps')
+#
+#
+# y_1d_new = zDenormalize(y_z, scaler)
 
-sample, scaler = zNormalize(y_1d[0:90].values.reshape(-1,1))
-y_z = zNormalizeOver(y_1d.values.reshape(-1,1), scaler)
 
-y_z_total, sca =  zNormalize(y_1d.values.reshape(-1,1))
-sca.mean_
-np.sqrt(sca.var_)
 
-plt.figure(7)
+
+Fs = 100
+f = 5
+sample = 100
+x = np.arange(sample)
+y = np.sin(2 * np.pi * f * x / Fs)
+ewm5 = pandas.DataFrame(y).ewm(span=5, min_periods=5).mean()
+
+plt.figure(8)
 plt.clf()
 plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y_z)
-plt.plot(y_z_total)
-plt.legend([(r'Z #1 ($\mu =%.2f, \sigma =%.2f$)'% (scaler.mean_,np.sqrt(scaler.var_))), (r'Z #2 ($\mu =%.2f, \sigma =%.2f$)' %(sca.mean_,np.sqrt(sca.var_)))])
-plt.xlabel('t(min)')
-plt.savefig('plots/z_exemplo.eps')
+plt.plot(y)
+plt.plot(ewm5)
+plt.plot(np.zeros(len(y)), ':k')
+plt.xlabel('t')
+plt.legend(['sen(t)', 'EMA5'])
+plt.savefig('plots/an_avg_zero_problem.eps')
 
 
-y_1d_new = zDenormalize(y_z, scaler)
+
+
 
 #USD-BRL
 # dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
@@ -169,41 +193,44 @@ y_1d_new = zDenormalize(y_z, scaler)
 # df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
 #
 # for w in range(2,16):
+#     plt.clf()
 #     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
 #     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
 #     plt.legend(['AN','SW'])
 #     plt.title('Model RMSE with Window size '+str(w)+ ' for MINI Dolar')
 #     plt.ylabel('loss')
-#     plt.xlabel('K')
-#     plt.show()
-
-
+#     plt.xlabel('k')
+#     plt.savefig('plots/dolar_rmse_k_w_'+str(w)+'.eps')
+#
+#
 # for w in range(2,16):
+#     plt.clf()
 #     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['train'], 'bo')
 #     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['train'], 'ro')
 #     plt.legend(['AN','SW'])
 #     plt.title('Model Train RMSE with Window size '+str(w)+ ' for MINI Dolar')
 #     plt.ylabel('loss')
-#     plt.xlabel('K')
-#     plt.show()
+#     plt.xlabel('k')
+#     plt.savefig('plots/dolar_train_rmse_k_w_' + str(w) + '.eps')
 
 
 
 
 #BTC
-#dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', #'epochs'])
-
-
-#dataframe = dataframe.sort_values(['w','normalization','k'])
-
-#df_an = dataframe.loc[dataframe['normalization'] == 'AN']
-#df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
-
-#for w in range(2,16):
-#    plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
-#    plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
-#    plt.legend(['AN','SW'])
-#    plt.title('Model RMSE with Window size '+str(w)+ ' for BTC')
-#    plt.ylabel('loss')
-#    plt.xlabel('K')
-#    plt.show()
+# dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+#
+# dataframe = dataframe.sort_values(['w','normalization','k'])
+#
+# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.legend(['AN','SW'])
+#     plt.title('Model RMSE with Window size '+str(w)+ ' for BTC')
+#     plt.ylabel('loss')
+#     plt.xlabel('k')
+#     plt.savefig('plots/btc_rmse_k_w_' + str(w) + '.eps')
