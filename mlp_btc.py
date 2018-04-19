@@ -96,10 +96,8 @@ def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset
     if (normalization == 'AN'):
         #predicted
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict, scaler, shift_train, shift_test)
-        print(len(X_trainp))
     if (normalization == 'SW'):
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict, scaler_train, scaler_test)
-        print(len(X_trainp))
     if (normalization == 'MM'):
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_mm_den(X_train, X_test, trainPredict, testPredict, scaler)
 

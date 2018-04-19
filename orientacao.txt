@@ -42,3 +42,11 @@ Reunião com Ogasawara:
 -Cenário por minuto desfavorável para AN, pq nas viradas de dia podem existir outlier (AN trabalha com inércia, não espera mudanças bruscas)(remover outlier de treino e teste)
 -Diminuir janelas deve melhorar (iterar até achar um ideal para cada dataset)
 -Alterar K das médias móveis tb altera (iterar até achar um ideal tb)
+
+
+
+19/04:
+Reunião zimbrao:
+Arrumar mais datasets de timeseries para testar. Sugestoes:
+Medição de chuva
+Energia elétrica
