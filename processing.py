@@ -113,6 +113,52 @@ def split_into_chunks_adaptive(data, ewm, train, predict, step, binary=True, sca
 
     return X, Y, shift
 
+
+def split_into_chunks_adaptive_type(data, ewm, train, predict, step, binary=True, scale=True, type='o'):
+    X, Y, shift = [], [], []
+    for i in range(0, len(data) - train - predict, step):
+        try:
+            # Use it only for daily return time series
+            if binary:
+                x_i = data[i:i + train]
+                y_i = data[i + train + predict]
+                if y_i > 0.:
+                    y_i = [1., 0.]
+                else:
+                    y_i = [0., 1.]
+
+                if scale: x_i = (np.array(x_i) - np.mean(x_i)) / np.std(x_i)
+
+            else:
+                timeseries = np.array(data[i:i + train + predict])
+                shift_i = np.array(ewm[i])
+                # shift_i = np.mean(timeseries[:-1])
+
+                if scale:
+                    if (type == 'o'):
+                        timeseries = timeseries / shift_i
+                    elif (type == 'c'):
+                        timeseries = (timeseries + 1) / (shift_i + 1)
+                    elif (type == 'd'):
+                        timeseries = timeseries - shift_i
+
+                    y_i = timeseries[-1]
+                    # y_i = (y_i - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
+                    # x_i = (np.array(timeseries[:-1]) - np.mean(timeseries[:-1])) / np.std(timeseries[:-1])
+                    x_i = timeseries[:-1]
+                else:
+                    x_i = timeseries[:-1]
+                    y_i = timeseries[-1]
+
+        except:
+            break
+
+        X.append(x_i)
+        Y.append(y_i)
+        shift.append(shift_i)
+
+    return X, Y, shift
+
 #
 # def split_into_chunks_adaptive_try(data, ewm, train, predict, step):
 #     X, Y, shift, R = [], [], [], []

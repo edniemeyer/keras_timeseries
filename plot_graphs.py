@@ -1,8 +1,8 @@
 import matplotlib.pylab as plt
 import pandas
 from matplotlib.pylab import sqrt
-from normalizer import *
 import numpy as np
+from processing import *
 from datetime import datetime
 
 
@@ -162,23 +162,71 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 
 
-Fs = 100
-f = 5
-sample = 100
-x = np.arange(sample)
-y = np.sin(2 * np.pi * f * x / Fs)
-ewm5 = pandas.DataFrame(y).ewm(span=5, min_periods=5).mean()
+# Fs = 100
+# f = 5
+# sample = 100
+# x = np.arange(sample)
+# y = np.sin(2 * np.pi * f * x / Fs)
+# ewm5 = pandas.DataFrame(y).ewm(span=5, min_periods=5).mean()
+#
+# plt.figure(8)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y)
+# plt.plot(ewm5)
+# plt.plot(np.zeros(len(y)), ':k')
+# plt.xlabel('t')
+# plt.legend(['sen(t)', 'EMA5'])
+# plt.savefig('plots/an_avg_zero_problem.eps')
+#
 
-plt.figure(8)
+
+
+
+#AN types compare exemplo
+
+
+y = dataframe['fechamento']
+ewm5 = y.ewm(span=5, min_periods=5).mean()
+
+y = np.array(y.iloc[5 - 1:])
+ewm5 = np.array(ewm5.iloc[5 - 1:])
+
+X, Y, shift = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+                                             scale=True, type='o')
+X, Y, shift = np.array(X), np.array(Y), np.array(shift)
+
+
+X2, Y2, shift2 = split_into_chunks_adaptive(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+                                             scale=True)
+
+X2, Y2, shift2 = np.array(X2), np.array(Y2), np.array(shift2)
+
+
+serie, scaler = minMaxNormalize((X[0:540]).reshape(-1,1))
+
+
+serie2, scaler2 = minMaxNormalize((X2[0:540]).reshape(-1,1))
+
+
+hv = minMaxNormalizeOver((X[116]).reshape(-1,1), scaler)
+lv = minMaxNormalizeOver((X[46]).reshape(-1,1), scaler)
+
+hv2 = minMaxNormalizeOver((X2[116]).reshape(-1,1), scaler2)
+lv2 = minMaxNormalizeOver((X2[46]).reshape(-1,1), scaler2)
+
+
+plt.figure(9)
 plt.clf()
-plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y)
-plt.plot(ewm5)
-plt.plot(np.zeros(len(y)), ':k')
-plt.xlabel('t')
-plt.legend(['sen(t)', 'EMA5'])
-plt.savefig('plots/an_avg_zero_problem.eps')
-
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+plt.plot(range(0,20),lv - lv2)
+plt.plot(range(30,50),hv - hv2)
+# plt.plot(range(0,20),X[46])
+# plt.plot(range(0,20),X2[46])
+# plt.plot(range(30,50),X[116])
+# plt.plot(range(30,50),X2[116])
+plt.legend(['AN - AND #1', 'AN - AND #2'])
+plt.savefig('plots/an_compare.eps')
 
 
 
