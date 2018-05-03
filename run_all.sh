@@ -1,9 +1,4 @@
-python3 mlp_zimbrao.py 0
-python3 multivariate_mlp_zimbrao.py 0
-python3 convolutional_zimbrao.py 0
-python3 multivariate_convolutional_zimbrao.py 0
-python3 multivariate_conv2d_zimbrao.py 0
-python3 lstm_zimbrao.py 0
-python3 lstm_zimbrao_stateful.py 0
-python3 multivariate_lstm_zimbrao.py 0
-python3 multivariate_lstm_zimbrao_stateful.py 0
+python3 mlp_rain.py 0
+python3 mlp_furnas.py 0
+python3 mlp_new.py 0
+python3 mlp_btc.py 0

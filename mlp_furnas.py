@@ -146,7 +146,7 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     normalizations = ['AN']
-    type = 'c'
+    type = 'o'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-FURNAS/MLP NN %s\n" % type)
 
