@@ -78,14 +78,25 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 
 #AN exemplo
-#
+
+
 #
 # y = dataframe['fechamento']
 # ewm5 = y.ewm(span=5, min_periods=5).mean()
-# serie, scaler = minMaxNormalize((y[0:540]/np.mean(y[0:540])).values.reshape(-1,1)) # um dia (para simplificar usei media)
 #
-# hv = minMaxNormalizeOver((y[120:140]/ewm5[120]).values.reshape(-1,1), scaler)
-# lv= minMaxNormalizeOver((y[50:70]/ewm5[50]).values.reshape(-1,1), scaler)
+# y = np.array(y.iloc[5 - 1:])
+# ewm5 = np.array(ewm5.iloc[5 - 1:])
+#
+# X, Y, shift = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+#                                              scale=True, type='o')
+# X, Y, shift = np.array(X), np.array(Y), np.array(shift)
+#
+# serie, scaler = minMaxNormalize((X[0:540]).reshape(-1,1))
+#
+#
+# hv = minMaxNormalizeOver((X[116]).reshape(-1,1), scaler)
+# lv = minMaxNormalizeOver((X[46]).reshape(-1,1), scaler)
+#
 #
 # plt.figure(4)
 # plt.clf()
@@ -94,6 +105,7 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 # plt.plot(range(30,50),hv)
 # plt.legend(['AN #1', 'AN #2'])
 # plt.savefig('plots/an_exemplo.eps')
+
 
 
 #MM exemplo
@@ -221,10 +233,6 @@ plt.clf()
 # plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
 plt.plot(range(0,20),lv - lv2)
 plt.plot(range(30,50),hv - hv2)
-# plt.plot(range(0,20),X[46])
-# plt.plot(range(0,20),X2[46])
-# plt.plot(range(30,50),X[116])
-# plt.plot(range(30,50),X2[116])
 plt.legend(['AN - AND #1', 'AN - AND #2'])
 plt.savefig('plots/an_compare.eps')
 
