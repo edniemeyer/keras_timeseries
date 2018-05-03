@@ -35,12 +35,12 @@ LAG_SIZE = 1
 EMB_SIZE = 1
 
 
-def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset, ewm_dolar):
+def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset, ewm_dolar, type):
     # X_train, X_test, Y_train, Y_test = dataset
     # X_trainp, X_testp, Y_trainp, Y_testp = dadosp
     if (normalization == 'AN'):
-        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an(
-            dataset, ewm_dolar, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an_type(
+            dataset, ewm_dolar, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, type)
     if (normalization == 'SW'):
         X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(
             dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
@@ -90,8 +90,8 @@ def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset
 
     # invert predictions (back to original)
     if (normalization == 'AN'):
-        X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_an_den(X_train, X_test, trainPredict, testPredict,
-                                                                            scaler, shift_train, shift_test)
+        X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_an_den_type(X_train, X_test, trainPredict, testPredict,
+                                                                            scaler, shift_train, shift_test, type)
 
     if (normalization == 'SW'):
         X_trainp3, X_testp3, new_train_predicted, new_predicted = nn_sw_den(X_train, X_test, trainPredict, testPredict,
@@ -145,9 +145,10 @@ def __main__(argv):
     # nonlinearities = ['relu']
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
-    normalizations = ['AN', 'SW']
+    normalizations = ['AN']
+    type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
-        fp.write("-FURNAS/MLP NN\n")
+        fp.write("-FURNAS/MLP NN %s\n" % type)
 
     hals = []
 
@@ -187,7 +188,7 @@ def __main__(argv):
                 # model.summary()
 
                 trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers, nb_epoch,
-                                                                          normalization, TRAIN_SIZE, dataset, ewm_dolar)
+                                                                          normalization, TRAIN_SIZE, dataset, ewm_dolar, type=type)
                 # if(testScore_aux > testScore):
                 #     testScore_aux=testScore
                 #     f_aux = f
