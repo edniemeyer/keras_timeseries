@@ -209,8 +209,8 @@ X, Y, shift = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, b
 X, Y, shift = np.array(X), np.array(Y), np.array(shift)
 
 
-X2, Y2, shift2 = split_into_chunks_adaptive(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
-                                             scale=True)
+X2, Y2, shift2 = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+                                             scale=True, type='c')
 
 X2, Y2, shift2 = np.array(X2), np.array(Y2), np.array(shift2)
 
@@ -228,13 +228,15 @@ hv2 = minMaxNormalizeOver((X2[116]).reshape(-1,1), scaler2)
 lv2 = minMaxNormalizeOver((X2[46]).reshape(-1,1), scaler2)
 
 
-plt.figure(9)
-plt.clf()
+# plt.figure(9)
+# plt.clf()
 # plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(range(0,20),lv - lv2)
-plt.plot(range(30,50),hv - hv2)
-plt.legend(['AN - AND #1', 'AN - AND #2'])
-plt.savefig('plots/an_compare.eps')
+# plt.plot(range(0,20),lv - lv2)
+# plt.plot(range(30,50),hv - hv2)
+# plt.legend(['AN - ANS #1', 'AN - ANS #2'])
+# plt.savefig('plots/an_compare.eps')
+
+
 
 
 
