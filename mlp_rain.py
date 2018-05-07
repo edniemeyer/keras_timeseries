@@ -148,7 +148,7 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     normalizations = ['AN']
-    type = 'o'
+    type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-RAINFALL/MLP NN %s\n" % type)
 
