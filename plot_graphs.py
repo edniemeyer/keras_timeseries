@@ -22,23 +22,92 @@ params = {'backend': 'ps',
 plt.rcParams.update(params)
 # Generate data
 
-
-dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
-
+#minidolar
+# dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+#
 # series = pandas.Series(dataframe['fechamento'].values, index=dataframe['ts'])
 # y = np.array(dataframe['fechamento'].tolist())
 # # Plot data
 # plt.figure(1)
 # plt.clf()
 # plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-# series[0:100].plot(label='WDOU16')
-# #plt.plot(y,'-b')
+# # series[0:100].plot(label='WDOU16')
+# plt.plot(y,'-b')
+# plt.axvline(x=int(0.7*len(y)), color='k')
+# plt.text(int(0.6*len(y)), max(y), 'train')
+# plt.text(int(0.72*len(y)), max(y), 'val')
+# plt.axvline(x=int(0.8*len(y)), color='k')
+# plt.text(int(0.82*len(y)), max(y), 'test')
 # plt.xlabel('t')
 # plt.ylabel('MINI Dolar')
-# plt.legend()
+# plt.legend(['WDOU16'])
 #
 # plt.savefig('plots/minidolar.eps')
+
+
+
+#btc
+# dataframe = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
 #
+# y = np.array(dataframe['close'].tolist())
+# # Plot data
+# plt.figure(1)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y,'-b')
+# plt.axvline(x=int(0.7*len(y)), color='k')
+# plt.text(int(0.6*len(y)), max(y), 'train')
+# plt.text(int(0.72*len(y)), max(y), 'val')
+# plt.axvline(x=int(0.8*len(y)), color='k')
+# plt.text(int(0.82*len(y)), max(y), 'test')
+# plt.xlabel('t')
+# plt.ylabel('Bitcoin')
+# plt.legend(['BTC(USD)'])
+#
+# plt.savefig('plots/btc.eps')
+
+
+#rainfall
+# dataframe = pandas.read_csv('annual-rainfall-at-fortaleza-bra.csv', sep=',', engine='python', header=0)
+#
+# y = np.array(dataframe['rainfall'].tolist())
+# # Plot data
+# plt.figure(1)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y,'-b')
+# plt.axvline(x=int(0.7*len(y)), color='k')
+# plt.text(int(0.6*len(y)), max(y), 'train')
+# plt.text(int(0.72*len(y)), max(y), 'val')
+# plt.axvline(x=int(0.8*len(y)), color='k')
+# plt.text(int(0.82*len(y)), max(y), 'test')
+# plt.xlabel('t')
+# plt.ylabel('Chuvas em Fortaleza (mm)')
+# #plt.legend(['BTC(mm)'])
+#
+# plt.savefig('plots/rainfall.eps')
+#
+
+#furnas
+dataframe = pandas.read_csv('furnas-vazoes-medias-mensais-m3s.csv', sep=',', engine='python', header=0)
+
+y = np.array(dataframe['furnas'].tolist())
+# Plot data
+plt.figure(1)
+plt.clf()
+plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+plt.plot(y,'-b')
+plt.axvline(x=int(0.7*len(y)), color='k')
+plt.text(int(0.6*len(y)), max(y), 'train')
+plt.text(int(0.72*len(y)), max(y), 'val')
+plt.axvline(x=int(0.8*len(y)), color='k')
+plt.text(int(0.82*len(y)), max(y), 'test')
+plt.xlabel('t')
+plt.ylabel('Vazões médias em FURNAS (m³/s)')
+#plt.legend(['BTC(mm)'])
+
+plt.savefig('plots/furnas.eps')
+
 
 #EMAS
 # y = dataframe['fechamento']
@@ -196,36 +265,36 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 
 
 #AN types compare exemplo
-
-
-y = dataframe['fechamento']
-ewm5 = y.ewm(span=5, min_periods=5).mean()
-
-y = np.array(y.iloc[5 - 1:])
-ewm5 = np.array(ewm5.iloc[5 - 1:])
-
-X, Y, shift = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
-                                             scale=True, type='o')
-X, Y, shift = np.array(X), np.array(Y), np.array(shift)
-
-
-X2, Y2, shift2 = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
-                                             scale=True, type='c')
-
-X2, Y2, shift2 = np.array(X2), np.array(Y2), np.array(shift2)
-
-
-serie, scaler = minMaxNormalize((X[0:540]).reshape(-1,1))
-
-
-serie2, scaler2 = minMaxNormalize((X2[0:540]).reshape(-1,1))
-
-
-hv = minMaxNormalizeOver((X[116]).reshape(-1,1), scaler)
-lv = minMaxNormalizeOver((X[46]).reshape(-1,1), scaler)
-
-hv2 = minMaxNormalizeOver((X2[116]).reshape(-1,1), scaler2)
-lv2 = minMaxNormalizeOver((X2[46]).reshape(-1,1), scaler2)
+#
+#
+# y = dataframe['fechamento']
+# ewm5 = y.ewm(span=5, min_periods=5).mean()
+#
+# y = np.array(y.iloc[5 - 1:])
+# ewm5 = np.array(ewm5.iloc[5 - 1:])
+#
+# X, Y, shift = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+#                                              scale=True, type='o')
+# X, Y, shift = np.array(X), np.array(Y), np.array(shift)
+#
+#
+# X2, Y2, shift2 = split_into_chunks_adaptive_type(y[0:540], ewm5[0:540], 20, 1, 1, binary=False,
+#                                              scale=True, type='c')
+#
+# X2, Y2, shift2 = np.array(X2), np.array(Y2), np.array(shift2)
+#
+#
+# serie, scaler = minMaxNormalize((X[0:540]).reshape(-1,1))
+#
+#
+# serie2, scaler2 = minMaxNormalize((X2[0:540]).reshape(-1,1))
+#
+#
+# hv = minMaxNormalizeOver((X[116]).reshape(-1,1), scaler)
+# lv = minMaxNormalizeOver((X[46]).reshape(-1,1), scaler)
+#
+# hv2 = minMaxNormalizeOver((X2[116]).reshape(-1,1), scaler2)
+# lv2 = minMaxNormalizeOver((X2[46]).reshape(-1,1), scaler2)
 
 
 # plt.figure(9)
