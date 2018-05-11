@@ -89,24 +89,24 @@ plt.rcParams.update(params)
 #
 
 #furnas
-dataframe = pandas.read_csv('furnas-vazoes-medias-mensais-m3s.csv', sep=',', engine='python', header=0)
-
-y = np.array(dataframe['furnas'].tolist())
-# Plot data
-plt.figure(1)
-plt.clf()
-plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
-plt.plot(y,'-b')
-plt.axvline(x=int(0.7*len(y)), color='k')
-plt.text(int(0.6*len(y)), max(y), 'train')
-plt.text(int(0.72*len(y)), max(y), 'val')
-plt.axvline(x=int(0.8*len(y)), color='k')
-plt.text(int(0.82*len(y)), max(y), 'test')
-plt.xlabel('t')
-plt.ylabel('Vazões médias em FURNAS (m³/s)')
-#plt.legend(['BTC(mm)'])
-
-plt.savefig('plots/furnas.eps')
+# dataframe = pandas.read_csv('furnas-vazoes-medias-mensais-m3s.csv', sep=',', engine='python', header=0)
+#
+# y = np.array(dataframe['furnas'].tolist())
+# # Plot data
+# plt.figure(1)
+# plt.clf()
+# plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# plt.plot(y,'-b')
+# plt.axvline(x=int(0.7*len(y)), color='k')
+# plt.text(int(0.6*len(y)), max(y), 'train')
+# plt.text(int(0.72*len(y)), max(y), 'val')
+# plt.axvline(x=int(0.8*len(y)), color='k')
+# plt.text(int(0.82*len(y)), max(y), 'test')
+# plt.xlabel('t')
+# plt.ylabel('Vazões médias em FURNAS (m³/s)')
+# #plt.legend(['BTC(mm)'])
+#
+# plt.savefig('plots/furnas.eps')
 
 
 #EMAS
@@ -309,41 +309,33 @@ plt.savefig('plots/furnas.eps')
 
 
 
-
-#USD-BRL
+#
+# #USD-BRL
 # dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
-#
-#
 # dataframe = dataframe.sort_values(['w','normalization','k'])
 #
 # df_an = dataframe.loc[dataframe['normalization'] == 'AN']
 # df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #
 # for w in range(2,16):
 #     plt.clf()
-#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
-#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
-#     plt.legend(['AN','SW'])
-#     plt.title('Model RMSE with Window size '+str(w)+ ' for MINI Dolar')
-#     plt.ylabel('loss')
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset I')
+#     plt.ylabel('RMSE')
 #     plt.xlabel('k')
-#     plt.savefig('plots/dolar_rmse_k_w_'+str(w)+'.eps')
+#     plt.savefig('plots/dolar_rmse_k_w_' + str(w) + '.eps')
 #
 #
-# for w in range(2,16):
-#     plt.clf()
-#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['train'], 'bo')
-#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['train'], 'ro')
-#     plt.legend(['AN','SW'])
-#     plt.title('Model Train RMSE with Window size '+str(w)+ ' for MINI Dolar')
-#     plt.ylabel('loss')
-#     plt.xlabel('k')
-#     plt.savefig('plots/dolar_train_rmse_k_w_' + str(w) + '.eps')
-
-
-
-
-#BTC
+#
+#
+#
+# #BTC
 # dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 #
 #
@@ -351,13 +343,64 @@ plt.savefig('plots/furnas.eps')
 #
 # df_an = dataframe.loc[dataframe['normalization'] == 'AN']
 # df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #
 # for w in range(2,16):
 #     plt.clf()
-#     plt.plot(range(2,30), df_an.loc[dataframe['w'] == w]['test'], 'bo')
-#     plt.plot(range(2,30), df_sw.loc[dataframe['w'] == w]['test'], 'ro')
-#     plt.legend(['AN','SW'])
-#     plt.title('Model RMSE with Window size '+str(w)+ ' for BTC')
-#     plt.ylabel('loss')
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset II')
+#     plt.ylabel('RMSE')
 #     plt.xlabel('k')
 #     plt.savefig('plots/btc_rmse_k_w_' + str(w) + '.eps')
+#
+# #furnas
+# dataframe = pandas.read_csv('compare_furnas.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+#
+# dataframe = dataframe.sort_values(['w','normalization','k'])
+#
+# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset III')
+#     plt.ylabel('RMSE')
+#     plt.xlabel('k')
+#     plt.savefig('plots/furnas_rmse_k_w_' + str(w) + '.eps')
+#
+#
+# #rainfall
+# dataframe = pandas.read_csv('compare_rainfall.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+#
+# dataframe = dataframe.sort_values(['w','normalization','k'])
+#
+# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset IV')
+#     plt.ylabel('RMSE')
+#     plt.xlabel('k')
+#     plt.savefig('plots/rain_rmse_k_w_' + str(w) + '.eps')
