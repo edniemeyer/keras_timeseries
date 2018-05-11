@@ -278,7 +278,11 @@ def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
-    # X_train, Y_train = remove_outliers(X_train, Y_train)
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+
+    X_test, Y_test = remove_outliers(X_test, Y_test)
+
+    X_trainp, Y_trainp, X_testp, Y_testp = X_train, Y_train, X_test, Y_test
 
     #saving original shapes
     X_train_shape = X_train.shape
@@ -299,7 +303,7 @@ def nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     Y_test = Y_test.reshape(Y_test_shape)
 
 
-    return X_train, X_test, Y_train, Y_test, scaler
+    return X_train, X_test, Y_train, Y_test, scaler, X_trainp, X_testp, Y_trainp, Y_testp
 
 def nn_mm_den(X_train, X_test, Y_train, Y_test, scaler):
     X_train_shape = X_train.shape
@@ -395,7 +399,10 @@ def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
-    # X_train, Y_train = remove_outliers(X_train, Y_train)
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+    X_test, Y_test = remove_outliers(X_test, Y_test)
+
+    X_trainp, Y_trainp, X_testp, Y_testp = X_train, Y_train, X_test, Y_test
 
     # saving original shapes
     X_train_shape = X_train.shape
@@ -415,7 +422,7 @@ def nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     Y_test = zNormalizeOver(Y_test.reshape(-1, 1), scaler)
     Y_test = Y_test.reshape(Y_test_shape)
 
-    return X_train, X_test, Y_train, Y_test, scaler
+    return X_train, X_test, Y_train, Y_test, scaler, X_trainp, X_testp, Y_trainp, Y_testp
 
 def nn_zs_den(X_train, X_test, Y_train, Y_test, scaler):
     X_train = zDenormalize(X_train, scaler)
@@ -431,7 +438,10 @@ def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     X, Y = np.array(X), np.array(Y)
     X_train, X_test, Y_train, Y_test = create_Xt_Yt(X, Y)
 
-    # X_train, Y_train = remove_outliers(X_train, Y_train)
+    X_train, Y_train = remove_outliers(X_train, Y_train)
+    X_test, Y_test = remove_outliers(X_test, Y_test)
+
+    X_trainp, Y_trainp, X_testp, Y_testp = X_train, Y_train, X_test, Y_test
 
     maximum = max(X_train.reshape(-1))
 
@@ -454,7 +464,7 @@ def nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE):
     Y_test = decimalNormalizeOver(Y_test.reshape(-1, 1), maximum)
     Y_test = Y_test.reshape(Y_test_shape)
 
-    return X_train, X_test, Y_train, Y_test, maximum
+    return X_train, X_test, Y_train, Y_test, maximum, X_trainp, X_testp, Y_trainp, Y_testp
 
 def nn_ds_den(X_train, X_test, Y_train, Y_test, maximum):
     X_train = decimalDenormalize(X_train, maximum)

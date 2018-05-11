@@ -311,13 +311,13 @@ plt.rcParams.update(params)
 
 #
 # #USD-BRL
-# dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
-# dataframe = dataframe.sort_values(['w','normalization','k'])
-#
-# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
-# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
-# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
-# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
+dataframe = pandas.read_csv('compare_dolar.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #
 # for w in range(2,16):
 #     plt.clf()
