@@ -167,11 +167,11 @@ repeat
 
 MSE.arima <- MSE(btc_test,forecasts_arima_fit)
 RMSE.arima <- sqrt(MSE.arima)
-print('furnas')
+print('rain')
 print(RMSE.arima)
 
 end_time <- Sys.time()
 
 elapsed_time = end_time - start_time
 
-writeLines(paste('furnas',RMSE.arima,elapsed_time, sep=','), 'output/arimaR.csv')
+writeLines(paste('rain',RMSE.arima,elapsed_time, sep=','), 'output/arimaR.csv')

@@ -332,19 +332,21 @@ df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #     plt.savefig('plots/dolar_rmse_k_w_' + str(w) + '.eps')
 #
 #
-#
+
+print(dataframe[dataframe['test'] == min(dataframe['test'])])
+
 #
 #
 # #BTC
-# dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+dataframe = pandas.read_csv('compare_btc.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
 #
-#
-# dataframe = dataframe.sort_values(['w','normalization','k'])
-#
-# df_an = dataframe.loc[dataframe['normalization'] == 'AN']
-# df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
-# df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
-# df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
+df_an = dataframe.loc[dataframe['normalization'] == 'AN']
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #
 # for w in range(2,16):
 #     plt.clf()
@@ -357,7 +359,10 @@ df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 #     plt.ylabel('RMSE')
 #     plt.xlabel('k')
 #     plt.savefig('plots/btc_rmse_k_w_' + str(w) + '.eps')
-#
+
+print(dataframe[dataframe['test'] == min(dataframe['test'])])
+
+
 #furnas
 dataframe = pandas.read_csv('compare_furnas.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
@@ -368,19 +373,20 @@ df_an = dataframe.loc[dataframe['normalization'] == 'AN']
 df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
 df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
 df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
+#
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset IV')
+#     plt.ylabel('RMSE')
+#     plt.xlabel('k')
+#     plt.savefig('plots/furnas_rmse_k_w_' + str(w) + '.eps')
 
-for w in range(2,16):
-    plt.clf()
-    plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
-    plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
-    plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
-    plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
-    plt.legend(['SW','AN','ANS', 'ANC'])
-    plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset IV')
-    plt.ylabel('RMSE')
-    plt.xlabel('k')
-    plt.savefig('plots/furnas_rmse_k_w_' + str(w) + '.eps')
-
+print(dataframe[dataframe['test'] == min(dataframe['test'])])
 
 #rainfall
 dataframe = pandas.read_csv('compare_rainfall.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
@@ -393,14 +399,18 @@ df_sw = dataframe.loc[dataframe['normalization'] == 'SW']
 df_ano = dataframe.loc[dataframe['normalization'] == 'ANO']
 df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 
-for w in range(2,16):
-    plt.clf()
-    plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
-    plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
-    plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
-    plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
-    plt.legend(['SW','AN','ANS', 'ANC'])
-    plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset III')
-    plt.ylabel('RMSE')
-    plt.xlabel('k')
-    plt.savefig('plots/rain_rmse_k_w_' + str(w) + '.eps')
+# for w in range(2,16):
+#     plt.clf()
+#     plt.plot(range(2, 30), df_sw.loc[dataframe['w'] == w]['test'], 'bo')
+#     plt.plot(range(2, 30), df_ano.loc[dataframe['w'] == w]['test'], 'ro')
+#     plt.plot(range(2, 30), df_an.loc[dataframe['w'] == w]['test'], 'go')
+#     plt.plot(range(2, 30), df_anc.loc[dataframe['w'] == w]['test'], 'k+')
+#     plt.legend(['SW','AN','ANS', 'ANC'])
+#     plt.title('Janela de tamanho w = '+str(w)+ ' para Dataset III')
+#     plt.ylabel('RMSE')
+#     plt.xlabel('k')
+#     plt.savefig('plots/rain_rmse_k_w_' + str(w) + '.eps')
+#
+
+
+print(dataframe[dataframe['test'] == min(dataframe['test'])])
