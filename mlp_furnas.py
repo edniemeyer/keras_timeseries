@@ -45,11 +45,11 @@ def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset
         X_train, X_test, Y_train, Y_test, scaler_train, scaler_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(
             dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'MM'):
-        X_train, X_test, Y_train, Y_test, scaler = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, X_trainp, X_testp, Y_trainp, Y_testp  = nn_mm(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'ZS'):
-        X_train, X_test, Y_train, Y_test, scaler = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, scaler, X_trainp, X_testp, Y_trainp, Y_testp  = nn_zs(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
     if (normalization == 'DS'):
-        X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
+        X_train, X_test, Y_train, Y_test, maximum, X_trainp, X_testp, Y_trainp, Y_testp  = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
 
     csv_logger = CSVLogger('output/%d_layers/%s_%s.csv' % (n_layers, name, normalization))
     reduce_lr = ReduceLROnPlateau(monitor='val_loss')
@@ -144,8 +144,8 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     # nonlinearities = ['relu']
 
-    # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
-    normalizations = ['AN']
+    normalizations = ['MM', 'ZS', 'DS']
+    # normalizations = ['AN']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-FURNAS/MLP NN %s\n" % type)
@@ -155,8 +155,8 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2, 16):
-        for p in range(2, 30):
+    for o in range(5, 6):
+        for p in range(2, 3):
             TRAIN_SIZE = o
 
             k = p
