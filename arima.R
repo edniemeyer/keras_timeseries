@@ -1,10 +1,9 @@
 # install.packages("TSPred")
 library(TSPred)
-
+start_time <- Sys.time()
 #
 # # MINI Dollar
 #
-# start_time <- Sys.time()
 #
 # dolar = read.csv('minidolar/wdo.csv', sep = '|')
 # dolar_train = dolar$fechamento[1:round(0.8*nrow(dolar))]
