@@ -141,7 +141,7 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
-    normalizations = ['MM', 'ZS', 'DS']
+    normalizations = ['DS']
     # normalizations = ['AN']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
