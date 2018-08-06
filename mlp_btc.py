@@ -141,8 +141,8 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     #nonlinearities = ['relu']
 
-    normalizations = ['DS']
-    # normalizations = ['AN']
+    #normalizations = ['DS']
+    normalizations = ['AN']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-BTC/MLP NN %s\n" % type)
