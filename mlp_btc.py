@@ -154,12 +154,12 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(9, 10):
-        for p in range(2,3):
+    for o in range(3, 15):
+        for p in range(7,8):
 
-            TRAIN_SIZE = o
+            TRAIN_SIZE = 7
 
-            k = p
+            k = 8
 
             ewm_btc = dataset_original.ewm(span=k, min_periods=k).mean()
 
@@ -175,13 +175,15 @@ def __main__(argv):
                 #normalization = 'MM'
                 model = Sequential()
 
-                model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
+                model.add(Dense(o, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
                 model.add(Activation(name))
                 model.add(Dropout(0.25))
 
                 for l in range(n_layers):
-                    model.add(Dense(12, input_shape = (TRAIN_SIZE, )))
+                    model.add(Dense(o, input_shape = (TRAIN_SIZE, ), kernel_initializer='glorot_uniform',
+                                kernel_regularizer=regularizers.l2(0.01)))
                     model.add(Activation(name))
+                    model.add(Dropout(0.25))
                    # model.add(Dropout(0.25))
 
 
