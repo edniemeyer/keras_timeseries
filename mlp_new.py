@@ -1,18 +1,19 @@
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ['PYTHONHASHSEED'] = '0'
 import sys
 import numpy as np
 import pandas
 import math
-from tensorflow import set_random_seed
+import tensorflow as tf
 import random
 import matplotlib.pylab as plt
 #import talib
 
 seed=7
 np.random.seed(seed)  # for reproducibility
-set_random_seed(seed)
+tf.set_random_seed(seed)
 random.seed(seed)
 
 from processing import *
@@ -23,6 +24,15 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.optimizers import SGD, Adam
 from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from keras import regularizers
+
+session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+
+
+from keras import backend as K
+
+sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+K.set_session(sess)
+
 
 
 start_time = time.time()

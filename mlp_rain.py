@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import pandas
 import math
-from tensorflow import set_random_seed
+import tensorflow as tf
 import random
 import matplotlib.pylab as plt
 
@@ -14,7 +14,7 @@ import matplotlib.pylab as plt
 
 seed = 7
 np.random.seed(seed)  # for reproducibility
-set_random_seed(seed)
+tf.set_random_seed(seed)
 random.seed(seed)
 
 from processing import *
@@ -26,6 +26,14 @@ from keras.callbacks import CSVLogger, EarlyStopping, ModelCheckpoint, TensorBoa
 from keras import regularizers
 
 start_time = time.time()
+
+session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+
+
+from keras import backend as K
+
+sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+K.set_session(sess)
 
 # USD-BRL
 dataframe = pandas.read_csv('annual-rainfall-at-fortaleza-bra.csv', sep=',', engine='python', header=0)
