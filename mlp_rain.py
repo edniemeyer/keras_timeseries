@@ -7,6 +7,7 @@ import numpy as np
 import pandas
 import math
 from tensorflow import set_random_seed
+import random
 import matplotlib.pylab as plt
 
 # import talib
@@ -14,6 +15,7 @@ import matplotlib.pylab as plt
 seed = 7
 np.random.seed(seed)  # for reproducibility
 set_random_seed(seed)
+random.seed(seed)
 
 from processing import *
 
