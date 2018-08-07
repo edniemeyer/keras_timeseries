@@ -12,10 +12,12 @@ import matplotlib.pylab as plt
 
 # import talib
 
-seed = 7
-np.random.seed(seed)  # for reproducibility
-tf.set_random_seed(seed)
-random.seed(seed)
+seed = [4395,3129,277,9871,5183,6082,810,6979,2654,5765]
+
+def set_seeds(seed):
+    np.random.seed(seed)  # for reproducibility
+    tf.set_random_seed(seed)
+    random.seed(seed)
 
 from processing import *
 
@@ -168,8 +170,10 @@ def __main__(argv):
     # with outlier removal: TRAIN_SIZE=4 k=3
 
     for o in range(3,15, 3):
-        for p in range(0, 10):
+        for p in seed:
             TRAIN_SIZE = 7
+
+            set_seeds(seed)
 
             k = 8
 
