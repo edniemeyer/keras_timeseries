@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import pandas
 from matplotlib.pylab import sqrt
+import math
 import numpy as np
 from processing import *
 from datetime import datetime
@@ -414,3 +415,12 @@ df_anc = dataframe.loc[dataframe['normalization'] == 'ANC']
 
 
 print(dataframe[dataframe['test'] == min(dataframe['test'])])
+
+
+
+
+dataframe = pandas.read_csv('epochs-ideal.csv', sep = ',',  engine='python', decimal='.')
+
+plt.clf()
+plt.plot(dataframe['epoch'].values, dataframe['val_loss'].values)
+plt.savefig('plots/epochs_val_loss.eps')

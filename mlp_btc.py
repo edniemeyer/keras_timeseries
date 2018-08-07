@@ -29,7 +29,7 @@ btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', head
 dataset_original = btc['close']
 
 batch_size = 64
-nb_epoch = 1000
+nb_epoch = 100
 patience = 1000
 
 TARGET_TIME = 1
@@ -154,8 +154,8 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(3, 15):
-        for p in range(7,8):
+    for o in range(3,15, 3):
+        for p in range(0, 10):
 
             TRAIN_SIZE = 7
 

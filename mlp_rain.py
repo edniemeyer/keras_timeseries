@@ -28,7 +28,7 @@ dataframe = pandas.read_csv('annual-rainfall-at-fortaleza-bra.csv', sep=',', eng
 dataset_original = dataframe['rainfall']
 
 batch_size = 64
-nb_epoch = 1000
+nb_epoch = 100
 patience = 1000
 TARGET_TIME = 1
 LAG_SIZE = 1
@@ -157,8 +157,8 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(3, 15):
-        for p in range(7, 8):
+    for o in range(3,15, 3):
+        for p in range(0, 10):
             TRAIN_SIZE = 7
 
             k = 8
