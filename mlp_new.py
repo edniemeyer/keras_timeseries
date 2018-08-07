@@ -5,11 +5,13 @@ import sys
 import numpy as np
 import pandas
 import math
+import random
 import matplotlib.pylab as plt
 #import talib
 
 seed=7
 np.random.seed(seed)  # for reproducibility
+random.seed(seed)
 
 from processing import *
 
