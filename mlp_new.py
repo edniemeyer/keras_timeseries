@@ -47,7 +47,7 @@ dataset_original = dataframe['fechamento']
 
 
 batch_size = 64
-nb_epoch = 100
+nb_epoch = 1000
 patience = 1000
 TARGET_TIME = 1
 LAG_SIZE = 1

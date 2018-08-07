@@ -43,7 +43,7 @@ btc = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', head
 dataset_original = btc['close']
 
 batch_size = 64
-nb_epoch = 100
+nb_epoch = 1000
 patience = 1000
 
 TARGET_TIME = 1
