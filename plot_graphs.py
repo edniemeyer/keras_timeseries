@@ -1,13 +1,13 @@
 import matplotlib.pylab as plt
 import pandas
-from matplotlib.pylab import sqrt
+from matplotlib.pylab import sqrt, boxplot
 import math
 import numpy as np
 from processing import *
 from datetime import datetime
 
 
-fig_width_pt = 406.0  # Get this from LaTeX using \showthe\columnwidth
+fig_width_pt = 496.0  # Get this from LaTeX using \showthe\columnwidth
 inches_per_pt = 1.0/72.27               # Convert pt to inch
 golden_mean = (sqrt(5)-1.0)/2.0         # Aesthetic ratio
 fig_width = fig_width_pt*inches_per_pt  # width in inches
@@ -424,3 +424,38 @@ dataframe = pandas.read_csv('epochs-ideal.csv', sep = ',',  engine='python', dec
 plt.clf()
 plt.plot(dataframe['epoch'].values, dataframe['val_loss'].values)
 plt.savefig('plots/epochs_val_loss.eps')
+
+
+
+#rainfall neurons
+dataframe = pandas.read_csv('compare_rainfall-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+plt.clf()
+boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+#plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('neurons')
+plt.savefig('plots/rain_rmse_neuron_0l.eps')
+
+
+dataframe = pandas.read_csv('compare_rainfall-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+plt.clf()
+boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+#plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('neurons')
+plt.savefig('plots/rain_rmse_neuron_1l.eps')
+
