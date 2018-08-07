@@ -173,7 +173,7 @@ def __main__(argv):
 
             TRAIN_SIZE = 7
 
-            set_seeds(seed)
+            set_seeds(p)
 
             k = 8
 
