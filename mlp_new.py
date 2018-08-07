@@ -5,13 +5,13 @@ import sys
 import numpy as np
 import pandas
 import math
-import random
+from tensorflow import set_random_seed
 import matplotlib.pylab as plt
 #import talib
 
 seed=7
 np.random.seed(seed)  # for reproducibility
-random.seed(seed)
+set_random_seed(seed)
 
 from processing import *
 
