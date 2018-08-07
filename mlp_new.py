@@ -171,13 +171,13 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(3,15, 3):
+    for o in range(5, 30, 5):
         for p in seed:
             TRAIN_SIZE = 7
 
             set_seeds(p)
 
-            k = 8
+            k = o
 
             ewm_dolar = dataset_original.ewm(span=k, min_periods=k).mean()
 
@@ -191,12 +191,12 @@ def __main__(argv):
                 name='tanh'
                 model = Sequential()
 
-                model.add(Dense(o, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
+                model.add(Dense(12, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
                 model.add(Activation(name))
                 model.add(Dropout(0.25))
 
                 for l in range(n_layers):
-                    model.add(Dense(o, input_shape = (TRAIN_SIZE, ), kernel_initializer='glorot_uniform',
+                    model.add(Dense(12, input_shape = (TRAIN_SIZE, ), kernel_initializer='glorot_uniform',
                                 kernel_regularizer=regularizers.l2(0.01)))
                     model.add(Activation(name))
                     model.add(Dropout(0.25))
