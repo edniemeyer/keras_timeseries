@@ -496,7 +496,40 @@ print(dataframe[dataframe['test'] == min(dataframe['test'])])
 
 
 #dolar neurons
-dataframe = pandas.read_csv('compare_dolar-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#dataframe = pandas.read_csv('compare_dolar-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+#w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+#w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+#w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+#w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+#plt.clf()
+#boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# plt.title('Rede Neural com uma camada oculta para Dataset IV')
+#plt.ylabel('RMSE')
+#plt.xlabel('neurons')
+#plt.savefig('plots/dolar_rmse_neuron_0l.eps')
+
+
+#dataframe = pandas.read_csv('compare_dolar-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+#w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+#w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+#w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+#w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+#plt.clf()
+#boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# plt.title('Rede Neural com duas camadas ocultas para Dataset IV')
+#plt.ylabel('RMSE')
+#plt.xlabel('neurons')
+#plt.savefig('plots/dolar_rmse_neuron_1l.eps')
+
+
+#btc neurons
+dataframe = pandas.read_csv('compare_btc-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
 w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
@@ -509,10 +542,10 @@ boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
 # plt.title('Rede Neural com uma camada oculta para Dataset IV')
 plt.ylabel('RMSE')
 plt.xlabel('neurons')
-plt.savefig('plots/dolar_rmse_neuron_0l.eps')
+plt.savefig('plots/btc_rmse_neuron_0l.eps')
 
 
-dataframe = pandas.read_csv('compare_dolar-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+dataframe = pandas.read_csv('compare_btc-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
 w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
@@ -525,5 +558,6 @@ boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
 # plt.title('Rede Neural com duas camadas ocultas para Dataset IV')
 plt.ylabel('RMSE')
 plt.xlabel('neurons')
-plt.savefig('plots/dolar_rmse_neuron_1l.eps')
+plt.savefig('plots/btc_rmse_neuron_1l.eps')
+
 
