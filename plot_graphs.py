@@ -529,35 +529,122 @@ print(dataframe[dataframe['test'] == min(dataframe['test'])])
 
 
 #btc neurons
-dataframe = pandas.read_csv('compare_btc-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+# dataframe = pandas.read_csv('compare_btc-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+# w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+# w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+# w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+# w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+#
+#
+# plt.clf()
+# boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# # plt.title('Rede Neural com uma camada oculta para Dataset IV')
+# plt.ylabel('RMSE')
+# plt.xlabel('neurons')
+# plt.savefig('plots/btc_rmse_neuron_0l.eps')
+#
+#
+# dataframe = pandas.read_csv('compare_btc-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+#
+# w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+# w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+# w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+# w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+#
+#
+# plt.clf()
+# boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# # plt.title('Rede Neural com duas camadas ocultas para Dataset IV')
+# plt.ylabel('RMSE')
+# plt.xlabel('neurons')
+# plt.savefig('plots/btc_rmse_neuron_1l.eps')
 
-w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
-w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
-w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
-w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+###################################################################################################
+
+
+
+
+
+
+
+#rainfall neurons
+dataframe = pandas.read_csv('compare_rainfall-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
+w8 = dataframe.loc[dataframe['w'] == 8]['test'].values.mean()
+w13 = dataframe.loc[dataframe['w'] == 13]['test'].values.mean()
+w18 = dataframe.loc[dataframe['w'] == 18]['test'].values.mean()
+w23 = dataframe.loc[dataframe['w'] == 23]['test'].values.mean()
+w28 = dataframe.loc[dataframe['w'] == 28]['test'].values.mean()
+
 
 
 plt.clf()
-boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
-# plt.title('Rede Neural com uma camada oculta para Dataset IV')
+plt.plot( [3,8,13,18,23,28], [w3,w8,w13,w18,w23,w28],'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
 plt.ylabel('RMSE')
-plt.xlabel('neurons')
-plt.savefig('plots/btc_rmse_neuron_0l.eps')
+plt.xlabel('k')
+plt.savefig('plots/rain_rmse_k.eps')
 
+#furnas neurons
+dataframe = pandas.read_csv('compare_furnas-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
-dataframe = pandas.read_csv('compare_btc-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
+w8 = dataframe.loc[dataframe['w'] == 8]['test'].values.mean()
+w13 = dataframe.loc[dataframe['w'] == 13]['test'].values.mean()
+w18 = dataframe.loc[dataframe['w'] == 18]['test'].values.mean()
+w23 = dataframe.loc[dataframe['w'] == 23]['test'].values.mean()
+w28 = dataframe.loc[dataframe['w'] == 28]['test'].values.mean()
 
-w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
-w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
-w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
-w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
 
 
 plt.clf()
-boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
-# plt.title('Rede Neural com duas camadas ocultas para Dataset IV')
+plt.plot([3,8,13,18,23,28], [w3,w8,w13,w18,w23,w28],'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
 plt.ylabel('RMSE')
-plt.xlabel('neurons')
-plt.savefig('plots/btc_rmse_neuron_1l.eps')
+plt.xlabel('k')
+plt.savefig('plots/furnas_rmse_k.eps')
+
+
+#dolar neurons
+dataframe = pandas.read_csv('compare_dolar-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
+w8 = dataframe.loc[dataframe['w'] == 8]['test'].values.mean()
+w13 = dataframe.loc[dataframe['w'] == 13]['test'].values.mean()
+w18 = dataframe.loc[dataframe['w'] == 18]['test'].values.mean()
+w23 = dataframe.loc[dataframe['w'] == 23]['test'].values.mean()
+w28 = dataframe.loc[dataframe['w'] == 28]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot( [3,8,13,18,23,28], [w3,w8,w13,w18,w23,w28], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('k')
+plt.savefig('plots/dolar_rmse_k.eps')
+
+
+#rainfall neurons
+dataframe = pandas.read_csv('compare_btc-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
+w8 = dataframe.loc[dataframe['w'] == 8]['test'].values.mean()
+w13 = dataframe.loc[dataframe['w'] == 13]['test'].values.mean()
+w18 = dataframe.loc[dataframe['w'] == 18]['test'].values.mean()
+w23 = dataframe.loc[dataframe['w'] == 23]['test'].values.mean()
+w28 = dataframe.loc[dataframe['w'] == 28]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot([3,8,13,18,23,28],[w3,w8,w13,w18,w23,w28], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('k')
+plt.savefig('plots/btc_rmse_k.eps')
 
 
