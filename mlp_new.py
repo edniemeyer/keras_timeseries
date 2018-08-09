@@ -161,7 +161,7 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     #normalizations = ['DS']
-    normalizations = ['AN']
+    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-MINIDOLAR/MLP NN %s\n" % type)
@@ -171,9 +171,9 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2, 30, 5):
-        for p in seed:
-            TRAIN_SIZE = o
+    #for o in range(2, 30, 5):
+    for p in seed:
+            TRAIN_SIZE = 2
 
             set_seeds(p)
 
@@ -187,7 +187,9 @@ def __main__(argv):
 
             #for name in nonlinearities:
             for normalization in normalizations:
-            # for f in range(1,2):
+                if (normalization[:-1] == 'AN'):
+                    type = normalization[-1]
+                    normalization == 'AN'
                 name='tanh'
                 model = Sequential()
 

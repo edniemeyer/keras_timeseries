@@ -2,6 +2,7 @@ import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ['PYTHONHASHSEED'] = '0'
 import sys
 import numpy as np
 import pandas
@@ -161,7 +162,7 @@ def __main__(argv):
     # nonlinearities = ['relu']
 
     #normalizations = ['DS']
-    normalizations = ['AN']
+    normalizations = ['ANo','ANc','ANd','SW','MM','ZS','DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-RAINFALL/MLP NN %s\n" % type)
@@ -171,9 +172,9 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2,30, 5):
-        for p in seed:
-            TRAIN_SIZE = o
+    #for o in range(2,30, 5):
+    for p in seed:
+            TRAIN_SIZE = 2
 
             set_seeds(p)
 
@@ -187,6 +188,9 @@ def __main__(argv):
 
             # for name in nonlinearities:
             for normalization in normalizations:
+                if (normalization[:-1] == 'AN'):
+                    type = normalization[-1]
+                    normalization == 'AN'
                 # for f in range(1,2):
                 name = 'tanh'
                 model = Sequential()

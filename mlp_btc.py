@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
+os.environ['PYTHONHASHSEED'] = '0'
 import sys
 import json
 import numpy as np
@@ -156,7 +157,7 @@ def __main__(argv):
     #nonlinearities = ['relu']
 
     #normalizations = ['DS']
-    normalizations = ['AN']
+    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-BTC/MLP NN %s\n" % type)
@@ -168,10 +169,10 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(2, 30, 5):
-        for p in seed:
+    #for o in range(2, 30, 5):
+    for p in seed:
 
-            TRAIN_SIZE = o
+            TRAIN_SIZE = 2
 
             set_seeds(p)
 
@@ -186,7 +187,9 @@ def __main__(argv):
 
             #for name in nonlinearities:
             for normalization in normalizations:
-            # for f in range(1,2):
+                if (normalization[:-1] == 'AN'):
+                    type = normalization[-1]
+                    normalization == 'AN'
                 name='tanh'
                 #normalization = 'MM'
                 model = Sequential()
