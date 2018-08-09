@@ -170,9 +170,9 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    #for o in range(2, 30, 5):
-    for p in seed:
-            TRAIN_SIZE = 22
+    for o in range(22, 30, 30):
+        for p in seed:
+            TRAIN_SIZE = o
 
             set_seeds(p)
 
