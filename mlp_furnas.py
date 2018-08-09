@@ -188,7 +188,7 @@ def __main__(argv):
             for normalization in normalizations:
                 if (normalization[:-1] == 'AN'):
                     type = normalization[-1]
-                    normalization == 'AN'
+                    normalization = 'AN'
                 # for f in range(1,2):
                 name = 'tanh'
                 model = Sequential()

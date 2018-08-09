@@ -189,7 +189,7 @@ def __main__(argv):
             for normalization in normalizations:
                 if (normalization[:-1] == 'AN'):
                     type = normalization[-1]
-                    normalization == 'AN'
+                    normalization = 'AN'
                 name='tanh'
                 #normalization = 'MM'
                 model = Sequential()
