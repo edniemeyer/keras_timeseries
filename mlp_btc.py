@@ -168,14 +168,14 @@ def __main__(argv):
     testScore_aux = 999999
     f_aux = 0
 
-    for o in range(3, 30, 5):
+    for o in range(2, 30, 5):
         for p in seed:
 
-            TRAIN_SIZE = 7
+            TRAIN_SIZE = o
 
             set_seeds(p)
 
-            k = o
+            k = 3
 
             ewm_btc = dataset_original.ewm(span=k, min_periods=k).mean()
 
