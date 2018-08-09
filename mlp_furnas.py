@@ -188,7 +188,9 @@ def __main__(argv):
             for normalization in normalizations:
                 if (normalization[:-1] == 'AN'):
                     type = normalization[-1]
-                    normalization = 'AN'
+                    norm = 'AN'
+                else:
+                    norm = normalization
                 # for f in range(1,2):
                 name = 'tanh'
                 model = Sequential()
@@ -210,7 +212,7 @@ def __main__(argv):
                 # model.summary()
 
                 trainScore, testScore, epochs, optimizer = evaluate_model(model, name, n_layers, nb_epoch,
-                                                                          normalization, TRAIN_SIZE, dataset, ewm_dolar, type=type)
+                                                                          norm, TRAIN_SIZE, dataset, ewm_dolar, type=type)
                 # if(testScore_aux > testScore):
                 #     testScore_aux=testScore
                 #     f_aux = f
