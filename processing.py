@@ -591,21 +591,21 @@ def nn_an_den_type(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_
             X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1, train_shape)
         else:
             X_denormalizado = minMaxDenormalize(X_train[i].reshape(-1, 1), scaler).reshape(-1)
-        if type == 'o':
+        if(type == 'o'):
             X_denormalizado = X_denormalizado * shift_train[i]
-        elif type == 'c':
-            X_denormalizado = (X_denormalizado-1) * (shift_train[i]-1)
-        else:
+        elif(type == 'c'):
+            X_denormalizado = (X_denormalizado) * (shift_train[i])
+        elif(type == 'd'):
             X_denormalizado = X_denormalizado + shift_train[i]
 
         X_train_d.append(X_denormalizado)
         Y_denormalizado = minMaxDenormalize(Y_train[i].reshape(-1, 1), scaler).reshape(-1)
 
-        if type == 'o':
+        if(type == 'o'):
             Y_denormalizado = Y_denormalizado * shift_train[i]
-        elif type == 'c':
-            Y_denormalizado = (Y_denormalizado-1) * (shift_train[i]-1)
-        else:
+        elif(type == 'c'):
+            Y_denormalizado = (Y_denormalizado) * (shift_train[i])
+        elif(type == 'd'):
             Y_denormalizado = Y_denormalizado + shift_train[i]
 
         Y_train_d.append(Y_denormalizado)
