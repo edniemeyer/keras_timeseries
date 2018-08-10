@@ -48,6 +48,7 @@ dataset_original =  [100 * (b - a) / a for a, b in zip(dataset_original[::1], da
 
 
 dataset_original = pandas.DataFrame(dataset_original)
+dataset_original = dataset_original[0]
 
 
 
