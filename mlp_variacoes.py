@@ -167,7 +167,8 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     #normalizations = ['DS']
-    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
+    normalizations = ['ANo']
+    #normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-VARIACOES MINIDOLAR/MLP NN %s\n" % type)
