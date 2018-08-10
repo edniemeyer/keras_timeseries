@@ -14,11 +14,16 @@ dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', de
 dataset = dataframe['fechamento']
 media  = dataframe['media'].tolist()
 
-ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
+variacoes =  [100 * (b - a) / a for a, b in zip(dataset[::1], dataset[1::1])]
+
+
+variacoes = pandas.DataFrame(variacoes)
+
+ewm_dolar = variacoes.ewm(span=5, min_periods=5).mean()
 
 
 #removendo NaN
-dataset = np.array(dataset.iloc[4:])
+variacoes = np.array(variacoes.iloc[4:])
 ewm_dolar = np.array(ewm_dolar.iloc[4:])
 
 X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
