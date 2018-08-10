@@ -12,33 +12,41 @@ EMB_SIZE = 1
 #USD-BRL
 dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
 dataset = dataframe['fechamento']
+ori = dataset
+
+
 media  = dataframe['media'].tolist()
 
-variacoes =  [100 * (b - a) / a for a, b in zip(dataset[::1], dataset[1::1])]
+dataset =  [100 * (b - a) / a for a, b in zip(dataset[::1], dataset[1::1])]
 
 
-variacoes = pandas.DataFrame(variacoes)
+dataset = pandas.DataFrame(dataset)
 
-ewm_dolar = variacoes.ewm(span=5, min_periods=5).mean()
+ewm_dolar = dataset.ewm(span=5, min_periods=5).mean()
 
 
 #removendo NaN
-variacoes = np.array(variacoes.iloc[4:])
+dataset = np.array(dataset.iloc[4:])
 ewm_dolar = np.array(ewm_dolar.iloc[4:])
-
-X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
-X, Y = np.array(X), np.array(Y)
-
-X_train_, X_test_, Y_train_, Y_test_ = create_Xt_Yt(X, Y, percentage=0.80)
-
-X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
-
-X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+ori = np.array(ori.iloc[4:])
 
 
-X_trainp2, X_testp2, Y_trainp2, Y_testp2 = nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
+X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an_type(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE, 'o')
 
-X_trainp3, X_testp3, Y_trainp3, Y_testp3 = nn_sw_den(X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2)
+
+#X, Y = split_into_chunks(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE, binary=False, scale=False)
+#X, Y = np.array(X), np.array(Y)
+
+#X_train_, X_test_, Y_train_, Y_test_ = create_Xt_Yt(X, Y, percentage=0.80)
+
+#X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test, X_trainp, X_testp, Y_trainp, Y_testp = nn_an(dataset, ewm_dolar, TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+
+#X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2, X_trainp, X_testp, Y_trainp, Y_testp = nn_sw(dataset,TRAIN_SIZE,TARGET_TIME, LAG_SIZE)
+
+
+#X_trainp2, X_testp2, Y_trainp2, Y_testp2 = nn_an_den(X_train, X_test, Y_train, Y_test, scaler, shift_train, shift_test)
+
+#X_trainp3, X_testp3, Y_trainp3, Y_testp3 = nn_sw_den(X_train2, X_test2, Y_train2, Y_test2, scaler_train2, scaler_test2)
 
 # X_train, X_test, Y_train, Y_test, maximum = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
 #

@@ -46,6 +46,36 @@ plt.rcParams.update(params)
 # plt.savefig('plots/minidolar.eps')
 
 
+#variacoes minidolar
+dataframe = pandas.read_csv('minidolar/wdo.csv', sep = '|',  engine='python', decimal='.',header=0)
+dataset_original = dataframe['fechamento']
+
+dataset_original =  [100 * (b - a) / a for a, b in zip(dataset_original[::1], dataset_original[1::1])]
+
+
+dataset_original = pandas.DataFrame(dataset_original)
+dataset_original = dataset_original[0]
+
+
+y = np.array(dataset_original.tolist())
+# Plot data
+plt.figure(1)
+plt.clf()
+plt.axes([0.125,0.2,0.95-0.125,0.95-0.2])
+# series[0:100].plot(label='WDOU16')
+plt.plot(y,'-b')
+plt.axvline(x=int(0.7*len(y)), color='k')
+plt.text(int(0.6*len(y)), max(y), 'train')
+plt.text(int(0.72*len(y)), max(y), 'val')
+plt.axvline(x=int(0.8*len(y)), color='k')
+plt.text(int(0.82*len(y)), max(y), 'test')
+plt.xlabel('t')
+plt.ylabel('Variações MINI Dolar')
+#plt.legend(['WDOU16'])
+
+plt.savefig('plots/variacoes.eps')
+
+
 
 #btc
 # dataframe = pandas.read_csv('btc-usd.csv', sep=',', engine='python', decimal='.', header=0)
