@@ -178,13 +178,13 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(3, 30, 5):
+    for o in range(2, 30, 5):
         for p in seed:
-            TRAIN_SIZE = 7
+            TRAIN_SIZE = o
 
             set_seeds(p)
 
-            k = o
+            k = 3
 
             ewm_dolar = dataset_original.ewm(span=k, min_periods=k).mean()
 
