@@ -167,8 +167,8 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     #normalizations = ['DS']
-    normalizations = ['ANo']
-    #normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
+    #normalizations = ['ANo']
+    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-VARIACOES MINIDOLAR/MLP NN %s\n" % type)
@@ -178,7 +178,7 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(2, 30, 5):
+    for o in range(22, 30, 30):
         for p in seed:
             TRAIN_SIZE = o
 
