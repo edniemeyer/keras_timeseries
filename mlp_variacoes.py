@@ -178,7 +178,7 @@ def __main__(argv):
     # best parameters without outlier removal: TRAIN_SIZE= 7 k=25
     # with outlier removal: TRAIN_SIZE=4 k=3
 
-    for o in range(22, 30, 30):
+    for o in range(12, 30, 30):
         for p in seed:
             TRAIN_SIZE = o
 
@@ -202,12 +202,12 @@ def __main__(argv):
                 name='tanh'
                 model = Sequential()
 
-                model.add(Dense(6, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
+                model.add(Dense(3, input_shape = (TRAIN_SIZE, ) , kernel_initializer='glorot_uniform', kernel_regularizer=regularizers.l2(0.01)))
                 model.add(Activation(name))
                 model.add(Dropout(0.25))
 
                 for l in range(n_layers):
-                    model.add(Dense(6, input_shape = (TRAIN_SIZE, ), kernel_initializer='glorot_uniform',
+                    model.add(Dense(3, input_shape = (TRAIN_SIZE, ), kernel_initializer='glorot_uniform',
                                 kernel_regularizer=regularizers.l2(0.01)))
                     model.add(Activation(name))
                     model.add(Dropout(0.25))
