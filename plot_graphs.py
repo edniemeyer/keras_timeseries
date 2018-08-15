@@ -591,6 +591,41 @@ print(dataframe[dataframe['test'] == min(dataframe['test'])])
 # plt.savefig('plots/btc_rmse_neuron_1l.eps')
 
 
+
+#variacoes neurons
+dataframe = pandas.read_csv('compare_variacoes-neuron-0layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+plt.clf()
+boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('RMSE')
+plt.xlabel('neurons')
+plt.savefig('plots/variacoes_rmse_neuron_0l.eps')
+
+
+dataframe = pandas.read_csv('compare_variacoes-neuron-1layers.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values
+w6 = dataframe.loc[dataframe['w'] == 6]['test'].values
+w9 = dataframe.loc[dataframe['w'] == 9]['test'].values
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values
+
+
+plt.clf()
+boxplot([w3,w6,w9,w12], positions = [3,6,9,12])
+# plt.title('Rede Neural com duas camadas ocultas para Dataset V')
+plt.ylabel('RMSE')
+plt.xlabel('neurons')
+plt.savefig('plots/variacoes_rmse_neuron_1l.eps')
+
+
+
 ###################################################################################################
 
 
@@ -599,7 +634,7 @@ print(dataframe[dataframe['test'] == min(dataframe['test'])])
 
 
 
-#rainfall neurons
+#rainfall k
 dataframe = pandas.read_csv('compare_rainfall-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
@@ -618,7 +653,7 @@ plt.ylabel('RMSE')
 plt.xlabel('k')
 plt.savefig('plots/rain_rmse_k.eps')
 
-#furnas neurons
+#furnas k
 dataframe = pandas.read_csv('compare_furnas-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
@@ -638,7 +673,7 @@ plt.xlabel('k')
 plt.savefig('plots/furnas_rmse_k.eps')
 
 
-#dolar neurons
+#dolar k
 dataframe = pandas.read_csv('compare_dolar-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
@@ -658,7 +693,7 @@ plt.xlabel('k')
 plt.savefig('plots/dolar_rmse_k.eps')
 
 
-#rainfall neurons
+#btc k
 dataframe = pandas.read_csv('compare_btc-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
 
 w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
@@ -676,5 +711,136 @@ plt.plot([3,8,13,18,23,28],[w3,w8,w13,w18,w23,w28], 'bo')
 plt.ylabel('RMSE')
 plt.xlabel('k')
 plt.savefig('plots/btc_rmse_k.eps')
+
+
+#variacoes k
+dataframe = pandas.read_csv('compare_variacoes-k.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w3 = dataframe.loc[dataframe['w'] == 3]['test'].values.mean()
+w8 = dataframe.loc[dataframe['w'] == 8]['test'].values.mean()
+w13 = dataframe.loc[dataframe['w'] == 13]['test'].values.mean()
+w18 = dataframe.loc[dataframe['w'] == 18]['test'].values.mean()
+w23 = dataframe.loc[dataframe['w'] == 23]['test'].values.mean()
+w28 = dataframe.loc[dataframe['w'] == 28]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot([3,8,13,18,23,28],[w3,w8,w13,w18,w23,w28], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('RMSE')
+plt.xlabel('k')
+plt.savefig('plots/variacoes_rmse_k.eps')
+
+
+
+###################################################################################################
+
+
+
+
+
+
+
+#rainfall w
+dataframe = pandas.read_csv('compare_rainfall-w.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w2 = dataframe.loc[dataframe['w'] == 2]['test'].values.mean()
+w7 = dataframe.loc[dataframe['w'] == 7]['test'].values.mean()
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values.mean()
+w17 = dataframe.loc[dataframe['w'] == 17]['test'].values.mean()
+w22 = dataframe.loc[dataframe['w'] == 22]['test'].values.mean()
+w27 = dataframe.loc[dataframe['w'] == 27]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot( [2,7,12,17,22,27], [w2,w7,w12,w17,w22,w27],'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('w')
+plt.savefig('plots/rain_rmse_w.eps')
+
+#furnas w
+dataframe = pandas.read_csv('compare_furnas-w.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w2 = dataframe.loc[dataframe['w'] == 2]['test'].values.mean()
+w7 = dataframe.loc[dataframe['w'] == 7]['test'].values.mean()
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values.mean()
+w17 = dataframe.loc[dataframe['w'] == 17]['test'].values.mean()
+w22 = dataframe.loc[dataframe['w'] == 22]['test'].values.mean()
+w27 = dataframe.loc[dataframe['w'] == 27]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot([2,7,12,17,22,27], [w2,w7,w12,w17,w22,w27],'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('w')
+plt.savefig('plots/furnas_rmse_w.eps')
+
+
+#dolar w
+dataframe = pandas.read_csv('compare_dolar-w.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w2 = dataframe.loc[dataframe['w'] == 2]['test'].values.mean()
+w7 = dataframe.loc[dataframe['w'] == 7]['test'].values.mean()
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values.mean()
+w17 = dataframe.loc[dataframe['w'] == 17]['test'].values.mean()
+w22 = dataframe.loc[dataframe['w'] == 22]['test'].values.mean()
+w27 = dataframe.loc[dataframe['w'] == 27]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot( [2,7,12,17,22,27], [w2,w7,w12,w17,w22,w27], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('w')
+plt.savefig('plots/dolar_rmse_w.eps')
+
+
+#btc w
+dataframe = pandas.read_csv('compare_btc-w.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w2 = dataframe.loc[dataframe['w'] == 2]['test'].values.mean()
+w7 = dataframe.loc[dataframe['w'] == 7]['test'].values.mean()
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values.mean()
+w17 = dataframe.loc[dataframe['w'] == 17]['test'].values.mean()
+w22 = dataframe.loc[dataframe['w'] == 22]['test'].values.mean()
+w27 = dataframe.loc[dataframe['w'] == 27]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot([2,7,12,17,22,27],[w2,w7,w12,w17,w22,w27], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset III')
+plt.ylabel('RMSE')
+plt.xlabel('w')
+plt.savefig('plots/btc_rmse_w.eps')
+
+
+#variacoes w
+dataframe = pandas.read_csv('compare_variacoes-w.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+w2 = dataframe.loc[dataframe['w'] == 2]['test'].values.mean()
+w7 = dataframe.loc[dataframe['w'] == 7]['test'].values.mean()
+w12 = dataframe.loc[dataframe['w'] == 12]['test'].values.mean()
+w17 = dataframe.loc[dataframe['w'] == 17]['test'].values.mean()
+w22 = dataframe.loc[dataframe['w'] == 22]['test'].values.mean()
+w27 = dataframe.loc[dataframe['w'] == 27]['test'].values.mean()
+
+
+
+plt.clf()
+plt.plot([2,7,12,17,22,27],[w2,w7,w12,w17,w22,w27], 'bo')
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('RMSE')
+plt.xlabel('w')
+plt.savefig('plots/variacoes_rmse_w.eps')
+
+
+
 
 
