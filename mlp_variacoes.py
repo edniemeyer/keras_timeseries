@@ -78,7 +78,7 @@ def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset
 
 
 
-    csv_logger = CSVLogger('output/%d_layers/%s_%s.csv' % (n_layers, name, normalization))
+    csv_logger = CSVLogger('output/%d_layers/variacoes_%s_%s.csv' % (n_layers, name, normalization))
     reduce_lr = ReduceLROnPlateau(monitor='val_loss')
     es = EarlyStopping(monitor='val_loss', patience=patience)
     #mcp = ModelCheckpoint('output/mnist_adaptative_%dx800/%s.checkpoint' % (n_layers, name), save_weights_only=True)
@@ -167,8 +167,8 @@ def __main__(argv):
 
     # normalizations = ['AN', 'SW', 'MM', 'ZS', 'DS']
     #normalizations = ['DS']
-    #normalizations = ['ANo']
-    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
+    normalizations = ['ANo']
+    # normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-VARIACOES MINIDOLAR/MLP NN %s\n" % type)

@@ -66,7 +66,7 @@ def evaluate_model(model, name, n_layers, ep, normalization, TRAIN_SIZE, dataset
     if (normalization == 'DS'):
         X_train, X_test, Y_train, Y_test, maximum, X_trainp, X_testp, Y_trainp, Y_testp  = nn_ds(dataset, TRAIN_SIZE, TARGET_TIME, LAG_SIZE)
 
-    csv_logger = CSVLogger('output/%d_layers/%s_%s.csv' % (n_layers, name, normalization))
+    csv_logger = CSVLogger('output/%d_layers/furnas_%s_%s.csv' % (n_layers, name, normalization))
     reduce_lr = ReduceLROnPlateau(monitor='val_loss')
     es = EarlyStopping(monitor='val_loss', patience=patience)
     # mcp = ModelCheckpoint('output/mnist_adaptative_%dx800/%s.checkpoint' % (n_layers, name), save_weights_only=True)
@@ -159,8 +159,8 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     # nonlinearities = ['relu']
 
-    #normalizations = ['DS']
-    normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
+    normalizations = ['ANo']
+    # normalizations = ['ANo', 'ANc', 'ANd', 'SW', 'MM', 'ZS', 'DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-FURNAS/MLP NN %s\n" % type)
