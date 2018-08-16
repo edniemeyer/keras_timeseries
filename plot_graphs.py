@@ -844,3 +844,127 @@ plt.savefig('plots/variacoes_rmse_w.eps')
 
 
 
+############################################################
+
+
+#minidolar all norm
+dataframe = pandas.read_csv('compare_dolar_all.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANo']['test'].values.mean()
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANc']['test'].values.mean()
+df_and = dataframe.loc[dataframe['normalization'] == 'ANd']['test'].values.mean()
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']['test'].values.mean()
+df_mm = dataframe.loc[dataframe['normalization'] == 'MM']['test'].values.mean()
+df_zs = dataframe.loc[dataframe['normalization'] == 'ZS']['test'].values.mean()
+df_ds = dataframe.loc[dataframe['normalization'] == 'DS']['test'].values.mean()
+
+print("minidolar")
+print(df_ano)
+print(df_anc)
+print(df_and)
+print(df_sw)
+print(df_mm)
+print(df_zs)
+print(df_ds)
+
+
+#btc all norm
+dataframe = pandas.read_csv('compare_btc_all.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANo']['test'].values.mean()
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANc']['test'].values.mean()
+df_and = dataframe.loc[dataframe['normalization'] == 'ANd']['test'].values.mean()
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']['test'].values.mean()
+df_mm = dataframe.loc[dataframe['normalization'] == 'MM']['test'].values.mean()
+df_zs = dataframe.loc[dataframe['normalization'] == 'ZS']['test'].values.mean()
+df_ds = dataframe.loc[dataframe['normalization'] == 'DS']['test'].values.mean()
+
+print("btc")
+print(df_ano)
+print(df_anc)
+print(df_and)
+print(df_sw)
+print(df_mm)
+print(df_zs)
+print(df_ds)
+
+
+
+#furnas all norm
+dataframe = pandas.read_csv('compare_furnas_all.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANo']['test'].values.mean()
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANc']['test'].values.mean()
+df_and = dataframe.loc[dataframe['normalization'] == 'ANd']['test'].values.mean()
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']['test'].values.mean()
+df_mm = dataframe.loc[dataframe['normalization'] == 'MM']['test'].values.mean()
+df_zs = dataframe.loc[dataframe['normalization'] == 'ZS']['test'].values.mean()
+df_ds = dataframe.loc[dataframe['normalization'] == 'DS']['test'].values.mean()
+
+print("furnas")
+print(df_ano)
+print(df_anc)
+print(df_and)
+print(df_sw)
+print(df_mm)
+print(df_zs)
+print(df_ds)
+
+
+
+#rainfall all norm
+dataframe = pandas.read_csv('compare_rainfall_all.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANo']['test'].values.mean()
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANc']['test'].values.mean()
+df_and = dataframe.loc[dataframe['normalization'] == 'ANd']['test'].values.mean()
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']['test'].values.mean()
+df_mm = dataframe.loc[dataframe['normalization'] == 'MM']['test'].values.mean()
+df_zs = dataframe.loc[dataframe['normalization'] == 'ZS']['test'].values.mean()
+df_ds = dataframe.loc[dataframe['normalization'] == 'DS']['test'].values.mean()
+
+print("rainfall")
+print(df_ano)
+print(df_anc)
+print(df_and)
+print(df_sw)
+print(df_mm)
+print(df_zs)
+print(df_ds)
+
+
+
+#variacoes all norm
+dataframe = pandas.read_csv('compare_variacoes_all.csv', sep = ',',  engine='python', decimal='.', header = None, names=['w', 'k', 'activation', 'normalization', 'train', 'test', 'optimizer', 'epochs'])
+
+
+dataframe = dataframe.sort_values(['w','normalization','k'])
+
+df_ano = dataframe.loc[dataframe['normalization'] == 'ANo']['test'].values.mean()
+df_anc = dataframe.loc[dataframe['normalization'] == 'ANc']['test'].values.mean()
+df_and = dataframe.loc[dataframe['normalization'] == 'ANd']['test'].values.mean()
+df_sw = dataframe.loc[dataframe['normalization'] == 'SW']['test'].values.mean()
+df_mm = dataframe.loc[dataframe['normalization'] == 'MM']['test'].values.mean()
+df_zs = dataframe.loc[dataframe['normalization'] == 'ZS']['test'].values.mean()
+df_ds = dataframe.loc[dataframe['normalization'] == 'DS']['test'].values.mean()
+
+print("variacoes")
+print(df_ano)
+print(df_anc)
+print(df_and)
+print(df_sw)
+print(df_mm)
+print(df_zs)
+print(df_ds)
