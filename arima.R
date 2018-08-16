@@ -185,9 +185,9 @@ dolar = 100*((dolar$fechamento[2:nrow(dolar)] - dolar$fechamento[1:nrow(dolar)-1
 dolar_train = dolar[1:round(0.8*length(dolar))]
 dolar_test = dolar[round(0.8*length(dolar)+1):length(dolar)]
 
-xx = dolar$fechamento
+xx = dolar
 currentIndex<-length(dolar_train);
-len = NROW( dolar );
+len = length( dolar );
 forecasts_arima_fit = dolar_test;
 repeat
 {
