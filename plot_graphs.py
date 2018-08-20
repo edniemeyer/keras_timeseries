@@ -970,6 +970,8 @@ print(df_zs)
 print(df_ds)
 
 
+###########################################################333
+
 
 dataframe = pandas.read_csv('furnas_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
 
@@ -979,4 +981,51 @@ plt.plot(dataframe['epoch'],dataframe['loss'])
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.savefig('plots/furnas_epoch.eps')
+
+dataframe = pandas.read_csv('rain_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
+
+plt.clf()
+plt.plot(dataframe['epoch'],dataframe['loss'])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.savefig('plots/rain_epoch.eps')
+
+
+dataframe = pandas.read_csv('dolar_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
+
+plt.clf()
+plt.plot(dataframe['epoch'],dataframe['loss'])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.savefig('plots/dolar_epoch.eps')
+
+
+
+dataframe = pandas.read_csv('btc_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
+
+plt.clf()
+plt.plot(dataframe['epoch'],dataframe['loss'])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.savefig('plots/btc_epoch.eps')
+
+
+
+dataframe = pandas.read_csv('variacoes_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
+
+plt.clf()
+plt.plot(dataframe['epoch'],dataframe['loss'])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.savefig('plots/variacoes_epoch.eps')
+
+
+
+
+
+
 
