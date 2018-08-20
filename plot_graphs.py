@@ -968,3 +968,15 @@ print(df_sw)
 print(df_mm)
 print(df_zs)
 print(df_ds)
+
+
+
+dataframe = pandas.read_csv('furnas_tanh_AN.csv', sep = ',',  engine='python', decimal='.', header = 0)
+
+plt.clf()
+plt.plot(dataframe['epoch'],dataframe['loss'])
+# plt.title('Rede Neural com uma camada oculta para Dataset V')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.savefig('plots/furnas_epoch.eps')
+

@@ -43,8 +43,8 @@ dataframe = pandas.read_csv('annual-rainfall-at-fortaleza-bra.csv', sep=',', eng
 dataset_original = dataframe['rainfall']
 
 batch_size = 64
-nb_epoch = 1000
-patience = 1000
+nb_epoch = 10000
+patience = 10000
 TARGET_TIME = 1
 LAG_SIZE = 1
 EMB_SIZE = 1
@@ -161,8 +161,8 @@ def __main__(argv):
     nonlinearities = ['sigmoid', 'relu', 'tanh']
     # nonlinearities = ['relu']
 
-    normalizations = ['ANo']
-    # normalizations = ['ANo','ANc','ANd','SW','MM','ZS','DS']
+    #normalizations = ['ANo']
+    normalizations = ['ANo','ANc','ANd','SW','MM','ZS','DS']
     type = 'c'
     with open("output/%d_layers/compare.csv" % n_layers, "a") as fp:
         fp.write("-RAINFALL/MLP NN %s\n" % type)
