@@ -1,7 +1,4 @@
 # keras_timeseries
-Implementation of various Neural Network using Keras for predicting Stocks Market (BM&amp;F Bovespa future contracts of dollar - Mini Dolar) and Bitcoin.
-
-
 
 How to run an example:
 
